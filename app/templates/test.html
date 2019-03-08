@@ -1,0 +1,27 @@
+<!-- Obj : créer une page web simple qui contient un simple formulaire-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <!-- {% if titre %} -->
+        <title>{{ titre }}</title>
+        <!-- {% else %} -->
+        <title>Page de test</title>
+        <!-- {% endif %} -->
+    </head>
+    <body>
+
+        <form method="post" action="../views.py">
+            <p>
+                <label for="textarea" >Discutez avec GrandPy </label>
+                <textarea rows="2" cols="35" id="textarea" autofocus required>
+
+                </textarea>
+
+                <input type="submit" value="envoyer">
+            </p>
+
+        </form>
+    </body>
+
+</html>

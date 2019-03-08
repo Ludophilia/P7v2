@@ -1,11 +1,6 @@
-from flask import Flask
-
-app = Flask(__name__)
-app.config.from_object("configu") #s'ecrit normalement config, mais mal écrit pour voir ce que ça va donner
+from flask import render_template
+from app import app
 
 @app.route('/')
 def index():
-    return "Hello weirdo !"
-
-if __name__ == "__main__":
-    app.run()
+    return render_template("test.html", titre="Pika pika")
