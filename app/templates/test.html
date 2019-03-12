@@ -3,22 +3,20 @@
 <html>
     <head>
         <meta charset="utf-8"/>
-        <!-- {% if titre %} -->
+        {% if titre %}
         <title>{{ titre }}</title>
-        <!-- {% else %} -->
+        {% else %}
         <title>Page de test</title>
-        <!-- {% endif %} -->
+        {% endif %}
     </head>
     <body>
 
-        <form method="post" action="../views.py">
+        <form method="post" action="" novalidate>
+            {{ form.hidden_tag() }}
             <p>
-                <label for="textarea" >Discutez avec GrandPy </label>
-                <textarea rows="2" cols="35" id="textarea" autofocus required>
-
-                </textarea>
-
-                <input type="submit" value="envoyer">
+                {{ form.textarea.label }}
+                {{ form.textarea(cols=35, rows=2, autofocus=True) }}
+                {{ form.submit_button() }}
             </p>
 
         </form>
