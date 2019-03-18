@@ -4,11 +4,6 @@ from wtforms.validators import DataRequired
 
 #Essayons le code coverage pour avoir une idée si on doit tester les imports. Comment on teste des imports dans Python
 
-# def test_imports():
-#     assert FlaskForm in flask_wtf
-
-
-
 # def test_form():
 #     # print(Form.textarea)
 #     # print(TextAreaField("Discutez avec GrandPy", validator=DataRequired))
