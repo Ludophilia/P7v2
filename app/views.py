@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect # , url_for
 from app.forms import Form
 
 app = Flask("app") #ou __name__ vu que __name__ == "app"
@@ -12,7 +12,7 @@ def index():
             return redirect('/bonjour')
         else:
             return redirect('/erreur')
-    return render_template("test.html", titre="Pika pika", form=form)
+    return render_template("page.html", form=form)
 
 @app.route('/bonjour')
 def bonjour():

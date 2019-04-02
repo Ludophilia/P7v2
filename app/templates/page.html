@@ -1,0 +1,58 @@
+<!-- Obj : créer le design du site web demandé sans javascript -->
+<!-- {{ url_for('static', filename='style.css') }} --> 
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="static/bootstrap/css/bootstrap.css" />
+        <!-- <link rel="stylesheet" href="static/style.css" />  -->
+        <title> Have you ever talked to GrandPy Bot?</title>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <header>
+                <div class="row justify-content-center navbar navbar-dark bg-dark">
+                    <div class="navbar-brand">GrandPy</div>
+                </div>
+            </header> 
+            <div class="row justify-content-center">
+                <div class="col-8">
+                    <div id="chat_zone"> 
+                        <div class="media">
+                            <img class="mr-3" src="https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg" width="45" height="45" alt="?" />
+                            <div class="media-body">
+                                <p class="">James a dit :
+                                Yoyoyo boy !!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-8"> 
+                    <form  method="post" action="" novalidate>
+                        {{ form.hidden_tag() }}
+                        <p>
+                            {{ form.textarea(id="chat_input", autofocus=True) }}
+                            <div id="submit_button">
+                                {{ form.submit_button() }}
+                            </div>
+                        </p>
+                    </form>
+                </div>    
+            </div>
+            <footer>
+                <div class="row bg-dark justify-content-center p-1">
+                    <a href="https://github.com/Ludophilia/P7">
+                        <image src="static/img/GitHub-Mark-Light-32px.png" alt="Gitkkun (Octocat)" width="25" height="25"/>
+                    </a>
+                </div>
+                <div class="row bg-dark justify-content-center" style="color: #fff; font-size: 10px;">
+                    Jeffrey G. pour OC - 2019
+                </div>
+            </footer>
+        </div>
+    </body>
+
+</html>
