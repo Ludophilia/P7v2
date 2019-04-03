@@ -16,31 +16,20 @@
                     <div class="navbar-brand">GrandPy</div>
                 </div>
             </header> 
-            <div class="row justify-content-center">
-                <div class="col-8">
-                    <div id="chat_zone"> 
-                        <div class="media">
-                            <img class="mr-3" src="https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg" width="45" height="45" alt="?" />
-                            <div class="media-body">
-                                <p class="">James a dit :
-                                Yoyoyo boy !!</p>
-                            </div>
-                        </div>
+            <div class="row justify-content-center bg-white">
+                <div style="height: 560px" class="col-8 border border-secondary rounded border-bottom-0 mt-3" id="chat_container">
+                    <div id="chat_zone" style="margin : 15px -15px;"> <!-- dirtyfix : Dat 15px padding tho'-->
                     </div>
                 </div>
             </div>
-            <div class="row justify-content-center">
-                <div class="col-8"> 
-                    <form  method="post" action="" novalidate>
+            <div class="row justify-content-center bg-white mb-3">
+                <form class="col-8" method="post" action="" novalidate>
+                    <div class="row">
                         {{ form.hidden_tag() }}
-                        <p>
-                            {{ form.textarea(id="chat_input", autofocus=True) }}
-                            <div id="submit_button">
-                                {{ form.submit_button() }}
-                            </div>
-                        </p>
-                    </form>
-                </div>    
+                        {{ form.textarea(class="col-9 border border-secondary form-control", id="chat_input") }}
+                        {{ form.submit_button(class="col-3 btn btn-outline-secondary border border-secondary", id="submit_button", style="padding: 6px -12px") }}
+                    </div>
+                </form>   
             </div>
             <footer>
                 <div class="row bg-dark justify-content-center p-1">
@@ -48,8 +37,10 @@
                         <image src="static/img/GitHub-Mark-Light-32px.png" alt="Gitkkun (Octocat)" width="25" height="25"/>
                     </a>
                 </div>
-                <div class="row bg-dark justify-content-center" style="color: #fff; font-size: 10px;">
+                <div class="row bg-dark justify-content-center text-white" style="font-size: 10px;" id="special">
                     Jeffrey G. pour OC - 2019
+                </div>
+                <div class="row bg-dark" style="height: 250px;">
                 </div>
             </footer>
         </div>
