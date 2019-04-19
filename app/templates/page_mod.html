@@ -18,7 +18,7 @@
                 </div>
             </header> 
             <div class="row justify-content-center bg-white mt-3">
-                <div style="" class="col-8 border border-secondary rounded border-bottom-0" id="chat_container">
+                <div style="height: 560px" class="col-8 border border-secondary rounded border-bottom-0" id="chat_container">
                     <div id="chat_zone" style="height: 560px; margin : 15px 0px 0px 10px; overflow: auto; word-wrap: break-word;">
                     </div>
                 </div>
@@ -27,8 +27,10 @@
                 <form class="col-8" method="post" action="" novalidate>
                     <div class="row">
                         {{ form.hidden_tag() }}
-                        {{ form.textarea(class="col-9 border border-secondary form-control", id="chat_input") }}
-                        {{ form.submit_button(class="col-3 btn btn-outline-secondary border border-secondary", id="submit_button", style="padding: 6px -12px") }}
+                        <label for="chat_input" ></label>
+                        <textarea class="col-9 border border-secondary form-control" id="chat_input" >
+                        </textarea>
+                        <input type="submit" class="col-3 btn btn-outline-secondary border border-secondary" value="envoyer" style="padding: 6px -12px" id="submit_button">
                     </div>
                 </form>   
             </div>

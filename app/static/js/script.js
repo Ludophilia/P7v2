@@ -1,43 +1,30 @@
-var test = document.getElementById("site_brand");
+var site_brand = document.getElementById("site_brand");
 var chat_input = document.getElementById("chat_input");
 var form = document.querySelector("form");
 var chat_zone = document.getElementById("chat_zone");
+var count = 0;
 
-
-test.addEventListener("click", function (e) {
-    chat_zone.insertAdjacentHTML("beforeend",`<p> <strong>GrandPy</strong> : Pourquoi tu appuies sur mon logo, t'es fou ou quoi ? Je suis plus très jeune, c'est fragile ici !!</p>`);
-    e.preventDefault() ; // empecher la redirection, le rafraichissement de la page
-
-    //Rajouter un compteur de clicks, et rajouter des phrases en fonction de l'état du compteur
+site_brand.addEventListener("click", function (e) {
+    chat_zone.insertAdjacentHTML("beforeend",`<p> <strong>GrandPy</strong> : Pourquoi tu appuies sur mon logo, t'es fou ou quoi ? Je suis plus très jeune, c'est fragile ici !!</p>`); //Rajouter un compteur de clicks, et rajouter des phrases en fonction de l'état du compteur
+    e.preventDefault() ;
 });
 
 form.addEventListener("submit", function (e) {
-    // Retirer la possibilité d'envoyer des messages vides ? 
-    chat_zone.insertAdjacentHTML("beforeend", `<p> <strong>Vous</strong> : ${chat_input.value} </p>`) ;
-    chat_input.textContent = "";
+    
+    var message_val = chat_input.value;
+    chat_zone.insertAdjacentHTML("beforeend", `<p class='message'> <strong>Vous</strong> : <span> </span> </p>`); // Ah, pou sûr, il ne supporte pas l'attribution d'attributs avec des variables...
+    chat_zone.querySelector(".message:last-child span").setAttribute("id", `${count}`);
+    document.getElementById(`${count}`).textContent += message_val;
+    count++;
+    chat_input.value = ""; 
     e.preventDefault();
 });
 
-// test.addEventListener("click", function (e) {
-//     var chat_zone = document.getElementById("chat_zone");
-//     chat_zone.textContent += `Pourquoi tu appuies sur mon ${e.target.textContent}, t'es fou ou quoi, c'est fragile ici !!`;
-// });
+/*
 
-// chat_input.addEventListener("focus", function () {
-//     chat_input.textContent = "Tu peux communiquer en écrivant dans cette zone et en appuyant sur le bouton à droite =>"}); 
+Tests :
+e>e<
+e>e<eeee> (prob)
+e\>e\<eeee\> (prob) C'est coupé parce qu'il le prend pour une balise... avec les <>
 
-// chat_input.addEventListener("blur", function () {
-//     chat_input.textContent = "Mais... tu veux pas ???"});
-
-// window.addEventListener(
-//     "beforeunload", function (e) {
-//         e.returnValue = "heu";
-//         return "heu";
-// });
-
-// window.addEventListener("load", function (e) {
-//     e.preventDefault() ;
-//     alert("salut frère !!");
-// });
-
-// chat_input.focus();
+*/
