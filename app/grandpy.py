@@ -65,18 +65,14 @@ class GrandPy:
                 reaction += 1
                 greetings = ["Bonjour!", "Salut!", "Yo!", "Hi!!"]
                 ln = random.randint(0,len(greetings)-1)
-                grandpy_answer += "{}\n".format(greetings[ln])
+                grandpy_answer += "{}\n".format(greetings[ln]) #Curieux, le \n n'est pas considéré comme un saut de ligne du point de vue front end...
 
             if keyword in ['openclassrooms', 'Openclassrooms', 'OpenClassrooms', 'OC']:
                 if "adresse" in keywords_list and ("connais" in keywords_list or "Connais" in keywords_list):
                     reaction += 1
-                    grandpy_answer += "Bien sûr mon poussin ! La voici : 7 cité Paradis, 75010 Paris.\n"
+                    grandpy_answer += "Bien sûr mon poussin ! La voici : 7 cité Paradis, 75010 Paris.\n" #Utilisez Geocode pour cela. Et puis Mockez cette fonction plutôt...
 
         if reaction == 0 : 
             grandpy_answer = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... Et oui je suis borné moi :)"
 
         return grandpy_answer
-
-# gp = GrandPy()
-# gp.answer_message("salut, bitch, je;?LK t'ai, ,,,,manqué ? celui celui celui certes certes certes bat beau ta reum pd,,,!?")
-# gp.answer_message("Salut GrandPy! Tu connais l'adresse d'Openclassrooms")

@@ -1,9 +1,10 @@
 from flask_testing import LiveServerTestCase
 from app import app
+from app.grandpy import requests
 from selenium import webdriver
 import time
 
-class TestGrandPyGreetings(LiveServerTestCase): 
+class TestGrandPyUI(LiveServerTestCase): 
     def create_app(self): 
         app.config.from_object("config_tests")
         return app
@@ -31,4 +32,18 @@ class TestGrandPyGreetings(LiveServerTestCase):
         time.sleep(1) #Laissez lui le temps de rafraichir le dom, sinon c'est un échec.
 
         self.text_element = self.driver.find_element_by_id("-1")
-        assert self.text_element.text == "Bonjour"
+        assert self.text_element.text in ["Bonjour!", "Salut!", "Yo!", "Hi!!"]
+
+        #On pourrait aussi s'assurer que GrandPy ne dise pas bonjour dans d'autres situations
+
+    def test_if_grandpy_gives_the_adress(self):
+        self.visit_url()
+
+        self.text_area = self.driver.find_element_by_id('chat_input')
+        self.text_area.send_keys("Connais-tu l'adresse d'OpenClassrooms") 
+        self.text_area.submit()
+
+        time.sleep(1)
+
+        self.text_element = self.driver.find_element_by_id("-1")
+        assert self.text_element.text == "Bien sûr mon poussin ! La voici : 7 cité Paradis, 75010 Paris."
