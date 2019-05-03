@@ -3,6 +3,7 @@ import json
 import random
 import os.path as pth
 import sys
+import config as cf
 
 class GrandPy:
 
@@ -51,8 +52,18 @@ class GrandPy:
         
         return list_from_string_to_parse
 
+    def get_address(self):
+        
+        url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=openclassrooms+paris&key={}".format(cf.API_KEY) 
+        r = requests.get(url) # request fonctionne même car mocnkeypatch est placé sur r.json() pour ne pas avoir à modifier le code.
+        r_formatted = r.json()
+        
+        for result in r_formatted["results"]:
+            if result["name"] == "Openclassrooms": 
+                address = result["formatted_address"].replace(", France", "")
+                return address 
+
     def answer_message(self, string_to_parse):
-        # On scanne la liste des mots clés et pour chaque mot clé significatif, on alimente une str qui devient de plus en plus massive.
 
         keywords_list = self.remove_stopwords(string_to_parse)
         print(keywords_list)
@@ -69,8 +80,9 @@ class GrandPy:
 
             if keyword in ['openclassrooms', 'Openclassrooms', 'OpenClassrooms', 'OC']:
                 if "adresse" in keywords_list and ("connais" in keywords_list or "Connais" in keywords_list):
+                    address = self.get_address()
                     reaction += 1
-                    grandpy_answer += "Bien sûr mon poussin ! La voici : 7 cité Paradis, 75010 Paris.\n" #Utilisez Geocode pour cela. Et puis Mockez cette fonction plutôt...
+                    grandpy_answer += "Bien sûr mon poussin ! La voici : {}.\n".format(address)
 
         if reaction == 0 : 
             grandpy_answer = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... Et oui je suis borné moi :)"

@@ -46,4 +46,4 @@ class TestGrandPyUI(LiveServerTestCase):
         time.sleep(1)
 
         self.text_element = self.driver.find_element_by_id("-1")
-        assert self.text_element.text == "Bien sûr mon poussin ! La voici : 7 cité Paradis, 75010 Paris."
+        assert self.text_element.text == "Bien sûr mon poussin ! La voici : 7 Cité Paradis, 75010 Paris."

@@ -7,11 +7,10 @@ import time
 
 class TestMaps():
 
-    def setUp(self): 
+    def test_if_maps_returns_the_adress(self, monkeypatch):
+        
         self.gp = GrandPy()
-
-    def test_if_maps_returns_the_adress(self, monkeypatch): #Qu'est ce que je cherche à tester ? 
-
+        
         result = {
             "html_attributions": [],
             "results": [
@@ -30,9 +29,7 @@ class TestMaps():
 
         def mockreturn(request): #sans (request) parameter
             return result
-        
-        monkeypatch.setattr(gp, "get_adress", mockreturn) # Hypothèse : monkeypatch.setattr() redirige la fonction la fonction. EN revanche, c'est quoi ce "get"... Un "attribut" (plus une méthode) de requests. #Ce n'est pas ça...
 
-        assert self.gp.get_adress() == "7 Cité Paradis, 75010 Paris, France" #Que voulez-vous tester ? Adresse récupée par grandpy est égale à "7 Cité Paradis, 75010 Paris, France"
+        monkeypatch.setattr("requests.models.Response.json", mockreturn)
 
-        # Normalement, on est censé récupérer le json via requests.json. 
+        assert self.gp.get_address() == "7 Cité Paradis, 75010 Paris"
