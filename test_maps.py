@@ -27,9 +27,11 @@ class TestMaps():
             ]
         }
 
-        def mockreturn(request): #sans (request) parameter
+        def mockreturn(): #sans (request) parameter
             return result
 
-        monkeypatch.setattr("requests.models.Response.json", mockreturn)
+        monkeypatch.setattr(self.gp, "get_maps_info", mockreturn)
 
-        assert self.gp.get_address() == "7 Cité Paradis, 75010 Paris"
+        maps_info = self.gp.get_maps_info()
+
+        assert self.gp.get_address(maps_info) == "7 Cité Paradis, 75010 Paris"

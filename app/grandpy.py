@@ -4,8 +4,12 @@ import random
 import os.path as pth
 import sys
 import config as cf
+import re
 
 class GrandPy:
+
+    def __init__(self):
+        self.maps_info = {}
 
     def build_stopwords(self):
         
@@ -35,7 +39,7 @@ class GrandPy:
                     string_to_parse = string_to_parse.replace(punctuation," ")
                 else:
                     string_to_parse = string_to_parse.replace(punctuation,"")
-        
+
         return string_to_parse
 
     def remove_stopwords(self, string_to_parse):
@@ -52,11 +56,16 @@ class GrandPy:
         
         return list_from_string_to_parse
 
-    def get_address(self):
+    def get_maps_info(self):
         
-        url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=openclassrooms+paris&key={}".format(cf.API_KEY) 
-        r = requests.get(url) # request fonctionne même car mocnkeypatch est placé sur r.json() pour ne pas avoir à modifier le code.
-        r_formatted = r.json()
+        if len(self.maps_info) == 0:
+            url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=openclassrooms+paris&key={}".format(cf.API_KEY) 
+            r = requests.get(url)
+            self.maps_info = r.json()
+        
+        return self.maps_info
+
+    def get_address(self, r_formatted):
         
         for result in r_formatted["results"]:
             if result["name"] == "Openclassrooms": 
@@ -65,26 +74,30 @@ class GrandPy:
 
     def answer_message(self, string_to_parse):
 
+        maps_info = self.get_maps_info()
         keywords_list = self.remove_stopwords(string_to_parse)
-        print(keywords_list)
+        
+        keywords_str = str()
+        for keyword in keywords_list: keywords_str += "{} ".format(keyword) #Meh solution
         
         grandpy_answer = ""
         reaction = 0
 
         for keyword in keywords_list:
-            if keyword in ['Bonjour', 'bonjour', 'Salut', 'salut', 'Yo', 'yo']:
+
+            if re.fullmatch(r"(^[Bb]onjour$|^[Bb]jr$|^[Ss]a?lu?t$|^[Yy]o$|^[Hh]i$)", keyword):
                 reaction += 1
                 greetings = ["Bonjour!", "Salut!", "Yo!", "Hi!!"]
                 ln = random.randint(0,len(greetings)-1)
                 grandpy_answer += "{}\n".format(greetings[ln]) #Curieux, le \n n'est pas considéré comme un saut de ligne du point de vue front end...
-
-            if keyword in ['openclassrooms', 'Openclassrooms', 'OpenClassrooms', 'OC']:
-                if "adresse" in keywords_list and ("connais" in keywords_list or "Connais" in keywords_list):
-                    address = self.get_address()
+            
+            if re.fullmatch(r"(^[oO]pen[cC]las.{1,2}rooms?$|^[oO][cC]$)", keyword):
+                if re.search(r"[Aa]d{1,2}res{1,2}e", keywords_str) and re.search(r"[Cc]on{1,2}ai[ts]?", keywords_str):
+                    address = self.get_address(maps_info)
                     reaction += 1
                     grandpy_answer += "Bien sûr mon poussin ! La voici : {}.\n".format(address)
 
-        if reaction == 0 : 
+        if reaction == 0: 
             grandpy_answer = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... Et oui je suis borné moi :)"
 
         return grandpy_answer
