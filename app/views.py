@@ -16,7 +16,7 @@ def test():
     if request.method == "POST":
         
         gp = GrandPy()
-        user_message = request.data.decode("utf-8") 
-        answer = gp.answer_message(user_message)
+        user_message = request.data.decode("utf-8") #Le message reçu
+        answer = gp.answer_message(user_message) #Le message renvoyé
 
-        return answer
+        return answer #Retour à l'envoyeur

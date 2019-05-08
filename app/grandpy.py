@@ -9,7 +9,7 @@ import re
 class GrandPy:
 
     def __init__(self):
-        self.maps_info = {}
+        self.maps_info = {} #Supprimez pas. Réutilisez si vous voulez d'autres infos de l'API maps.
 
     def build_stopwords(self):
         
@@ -58,12 +58,12 @@ class GrandPy:
 
     def get_maps_info(self):
         
-        if len(self.maps_info) == 0:
+        if len(self.maps_info) == 0: #Design economique pour éviter d'apppeler l'API à chaque fois.
             url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=openclassrooms+paris&key={}".format(cf.API_KEY) 
             r = requests.get(url)
-            self.maps_info = r.json()
+            self.maps_info = r.json() 
         
-        return self.maps_info
+        return self.maps_info 
 
     def get_address(self, r_formatted):
         
@@ -71,6 +71,13 @@ class GrandPy:
             if result["name"] == "Openclassrooms": 
                 address = result["formatted_address"].replace(", France", "")
                 return address 
+
+    def get_coordinates(self, r_formatted):
+        
+        for result in r_formatted["results"]:
+            if result["name"] == "Openclassrooms": 
+                coordinates = result["geometry"]["location"]
+                return coordinates
 
     def answer_message(self, string_to_parse):
 
@@ -81,6 +88,7 @@ class GrandPy:
         for keyword in keywords_list: keywords_str += "{} ".format(keyword) #Meh solution
         
         grandpy_answer = ""
+        message_answer = {}
         reaction = 0
 
         for keyword in keywords_list:
@@ -92,12 +100,17 @@ class GrandPy:
                 grandpy_answer += "{}\n".format(greetings[ln]) #Curieux, le \n n'est pas considéré comme un saut de ligne du point de vue front end...
             
             if re.fullmatch(r"(^[oO]pen[cC]las.{1,2}rooms?$|^[oO][cC]$)", keyword):
-                if re.search(r"[Aa]d{1,2}res{1,2}e", keywords_str) and re.search(r"[Cc]on{1,2}ai[ts]?", keywords_str):
+                if re.search(r"[Aa]d{1,2}res{1,2}e", keywords_str) and re.search(r"[Cc]on{1,2}ai(tre|[ts])", keywords_str):
                     address = self.get_address(maps_info)
+                    message_answer["pi_location"] = self.get_coordinates(maps_info)
                     reaction += 1
                     grandpy_answer += "Bien sûr mon poussin ! La voici : {}.\n".format(address)
 
         if reaction == 0: 
             grandpy_answer = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... Et oui je suis borné moi :)"
 
-        return grandpy_answer
+        message_answer["gp_message"] = grandpy_answer
+        
+        message_answer = json.dumps(message_answer, ensure_ascii=False, sort_keys=True)
+
+        return message_answer
