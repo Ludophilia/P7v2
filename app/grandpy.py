@@ -100,7 +100,7 @@ class GrandPy:
                 grandpy_answer += "{}\n".format(greetings[ln]) #Curieux, le \n n'est pas considéré comme un saut de ligne du point de vue front end...
             
             if re.fullmatch(r"(^[oO]pen[cC]las.{1,2}rooms?$|^[oO][cC]$)", keyword):
-                if re.search(r"[Aa]d{1,2}res{1,2}e", keywords_str) and re.search(r"[Cc]on{1,2}ai(tre|[ts])", keywords_str):
+                if re.search(r"[Aa]d{1,2}res{1,2}e?", keywords_str) and re.search(r"[Cc]on{1,2}ai(tre|[ts]?)", keywords_str):
                     address = self.get_address(maps_info)
                     message_answer["pi_location"] = self.get_coordinates(maps_info)
                     reaction += 1

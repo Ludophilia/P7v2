@@ -29,7 +29,7 @@ class TestGrandPyUI(LiveServerTestCase):
         self.text_area.send_keys('bonjour') 
         self.text_area.submit()
 
-        time.sleep(1) #Laissez lui le temps de rafraichir le dom, sinon c'est un échec.
+        time.sleep(2) #Laissez lui le temps de rafraichir le dom, sinon c'est un échec.
 
         self.text_element = self.driver.find_element_by_id("-1")
         assert self.text_element.text in ["Bonjour!", "Salut!", "Yo!", "Hi!!"]
@@ -43,7 +43,7 @@ class TestGrandPyUI(LiveServerTestCase):
         self.text_area.send_keys("Connais-tu l'adresse d'OpenClassrooms") 
         self.text_area.submit()
 
-        time.sleep(1)
+        time.sleep(2)
 
         self.text_element = self.driver.find_element_by_id("-1")
         assert self.text_element.text == "Bien sûr mon poussin ! La voici : 7 Cité Paradis, 75010 Paris."
