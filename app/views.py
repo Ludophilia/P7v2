@@ -12,16 +12,12 @@ def index():
     form = Form()
     return render_template("page.html", form=form, api_key = cf.API_KEY)
 
-@app.route('/maps', methods=['GET', 'POST'])
-def hello():
-    return render_template("maps_test.html", api_key = cf.API_KEY)
-
-@app.route('/test', methods=['GET', 'POST'])
+@app.route('/grandpy', methods=['GET', 'POST'])
 def test():
     if request.method == "POST":
         
         gp = GrandPy()
         user_message = request.data.decode("utf-8") #Le message reçu
-        answer = gp.answer_message(user_message) #Le message renvoyé
+        answer = gp.answer_message(user_message) #Le message à renvoyer
 
         return answer #Retour à l'envoyeur
