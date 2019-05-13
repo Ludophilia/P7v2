@@ -4,8 +4,6 @@ var container_fluid = document.querySelector(".container-fluid");
 var form = document.querySelector("form");
 var chat_input = document.getElementById("chat_input");
 var chat_zone = document.getElementById("chat_zone");
-var count_you = 0;
-var count_gp = -1;
 
 site_brand.addEventListener("click", function (e) {
 
@@ -36,26 +34,18 @@ function displayMessage(user, message) {
     // Est en charge d'afficher le message des participants au chat (utilisateur et GrandPy)
 
     chat_zone.insertAdjacentHTML("beforeend", `<p class='message'> <strong>${user}</strong> : <span> </span> </p>`); 
+    chat_zone.querySelector(".message:last-child span").textContent += message;
     
-    if (user === "Vous") {
-        chat_zone.querySelector(".message:last-child span").setAttribute("id", `${count_you}`);
-        document.getElementById(`${count_you}`).textContent += message;
-        count_you++;
-    } else if (user === "GrandPy") {
-        chat_zone.querySelector(".message:last-child span").setAttribute("id", `${count_gp}`);
-        document.getElementById(`${count_gp}`).textContent += message;
-        count_gp--;
-    }
 };
 
 function displayMap(latitude, longitude, zoom_level) {
     
     // En charge d'afficher la carte Google Maps dans la fenêtre de chat
 
-    chat_zone.insertAdjacentHTML("beforeend", `<div id="map" style="height:300px; width:100%; "> </div>`);
+    chat_zone.insertAdjacentHTML("beforeend", `<div class="map" style="height:300px; width:100%; "> </div>`);
                 
     function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
+        var map = new google.maps.Map(document.querySelector('.map:last-child'), {
         center: {'lat': latitude, 'lng': longitude},
         zoom: zoom_level})
         var marker = new google.maps.Marker({position: {lat: latitude, lng: longitude}, map: map});
