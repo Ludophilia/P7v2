@@ -35,7 +35,7 @@ function displayMessage(user, message) {
 
     chat_zone.insertAdjacentHTML("beforeend", `<p class='message'> <strong>${user}</strong> : <span> </span> </p>`); 
     chat_zone.querySelector(".message:last-child span").textContent += message;
-    
+
 };
 
 function displayMap(latitude, longitude, zoom_level) {
@@ -58,11 +58,11 @@ form.addEventListener("submit", function (e) {
     
     // Gère ce qui se passe quand on valide le formulaire
 
-    var message_val = chat_input.value;
+    var user_message = chat_input.value;
 
-    displayMessage("Vous", message_val);
+    displayMessage("Vous", user_message);
     
-    ajaxCommunicate("POST", "/grandpy", message_val, function (response) {
+    ajaxCommunicate("POST", "/grandpy", user_message, function (response) {
         
         var gp_json = JSON.parse(response);
         var gp_message = gp_json.gp_message;
