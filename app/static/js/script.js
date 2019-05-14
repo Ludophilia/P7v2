@@ -69,7 +69,7 @@ form.addEventListener("submit", function (e) {
 
         displayMessage("GrandPy", gp_message);
                 
-        if (gp_json.pi_location.lat !== null) {
+        if (gp_json.pi_location.lat !== undefined) {
 
             var address_lat = gp_json.pi_location.lat;
             var address_lng = gp_json.pi_location.lng;    

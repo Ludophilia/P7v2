@@ -31,7 +31,7 @@ class TestGrandPyUI(LiveServerTestCase):
 
         time.sleep(2) #Laissez lui le temps de rafraichir le dom, sinon c'est un échec.
 
-        self.text_element = self.driver.find_element_by_id("-1")
+        self.text_element = self.driver.find_element_by_css_selector(".message:last-child span")
         assert self.text_element.text in ["Bonjour!", "Salut!", "Yo!", "Hi!!"]
 
         #On pourrait aussi s'assurer que GrandPy ne dise pas bonjour dans d'autres situations
@@ -45,5 +45,19 @@ class TestGrandPyUI(LiveServerTestCase):
 
         time.sleep(2)
 
-        self.text_element = self.driver.find_element_by_id("-1")
+        self.text_element = self.driver.find_element_by_css_selector(".message:nth-last-child(2) span")
+
         assert self.text_element.text == "Bien sûr mon poussin ! La voici : 7 Cité Paradis, 75010 Paris."
+
+    def test_if_the_map_is_displayed_when_the_user_asks_gp_the_adress(self): #Test à améliorer ?
+        self.visit_url()
+
+        self.text_area = self.driver.find_element_by_id('chat_input')
+        self.text_area.send_keys("Connais-tu l'adresse d'OpenClassrooms") 
+        self.text_area.submit()
+
+        time.sleep(2)
+
+        self.maps_gmstyle = self.driver.find_element_by_css_selector(".map div div:first-child")
+
+        assert self.maps_gmstyle.get_attribute("class") == "gm-style" # On considère que si la carte s'affiche (et c'est le cas si la classe gm-style créée par Google s'affiche), tout est correct. Les coordonnées ont été vérifiées dans un autre test. Bien sûr, des problèmes internes à Google Maps pourraient survenir, mais on est pas censer tester Gmaps ici.
