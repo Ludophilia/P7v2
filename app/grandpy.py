@@ -65,6 +65,29 @@ class GrandPy:
         
         return self.maps_info 
 
+    def get_wiki_info(self):
+
+        pass #A coder bien sûr. Pour le moment, on utilise un mock.
+
+    def get_anecdocte(self, r_formatted):
+        
+        anecdocte_wikitext = r_formatted["parse"]["wikitext"]["*"].split('\n')
+        url = "https://fr.wikipedia.org/wiki/" + r_formatted["parse"]["title"].replace(" ", "_")
+        know_more = "[En savoir plus sur <a href=\'"+ url +"\'>Wikipédia<a>]"
+        symb_to_remove = ["[[wikt:", "[[", "]]", "{{", "}}"]
+        anecdocte = ""
+
+        for line in anecdocte_wikitext:
+            if re.search(r"[La] cité [Pp]aradis est une voie publique", line):
+                anecdocte = line
+
+        for symbol in symb_to_remove:
+            anecdocte = anecdocte.replace(symbol,"")
+
+        anecdocte = re.sub(r"\|[\d\w]+\s?[\d\w]*\s?[\d\w]*", "", anecdocte) + " " + know_more
+        
+        return anecdocte
+
     def get_address(self, r_formatted):
         
         for result in r_formatted["results"]:

@@ -50,7 +50,6 @@ function displayMap(latitude, longitude, zoom_level) {
         zoom: zoom_level})
         var marker = new google.maps.Marker({position: {lat: latitude, lng: longitude}, map: map});
     }
-
     initMap(); 
 };
 

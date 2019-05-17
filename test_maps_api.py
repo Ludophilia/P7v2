@@ -1,17 +1,13 @@
-from flask_testing import LiveServerTestCase
 from app import app
 from app.grandpy import requests, GrandPy
-from selenium import webdriver
-import time
 
+class TestMapsApiDataTreatment():
 
-class TestMaps():
-
-    def test_if_maps_returns_the_adress(self, monkeypatch):
+    def test_if_get_address_returns_the_correct_address(self, monkeypatch):
         
         self.gp = GrandPy()
         
-        result = {
+        gm_api_response = {
             "html_attributions": [],
             "results": [
                 {
@@ -27,11 +23,11 @@ class TestMaps():
             ]
         }
 
-        def mockreturn(): #sans (request) parameter
-            return result
+        def mock_gm_api_response():
+            return gm_api_response
 
-        monkeypatch.setattr(self.gp, "get_maps_info", mockreturn)
+        monkeypatch.setattr(self.gp, "get_maps_info", mock_gm_api_response)
 
-        maps_info = self.gp.get_maps_info()
+        maps_info = self.gp.get_maps_info() 
 
         assert self.gp.get_address(maps_info) == "7 Cité Paradis, 75010 Paris"
