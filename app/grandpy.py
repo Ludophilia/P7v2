@@ -10,6 +10,7 @@ class GrandPy:
 
     def __init__(self):
         self.maps_info = {} #Supprimez pas. Réutilisez si vous voulez d'autres infos de l'API maps.
+        self.wiki_info = {} 
 
     def build_stopwords(self):
         
@@ -66,8 +67,13 @@ class GrandPy:
         return self.maps_info 
 
     def get_wiki_info(self):
-
-        pass #A coder bien sûr. Pour le moment, on utilise un mock.
+        
+        if len(self.wiki_info) == 0: #Design economique pour éviter d'apppeler l'API à chaque fois.
+            url = "https://fr.wikipedia.org/w/api.php?action=parse&format=json&prop=wikitext&page=Cité Paradis&section=1"
+            r = requests.get(url)
+            self.wiki_info = r.json()
+        
+        return self.wiki_info 
 
     def get_anecdocte(self, r_formatted):
         
@@ -104,11 +110,10 @@ class GrandPy:
 
     def answer_message(self, string_to_parse):
 
-        maps_info = self.get_maps_info()
         keywords_list = self.remove_stopwords(string_to_parse)
         
         keywords_str = str()
-        for keyword in keywords_list: keywords_str += "{} ".format(keyword) #Meh solution
+        for keyword in keywords_list: keywords_str += "{} ".format(keyword) #Bof la solution
         
         grandpy_answer = ""
         message_answer = {}
@@ -124,15 +129,24 @@ class GrandPy:
             
             if re.fullmatch(r"(^[oO]pen[cC]las.{1,2}rooms?$|^[oO][cC]$)", keyword):
                 if re.search(r"[Aa]d{1,2}res{1,2}e?", keywords_str) and re.search(r"[Cc]on{1,2}ai(tre|[ts]?)", keywords_str):
+                    
+                    reaction += 1
+
+                    maps_info = self.get_maps_info()
                     address = self.get_address(maps_info)
                     message_answer["pi_location"] = self.get_coordinates(maps_info)
-                    reaction += 1
                     grandpy_answer += "Bien sûr mon poussin ! La voici : {}.\n".format(address)
+
+                    #anecdocte = self.get
+
+                    # message_answer["pi_anecdocte"] = 
+
 
         if reaction == 0: 
             grandpy_answer = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... Et oui je suis borné moi :)"
 
         message_answer["gp_message"] = grandpy_answer
+
         
         message_answer = json.dumps(message_answer, ensure_ascii=False, sort_keys=True)
 
