@@ -68,7 +68,7 @@ class GrandPy:
 
     def get_wiki_info(self):
         
-        if len(self.wiki_info) == 0: #Design economique pour éviter d'apppeler l'API à chaque fois.
+        if len(self.wiki_info) == 0:
             url = "https://fr.wikipedia.org/w/api.php?action=parse&format=json&prop=wikitext&page=Cité Paradis&section=1"
             r = requests.get(url)
             self.wiki_info = r.json()
@@ -137,17 +137,14 @@ class GrandPy:
                     message_answer["pi_location"] = self.get_coordinates(maps_info)
                     grandpy_answer += "Bien sûr mon poussin ! La voici : {}.\n".format(address)
 
-                    #anecdocte = self.get
-
-                    # message_answer["pi_anecdocte"] = 
-
+                    anecdocte = self.get_anecdocte(self.get_wiki_info())
+                    message_answer["pi_anecdocte"] = anecdocte
 
         if reaction == 0: 
             grandpy_answer = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... Et oui je suis borné moi :)"
 
         message_answer["gp_message"] = grandpy_answer
 
-        
         message_answer = json.dumps(message_answer, ensure_ascii=False, sort_keys=True)
 
         return message_answer
