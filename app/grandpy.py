@@ -2,14 +2,13 @@ import requests
 import json
 import random
 import os.path as pth
-import sys
 import config as cf
 import re
 
 class GrandPy:
 
     def __init__(self):
-        self.maps_info = {} #Supprimez pas. Réutilisez si vous voulez d'autres infos de l'API maps.
+        self.maps_info = {}
         self.wiki_info = {} 
 
     def build_stopwords(self):
@@ -78,10 +77,12 @@ class GrandPy:
     def get_anecdocte(self, r_formatted):
         
         anecdocte_wikitext = r_formatted["parse"]["wikitext"]["*"].split('\n')
-        url = "https://fr.wikipedia.org/wiki/" + r_formatted["parse"]["title"].replace(" ", "_")
-        know_more = "[En savoir plus sur <a href=\'"+ url +"\'>Wikipédia<a>]"
+        wiki_url = "https://fr.wikipedia.org/wiki/" + r_formatted["parse"]["title"].replace(" ", "_")
+
         symb_to_remove = ["[[wikt:", "[[", "]]", "{{", "}}"]
         anecdocte = ""
+
+        anecdocte_complete = {}
 
         for line in anecdocte_wikitext:
             if re.search(r"[La] cité [Pp]aradis est une voie publique", line):
@@ -90,9 +91,12 @@ class GrandPy:
         for symbol in symb_to_remove:
             anecdocte = anecdocte.replace(symbol,"")
 
-        anecdocte = re.sub(r"\|[\d\w]+\s?[\d\w]*\s?[\d\w]*", "", anecdocte) + " " + know_more
+        anecdocte = re.sub(r"\|[\d\w]+\s?[\d\w]*\s?[\d\w]*", "", anecdocte)
         
-        return anecdocte
+        anecdocte_complete["anecdocte"] = anecdocte
+        anecdocte_complete["url"] = wiki_url
+        
+        return anecdocte_complete
 
     def get_address(self, r_formatted):
         
@@ -137,8 +141,8 @@ class GrandPy:
                     message_answer["pi_location"] = self.get_coordinates(maps_info)
                     grandpy_answer += "Bien sûr mon poussin ! La voici : {}.\n".format(address)
 
-                    anecdocte = self.get_anecdocte(self.get_wiki_info())
-                    message_answer["pi_anecdocte"] = anecdocte
+                    anecdocte_complete = self.get_anecdocte(self.get_wiki_info())
+                    message_answer["pi_anecdocte"] = anecdocte_complete
 
         if reaction == 0: 
             grandpy_answer = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... Et oui je suis borné moi :)"

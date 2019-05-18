@@ -33,9 +33,16 @@ function displayMessage(user, message) {
 
     // Est en charge d'afficher le message des participants au chat (utilisateur et GrandPy)
 
-    chat_zone.insertAdjacentHTML("beforeend", `<p class='message'> <strong>${user}</strong> : <span> </span> </p>`); 
-    chat_zone.querySelector(".message:last-child span").textContent += message;
+    chat_zone.insertAdjacentHTML("beforeend", `<p class='message'> <strong>${user}</strong> : <span> </span> </p>`);
+    var message_zone = chat_zone.querySelector(".message:last-child span");
 
+    if (message.anecdocte !== undefined) {
+        message_zone.textContent = "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? " + message.anecdocte;
+        message_zone.insertAdjacentHTML("beforeend", ` [En savoir plus sur <a href="${message.url}">Wikipédia</a>]`)
+
+    } else {
+        message_zone.textContent += message;
+    }
 };
 
 function displayMap(latitude, longitude, zoom_level) {
@@ -64,16 +71,13 @@ form.addEventListener("submit", function (e) {
     ajaxCommunicate("POST", "/grandpy", user_message, function (response) {
         
         var gp_json = JSON.parse(response);
-        var gp_message = gp_json.gp_message;
-
-        displayMessage("GrandPy", gp_message);
+    
+        displayMessage("GrandPy", gp_json.gp_message);
                 
         if (gp_json.pi_location.lat !== undefined) {
 
-            var address_lat = gp_json.pi_location.lat;
-            var address_lng = gp_json.pi_location.lng;    
-                        
-            displayMap(address_lat, address_lng, 15);
+            displayMap(gp_json.pi_location.lat, gp_json.pi_location.lng, 15);
+            displayMessage("GrandPy", gp_json.pi_anecdocte);
 
             };
         });

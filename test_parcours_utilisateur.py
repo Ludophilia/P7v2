@@ -39,14 +39,16 @@ class TestGrandPyUI(LiveServerTestCase):
     def test_if_grandpy_gives_the_adress_and_if_the_map_is_displayed(self):
         self.visit_url()
 
-        self.text_area = self.driver.find_element_by_id('chat_input')
-        self.text_area.send_keys("Connais-tu l'adresse d'OpenClassrooms") 
-        self.text_area.submit()
+        self.chat_input = self.driver.find_element_by_id('chat_input')
+        self.chat_input.send_keys("Connais-tu l'adresse d'OpenClassrooms") 
+        self.chat_input.submit()
 
-        time.sleep(2)
+        time.sleep(3)
 
-        self.text_element = self.driver.find_element_by_css_selector(".message:nth-last-child(2) span")
+        self.gp_answer = self.driver.find_element_by_css_selector(".message:nth-last-child(3) span")
         self.maps_gmstyle = self.driver.find_element_by_css_selector(".map div div:first-child")
+        self.gp_anecdocte = self.driver.find_element_by_css_selector(".message:last-child span")
 
-        assert self.text_element.text == "Bien sûr mon poussin ! La voici : 7 Cité Paradis, 75010 Paris."
-        assert self.maps_gmstyle.get_attribute("class") == "gm-style" # On considère que si la carte s'affiche (et c'est le cas si la classe gm-style créée par Google s'affiche), tout est correct. Les coordonnées ont été vérifiées dans un autre test. Bien sûr, des problèmes internes à Google Maps pourraient survenir, mais on est pas censer tester Gmaps ici.
+        assert self.gp_answer.text == "Bien sûr mon poussin ! La voici : 7 Cité Paradis, 75010 Paris."
+        assert self.maps_gmstyle.get_attribute("class") == "gm-style"
+        assert self.gp_anecdocte.text == "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse. [En savoir plus sur Wikipédia]"

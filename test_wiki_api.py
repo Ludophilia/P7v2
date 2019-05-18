@@ -48,4 +48,7 @@ class TestWikimediaApiData():
 
         wiki_info = self.gp.get_wiki_info()
         
-        assert self.gp.get_anecdocte(wiki_info) == "La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse. [En savoir plus sur <a href='https://fr.wikipedia.org/wiki/Cité_Paradis'>Wikipédia<a>]" #En savoir plus sur Wikipédia
+        assert self.gp.get_anecdocte(wiki_info) == {
+            "anecdocte": "La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse.",
+            "url": "https://fr.wikipedia.org/wiki/Cité_Paradis"
+        }
