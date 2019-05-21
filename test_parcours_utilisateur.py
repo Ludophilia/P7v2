@@ -10,7 +10,7 @@ class TestGrandPyUI(LiveServerTestCase):
         return app
     
     def setUp(self): 
-        self.driver = webdriver.Chrome('app/tests/chromedriver.exe')
+    self.driver = webdriver.Chrome('app/tests/chromedriver') #Téléchargez un driver et renseignez son chemin ici
     
     def tearDown(self):
         self.driver.quit()
