@@ -60,7 +60,16 @@ function displayMap(latitude, longitude, zoom_level) {
     initMap(); 
 };
 
-form.addEventListener("submit", function (e) {
+form.addEventListener("keyup", function(e) {
+
+    // Gère l'envoi du formulaire en cas d'appui sur la touche entrée
+
+    if (e.code === "Enter") {
+        document.querySelector("#submit_button").click()
+    }
+});
+
+form.addEventListener("submit", function(e) {
     
     // Gère ce qui se passe quand on valide le formulaire
 

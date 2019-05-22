@@ -2,6 +2,8 @@ from flask_testing import LiveServerTestCase
 from app import app
 from app.grandpy import requests
 from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 import time
 
 class TestGrandPyUI(LiveServerTestCase): 
@@ -10,7 +12,8 @@ class TestGrandPyUI(LiveServerTestCase):
         return app
     
     def setUp(self): 
-    self.driver = webdriver.Chrome('app/tests/chromedriver') #Téléchargez un driver et renseignez son chemin ici
+        self.driver = webdriver.Chrome('app/tests/chromedriver') #Téléchargez un driver et renseignez son chemin ici
+        self.action = ActionChains(self.driver)
     
     def tearDown(self):
         self.driver.quit()
@@ -26,8 +29,7 @@ class TestGrandPyUI(LiveServerTestCase):
         self.visit_url()
 
         self.text_area = self.driver.find_element_by_id('chat_input')
-        self.text_area.send_keys('bonjour') 
-        self.text_area.submit()
+        self.text_area.send_keys('bonjour', Keys.ENTER)
 
         time.sleep(2) #Laissez lui le temps de rafraichir le dom, sinon c'est un échec.
 
