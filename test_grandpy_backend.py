@@ -1,5 +1,38 @@
 from app import app
 from app.grandpy import requests, GrandPy
+import json
+
+
+class TestMapsApiDataTreatment():
+
+    def test_if_get_address_returns_the_correct_address(self, monkeypatch):
+        
+        self.gp = GrandPy()
+        
+        gm_api_response = {
+            "html_attributions": [],
+            "results": [
+                {
+                    "formatted_address": "7 Cité Paradis, 75010 Paris, France",
+                    "geometry": {
+                        "location": {
+                            "lat": 48.8747265,
+                            "lng": 2.3505517
+                        }
+                    },
+                    "name": "Openclassrooms",
+                }
+            ]
+        }
+
+        def mock_gm_api_response():
+            return gm_api_response
+
+        monkeypatch.setattr(self.gp, "get_maps_info", mock_gm_api_response)
+
+        maps_info = self.gp.get_maps_info() 
+
+        assert self.gp.get_address(maps_info) == "7 Cité Paradis, 75010 Paris"
 
 class TestWikimediaApiData():
 
@@ -52,3 +85,22 @@ class TestWikimediaApiData():
             "anecdocte": "La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse.",
             "url": "https://fr.wikipedia.org/wiki/Cité_Paradis"
         }
+
+class TestGrandPy():
+
+    def test_what_answer_message_returns_if_the_user_asks_for_OC_address(self):
+        
+        self.gp = GrandPy()
+        
+        expected_answer = {
+            'gp_message': 'Bien sûr mon poussin ! La voici : 7 Cité Paradis, 75010 Paris.\n',
+            'pi_location': {'lat': 48.8748465, 'lng': 2.3504873}, #lat 48.8747265 et lng ont changé 2.3505517
+            'pi_anecdocte' : {"anecdocte": "La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse.",
+            "url": "https://fr.wikipedia.org/wiki/Cité_Paradis"}
+            }
+        
+        expected_answer_js = json.dumps(expected_answer, ensure_ascii=False, sort_keys=True)
+
+        grandpy_answer = self.gp.answer_message("adresse oc connaitre")
+
+        assert expected_answer_js == grandpy_answer

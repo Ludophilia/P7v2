@@ -1,6 +1,5 @@
 from flask_testing import LiveServerTestCase
 from app import app
-from app.grandpy import requests
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -13,7 +12,6 @@ class TestGrandPyUI(LiveServerTestCase):
     
     def setUp(self): 
         self.driver = webdriver.Chrome('app/tests/chromedriver') #Téléchargez un driver et renseignez son chemin ici
-        self.action = ActionChains(self.driver)
     
     def tearDown(self):
         self.driver.quit()
@@ -25,20 +23,7 @@ class TestGrandPyUI(LiveServerTestCase):
         self.visit_url()
         assert self.driver.current_url == "http://127.0.0.1:8943/" or self.driver.current_url == "http://localhost:8943/"
 
-    def test_if_grandpy_greets_back(self):
-        self.visit_url()
-
-        self.text_area = self.driver.find_element_by_id('chat_input')
-        self.text_area.send_keys('bonjour', Keys.ENTER)
-
-        time.sleep(2) #Laissez lui le temps de rafraichir le dom, sinon c'est un échec.
-
-        self.text_element = self.driver.find_element_by_css_selector(".message:last-child span")
-        assert self.text_element.text in ["Bonjour!", "Salut!", "Yo!", "Hi!!"]
-
-        #On pourrait aussi s'assurer que GrandPy ne dise pas bonjour dans d'autres situations
-
-    def test_if_grandpy_gives_the_adress_and_if_the_map_is_displayed(self):
+    def test_if_grandpy_gives_the_adress_and_the_info_related_to_the_adress_and_if_the_map_is_displayed(self):
         self.visit_url()
 
         self.chat_input = self.driver.find_element_by_id('chat_input')
