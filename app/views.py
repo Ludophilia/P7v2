@@ -1,8 +1,8 @@
-from flask import Flask, render_template, redirect, request # , url_for
+from flask import Flask, render_template, request # , url_for, redirect, 
 from app.forms import Form
 from app.grandpy import GrandPy
-import json
 import config as cf
+#import json
 
 app = Flask("app") #ou __name__ vu que __name__ == "app"
 app.config.from_object("config") 
@@ -20,4 +20,4 @@ def test():
         user_message = request.data.decode("utf-8") #Le message reçu
         answer = gp.answer_message(user_message) #Le message à renvoyer
 
-        return answer #Retour à l'envoyeur
+        return answer #Retour à l'envoyeur (au client quoi)

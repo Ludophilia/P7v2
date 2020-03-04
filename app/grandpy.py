@@ -1,9 +1,6 @@
-import requests
-import json
-import random
+import requests, json, random, re
 import os.path as pth
-import config as cf
-import re
+import config as cf 
 
 class GrandPy:
 
@@ -14,7 +11,6 @@ class GrandPy:
     def build_stopwords(self):
         
         if not pth.exists("stopwords.js") : 
-
             r = requests.get("https://raw.githubusercontent.com/6/stopwords-json/master/dist/fr.json")
             stopwords_txt = r.text
             with open("stopwords.js", "x") as f:
@@ -22,39 +18,30 @@ class GrandPy:
         
         with open("stopwords.js") as f:
             stopwords_list = f.read().replace('[','').replace(']','').replace("\"","").split(",")
-        
-        stopwords_list_lg = []
+            stopwords_list = stopwords_list + [word.capitalize() for word in stopwords_list]
 
-        for word in stopwords_list:
-            stopwords_list_lg += [word, word.capitalize()] #Wow, reconstruire la liste, c'est lourd comme méthode
-
-        return stopwords_list_lg
+        return stopwords_list
     
     def remove_pounctuation(self, string_to_parse):
         
         punctuations = ["\'", "\"", "?", ",", ".", "!?", "?!", "-", "!", ";", ":"]
         for punctuation in punctuations:
             while punctuation in string_to_parse: 
-                if punctuation == "\'" or punctuation == "-":
-                    string_to_parse = string_to_parse.replace(punctuation," ")
-                else:
-                    string_to_parse = string_to_parse.replace(punctuation,"")
-
+                string_to_parse = string_to_parse.replace(punctuation," ")
+           
         return string_to_parse
 
     def remove_stopwords(self, string_to_parse):
         
         stopwords_list = self.build_stopwords()
         
-        list_from_string_to_parse = self.remove_pounctuation(string_to_parse).split()
+        word_list = self.remove_pounctuation(string_to_parse).split()
         
         for stopword in stopwords_list:
-            if stopword in list_from_string_to_parse: 
-                stopword_occurences = list_from_string_to_parse.count(stopword)
-                for stopword_occurence in range(stopword_occurences):
-                    list_from_string_to_parse.remove(stopword)
+            if stopword in word_list: 
+                [word_list.remove(stopword) for _ in range(word_list.count(stopword))]
         
-        return list_from_string_to_parse
+        return word_list
 
     def get_maps_info(self):
         
@@ -83,18 +70,18 @@ class GrandPy:
         anecdocte = ""
 
         anecdocte_complete = {}
+        anecdocte_complete["url"] = wiki_url
 
         for line in anecdocte_wikitext:
-            if re.search(r"[La] cité [Pp]aradis est une voie publique", line):
-                anecdocte = line
+            if re.search(r"[La] cité [Pp]aradis est une voie publique", line): #Extrait la réponse à la question du wikitexte
+                anecdocte = line 
 
-        for symbol in symb_to_remove:
-            anecdocte = anecdocte.replace(symbol,"")
+        for symbol in symb_to_remove: 
+            anecdocte = anecdocte.replace(symbol,"") #Retire les {{}}, [[]] du wikitexte qui figurent toujours la réponse
 
-        anecdocte = re.sub(r"\|[\d\w]+\s?[\d\w]*\s?[\d\w]*", "", anecdocte)
-        
+        anecdocte = re.sub(r"\|\w+\s?\w*\s?\w*", "", anecdocte) #Cherche à retirer "|10e", "|arrondissement de Paris"...
+
         anecdocte_complete["anecdocte"] = anecdocte
-        anecdocte_complete["url"] = wiki_url
         
         return anecdocte_complete
 
@@ -120,7 +107,7 @@ class GrandPy:
         for keyword in keywords_list: keywords_str += "{} ".format(keyword) #Bof la solution
         
         grandpy_answer = ""
-        message_answer = {}
+        json_answer = {}
         reaction = 0
 
         for keyword in keywords_list:
@@ -128,8 +115,8 @@ class GrandPy:
             if re.fullmatch(r"(^[Bb]onjour$|^[Bb]jr$|^[Ss]a?lu?t$|^[Yy]o$|^[Hh]i$)", keyword):
                 reaction += 1
                 greetings = ["Bonjour!", "Salut!", "Yo!", "Hi!!"]
-                ln = random.randint(0,len(greetings)-1)
-                grandpy_answer += "{}\n".format(greetings[ln]) #Curieux, le \n n'est pas considéré comme un saut de ligne du point de vue front end...
+                lucky_number = random.randint(0,len(greetings)-1)
+                grandpy_answer += "{}\n".format(greetings[lucky_number]) #Curieux, le \n n'est pas considéré comme un saut de ligne du point de vue front end...
             
             if re.fullmatch(r"(^[oO]pen[cC]las.{1,2}rooms?$|^[oO][cC]$)", keyword):
                 if re.search(r"[Aa]d{1,2}res{1,2}e?", keywords_str) and re.search(r"[Cc]on{1,2}ai(tre|[ts]?)", keywords_str):
@@ -138,17 +125,17 @@ class GrandPy:
 
                     maps_info = self.get_maps_info()
                     address = self.get_address(maps_info)
-                    message_answer["pi_location"] = self.get_coordinates(maps_info)
+                    json_answer["pi_location"] = self.get_coordinates(maps_info)
                     grandpy_answer += "Bien sûr mon poussin ! La voici : {}.\n".format(address)
 
                     anecdocte_complete = self.get_anecdocte(self.get_wiki_info())
-                    message_answer["pi_anecdocte"] = anecdocte_complete
+                    json_answer["pi_anecdocte"] = anecdocte_complete
 
         if reaction == 0: 
             grandpy_answer = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... Et oui je suis borné moi :)"
 
-        message_answer["gp_message"] = grandpy_answer
+        json_answer["gp_message"] = grandpy_answer
 
-        message_answer = json.dumps(message_answer, ensure_ascii=False, sort_keys=True)
+        json_answer = json.dumps(json_answer, ensure_ascii=False, sort_keys=True)
 
-        return message_answer
+        return json_answer
