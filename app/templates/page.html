@@ -9,24 +9,24 @@
         <title> Have you ever talked to GrandPy Bot? </title>
     </head>
     <body>
-        <div class="container-fluid">
-            <header>
-                <nav class="row justify-content-center navbar navbar-dark bg-dark">
-                    <div class="navbar-brand" id="site_brand"><a href="/">GrandPy</a></div>
+        <div class="my_container container-fluid">
+            <header class="row navbar justify-content-center bg-dark">
+                <nav class="navbar-brand" id="site_brand">
+                    <a href="/">GrandPy</a>
                 </nav>
             </header> 
-            <section class="row justify-content-center bg-white mt-3 mb-3">
-                <article class="col-8 border border-secondary rounded border-bottom-0" id="chat_zone">
+            <section class="row justify-content-center bg-white">
+                <article class="col-8 border border-secondary rounded border-bottom-0 mt-3" id="chat_zone">
                 </article>
-                <form class="col-8" method="post" action="" novalidate>
+                <form class="col-8" method="post" action="" novalidate id="chat_control">
                     <div class="row">
                         {{ form.hidden_tag() }}
                         {{ form.textarea(class="col-9 border border-secondary form-control", id="chat_input") }}
                         {{ form.submit_button(class="col-3 btn btn-outline-secondary border border-secondary", id="submit_button") }}
                     </div>
-                </form>   
+                </form>
             </section>
-            <footer class="row bg-dark justify-content-center p-1">
+            <footer class="row justify-content-center bg-dark">
                 <div class="text-center col-12">
                     <a href="https://github.com/Ludophilia/P7">
                         <image src="static/img/GitHub-Mark-Light-32px.png" alt="Gitkun (Octocat)" width="25" height="25"/>
