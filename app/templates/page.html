@@ -1,43 +1,43 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8" />
+        <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" href={{ url_for('static', filename='css/bootstrap.css') }}>
         <link rel="stylesheet" href={{ url_for('static', filename='css/loading.css') }}>
         <link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }}>
-        <title> Have you ever talked to GrandPy Bot? </title>
+        <title>🤖 GrandPyBot 1st Anniversary Remake</title>
     </head>
     <body>
-        <div class="my_container container-fluid">
-            <header class="row navbar justify-content-center bg-dark">
-                <nav class="navbar-brand" id="site_brand">
-                    <a href="/">GrandPy</a>
+        <div class="my_container">
+            <header>
+                <nav id="brand">
+                    <span id="brand_logo">🤖 </span><a href="#">GrandPy</a>
                 </nav>
-            </header> 
-            <section class="row justify-content-center bg-white">
-                <article class="col-8 border border-secondary rounded border-bottom-0 mt-3" id="chat_zone">
-                </article>
-                <form class="col-8" method="post" action="" novalidate id="chat_control">
-                    <div class="row">
+            </header>
+            <section id="chat_window">
+                <section id="dialogue_container">
+                    <article id="dialogue_area">
+                    </article>
+                    <form method="post" action="" novalidate id="input_container">
+                        <!-- <div> -->
                         {{ form.hidden_tag() }}
-                        {{ form.textarea(class="col-9 border border-secondary form-control", id="chat_input") }}
-                        {{ form.submit_button(class="col-3 btn btn-outline-secondary border border-secondary", id="submit_button") }}
-                    </div>
-                </form>
+                        {{ form.textarea(class="", id="input_area") }}
+                        {{ form.submit_button(class="", id="submit_button") }}
+                        <!-- </div> -->
+                    </form>
+                </section>
             </section>
-            <footer class="row justify-content-center bg-dark">
-                <div class="text-center col-12">
-                    <a href="https://github.com/Ludophilia/P7">
-                        <image src="static/img/GitHub-Mark-Light-32px.png" alt="Gitkun (Octocat)" width="25" height="25"/>
-                    </a>
+            <footer>
+                <div id="footer-notes">
+                    2019, 2020 — Créé par Jeffrey G.<br/>pour Openclassrooms
                 </div>
-                <div class="col-12 text-white text-center" id="footer_extra">
-                    Jeffrey G. pour OC - 2019
+                <div>
+                    <a href="https://github.com/Ludophilia/P7v2" target="_blank">
+                        <image src="static/img/GitHub-Mark-Light-32px.png" alt="Octocat" width="25" height="25"/>
+                    </a>
                 </div>
             </footer>
         </div>
-        <script src="static/js/jquery-3.4.0.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}" async defer></script>
         <script src="static/js/script.js"></script> 
     </body>

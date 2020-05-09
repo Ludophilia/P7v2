@@ -1,9 +1,9 @@
-var site_brand = document.getElementById("site_brand");
+var site_brand = document.querySelector("#brand");
 var body = document.querySelector("body");
-var container_fluid = document.querySelector(".container-fluid");
+var container_fluid = document.querySelector(".my_container");
 var form = document.querySelector("form");
-var chat_input = document.getElementById("chat_input");
-var chat_zone = document.getElementById("chat_zone");
+var chat_input = document.getElementById("input_area");
+var chat_zone = document.getElementById("dialogue_area");
 var reactions = 0;
 
 function ajaxCommunicate(method, target, value, callback) {
@@ -26,7 +26,7 @@ function displayMessage(user, message, timeout) {
     
     window.setTimeout(function(){
         
-        // Retire l'animation de chargement
+        // Retire toutes les animations de chargement
         var loading_animation = chat_zone.querySelectorAll(".ld-square");
         if (user === "GrandPy" && loading_animation !== null) {
             
@@ -45,7 +45,7 @@ function displayMessage(user, message, timeout) {
         // Cas de l'anecdocte
         if (message.anecdocte !== undefined) {
             last_message_zone.textContent = "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? " + message.anecdocte;
-            last_message_zone.insertAdjacentHTML("beforeend", ` [En savoir plus sur <a href="${message.url}">Wikipédia</a>]`)
+            last_message_zone.insertAdjacentHTML("beforeend", ` [En savoir plus sur <a href="${message.url}" target="_blank">Wikipédia</a>]`)
         } else { // Cas général
             last_message_zone.textContent += message;
         }
