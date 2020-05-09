@@ -2,10 +2,17 @@ from flask import Flask, render_template, request # , url_for, redirect,
 from app.forms import Form
 from app.grandpy import GrandPy
 import config as cf
+import os
 #import json
 
 app = Flask("app") #ou __name__ vu que __name__ == "app"
-app.config.from_object("config") 
+
+if os.environ.get("ENV") == "PRODUCTION":
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+    app.config["API_KEY"] = os.environ.get("API_KEY")
+
+elif os.environ.get("ENV") == "DEVELOPMENT":
+    app.config.from_object("config")
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
