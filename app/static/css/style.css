@@ -1,9 +1,12 @@
 
 /* Customized style written exclusively for you */
 
+/* ############## Custom Fonts ############## */
+
 @font-face {
     font-family: downloaded-krungthep;
-    src: url("krungthep.ttf");
+    src: url("krungthep.ttf") format('truetype'),
+         url("krungthep.svg") format('svg');
 }
 
 /* ############## Container ############## */
@@ -36,7 +39,7 @@ header {
 }
 
 #brand {
-    font-family: krungthep downloaded-krungthep;
+    font-family: krungthep, downloaded-krungthep; 
     font-size: 20px;
 
     margin: 15px 0px;
@@ -54,7 +57,7 @@ header {
 /* ############## Footer ############## */
 
 footer {
-    font-family: krungthep downloaded-krungthep;
+    font-family: krungthep, downloaded-krungthep; 
     font-size: 12px;
     text-align: center;
 
