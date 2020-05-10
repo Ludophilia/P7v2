@@ -94,7 +94,7 @@ footer {
 
     padding: 25px 30px;
     box-sizing: border-box;
-    border-radius: 10px 10px 0px 0px ;
+    border-radius: 10px 10px 0px 0px;
 }
 
 #input_container {
@@ -120,8 +120,12 @@ footer {
     padding: 25px 30px;
     box-sizing: border-box;
     border: none;
-    border-bottom-left-radius: 10px;
+    border-radius: 0px 0px 0px 10px;
     margin: 0px;
+}
+
+#input_area:focus {
+    outline: 1px solid #51CBEE; /* rgba(81, 203, 238, 1);*/
 }
 
 #submit_button {
@@ -137,6 +141,7 @@ footer {
     padding: 6px 12px;
     box-sizing: border-box;
     border: none;
-    border-bottom-right-radius: 10px;
+    border-radius: 0px 0px 10px 0px;
     margin: 0px;
 }
+
