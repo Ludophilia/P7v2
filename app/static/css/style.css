@@ -1,35 +1,40 @@
+
 /* Customized style written exclusively for you */
 
-/* Container */
+/* ############## Container ############## */
 
 body {
-    margin: 0px; /* 8px par défaut, pourquoi ??*/
-    background-color: #1D1F26; 
+    height: 100vh; 
+
+    background-color: #1D1F26;
+
+    border: red dotted 5px; /* A retirer */
+    box-sizing: border-box;
+
+    margin: 0px;
 } 
 
 .my_container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100vh; 
-    /* ExtraPropsToRemoveLater */
-    /* border: red dotted 5px;  */
-    box-sizing: border-box;
-    /* EndOfExtraPropsToRemoveLater */
+
+    height: 100%;
 }
 
-/* Header */
+/* ############## Header ############## */
 
 header {
-    /* height: 5%; */
-    background-color:#1D1F26;
     text-align: center;
+
+    background-color:#1D1F26;
 }
 
 #brand {
-    margin: 15px 0px;
-    font-size: 20px;
     font-family: krungthep;
+    font-size: 20px;
+
+    margin: 15px 0px;
 }
 
 #brand a {
@@ -41,14 +46,16 @@ header {
     font-size: 30px;
 }
 
-/* Footer */
+/* ############## Footer ############## */
 
 footer {
-    background-color:#1D1F26;
-    text-align: center;
-    color:#fff;
     font-family: krungthep;
     font-size: 12px;
+    text-align: center;
+
+    color:#fff;
+    background-color:#1D1F26;
+
     padding-top: 20px;
     padding-bottom: 30px;
 }
@@ -57,85 +64,79 @@ footer {
     margin-bottom: 8px;
 }
 
-/* Chat */
+/* ############## Chat ############## */
 
 #chat_window {
+    height: 80%; /* 80vh ? */
+
     background-color: #1C2E40;
+
     padding: 20px;
-    height: 80vh ; 
     box-sizing: border-box;
 }
 
 #dialogue_container {
-    /* margin: 25px ; */
-    box-sizing: border-box;
-    background-color:#1C2E40;
     height: 100%;
-    /* Empêche dialogue_area (dont la taille est basée sur ce container) de s'étendre. */
+    
+    background-color:#1C2E40;
 }
 
 #dialogue_area {
-    background-color:#1D1F26;
     height: 80%;
-    padding: 25px 30px;
-    box-sizing: border-box;
-
     overflow: auto; 
     overflow-wrap: break-word;
 
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    
-    /* ExtraPropsToRemoveLater */
-    /* border-color: yellow;
-    border-width: 5px;
-    border-style: dotted; */
+    font-family: Verdana; /* A remplacer */
+    font-size: 16px; /* A remplacer */
 
-    font-family: Verdana;
-    font-size: 16px;
-    color:#fff;
-    /* EndOfExtraPropsToRemoveLater */
+    color:#fff; /* A remplacer */
+    background-color:#1D1F26;
+
+    padding: 25px 30px;
+    box-sizing: border-box;
+    border-radius: 10px 10px 0px 0px ;
 }
 
 #input_container {
-    height: 20%;
-    /* ExtraPropsToRemoveLater */
-    /* border: 5px green dotted; */
-    /* EndOfExtraPropsToRemoveLater */
-    box-sizing: border-box;
     display: flex;
+
+    height: 20%;
+
+    box-sizing: border-box;
 }
 
 #input_area {
-    height: 100%;
-    border: none;
-    resize: none;
-    /*display: inline-block; /*Pas la peine de préciser, c'est par défaut */
-    /*float: left;*/
-    background-color:#1D212A;
     flex-basis: 85%;
-    font-family: Verdana;
-    font-size: 16px;
-    color:#fff;
+
+    height: 100%;
+    resize: none;
+
+    font-family: Verdana; /* A remplacer */
+    font-size: 16px; /* A remplacer */
+
+    color:#fff; /* A remplacer */
+    background-color:#1D212A;
+
     padding: 25px 30px;
-    border-bottom-left-radius: 10px;
     box-sizing: border-box;
+    border: none;
+    border-bottom-left-radius: 10px;
+    margin: 0px;
 }
 
 #submit_button {
-    /* all: unset; */
-    /* border: 1px #fff solid; */
-    /*-webkit-appearance: none;*/
-    /* align-items: stretch; fait rien*/
-    /*display: inline-bock;*/
+    flex-basis: 15%; 
+
     height: 100%;
-    flex-basis: 15%;
-    border: none; /* Sinon ce sont les bordures par défaut */
+
+    font-size: 16px;
+
+    color:#fff;
+    background-color: #182736;
+
     padding: 6px 12px;
     box-sizing: border-box;
-    background-color: #182736;
+    border: none;
     border-bottom-right-radius: 10px;
-    font-size: 16px;
-    color:#fff;
-
+    margin: 0px;
 }
