@@ -1,6 +1,11 @@
 
 /* Customized style written exclusively for you */
 
+@font-face {
+    font-family: downloaded-krungthep;
+    src: url("krungthep.ttf");
+}
+
 /* ############## Container ############## */
 
 body {
@@ -31,7 +36,7 @@ header {
 }
 
 #brand {
-    font-family: krungthep;
+    font-family: krungthep downloaded-krungthep;
     font-size: 20px;
 
     margin: 15px 0px;
@@ -49,7 +54,7 @@ header {
 /* ############## Footer ############## */
 
 footer {
-    font-family: krungthep;
+    font-family: krungthep downloaded-krungthep;
     font-size: 12px;
     text-align: center;
 
@@ -75,6 +80,8 @@ footer {
     box-sizing: border-box;
 }
 
+/* ############## Chat (Dialogue) ############## */
+
 #dialogue_container {
     height: 100%;
     
@@ -96,6 +103,8 @@ footer {
     box-sizing: border-box;
     border-radius: 10px 10px 0px 0px;
 }
+
+/* ############## Chat (Input) ############## */
 
 #input_container {
     display: flex;
@@ -125,10 +134,12 @@ footer {
 }
 
 #input_area:focus {
-    outline: 1px solid #51CBEE; /* rgba(81, 203, 238, 1);*/
+    outline: 1px solid #51CBEE; /* ou rgba(81, 203, 238, 1);*/
 }
 
 #submit_button {
+    -webkit-appearance: none; /* Empêche iOS de remplacer les boutons */
+
     flex-basis: 15%; 
 
     height: 100%;
@@ -144,4 +155,3 @@ footer {
     border-radius: 0px 0px 10px 0px;
     margin: 0px;
 }
-
