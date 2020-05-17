@@ -5,8 +5,8 @@
 
 @font-face {
     font-family: downloaded-krungthep;
-    src: url("krungthep.ttf") format('truetype'),
-         url("krungthep.svg") format('svg');
+    src: url("../fonts/krungthep.ttf") format('truetype'),
+         url("../fonts/krungthep.svg") format('svg');
 }
 
 /* ############## Container ############## */
@@ -39,7 +39,7 @@ header {
 }
 
 #brand {
-    font-family: krungthep, downloaded-krungthep; 
+    font-family: krungthep, downloaded-krungthep;
     font-size: 20px;
 
     margin: 15px 0px;
@@ -57,7 +57,7 @@ header {
 /* ############## Footer ############## */
 
 footer {
-    font-family: krungthep, downloaded-krungthep; 
+    font-family: krungthep, downloaded-krungthep;
     font-size: 12px;
     text-align: center;
 
@@ -96,15 +96,57 @@ footer {
     overflow: auto; 
     overflow-wrap: break-word;
 
-    font-family: Verdana; /* A remplacer */
-    font-size: 16px; /* A remplacer */
-
-    color:#fff; /* A remplacer */
+    color:#fff;
     background-color:#1D1F26;
 
     padding: 25px 30px;
     box-sizing: border-box;
     border-radius: 10px 10px 0px 0px;
+}
+
+.message_container {
+    width: max-content; /* fit-content, max-content, mox-content */
+    max-width: 100%;
+
+    margin: 10px 0; 
+}
+
+.message {
+    /* overflow-wrap: break-word; */
+
+    font-size: 16px;
+    text-align: justify;
+
+    background-color: #1C2E40;
+
+    padding: 15px 30px;
+    box-sizing: border-box;
+}
+
+.user {
+    font-family: Verdana;
+    border-radius: 20px 20px 20px 0px;
+}
+
+.user + .profile_icon {
+    text-align: left;
+    margin: 0 0 0 -10px;
+}
+
+.grandpy {
+    font-family: krungthep, downloaded-krungthep;
+    border-radius: 20px 20px 0px 20px;
+
+}
+
+.grandpy + .profile_icon {
+    text-align: right;
+    margin: 0 -10px 0 0;
+}
+
+.loading {
+    color: #fff;
+    margin: 10px 0;
 }
 
 /* ############## Chat (Input) ############## */
@@ -118,10 +160,11 @@ footer {
 }
 
 #input_area {
+    resize: none;
+
     flex-basis: 85%;
 
     height: 100%;
-    resize: none;
 
     font-family: Verdana; /* A remplacer */
     font-size: 16px; /* A remplacer */
@@ -134,14 +177,21 @@ footer {
     border: none;
     border-radius: 0px 0px 0px 10px;
     margin: 0px;
+
+    transition: border, box-shadow 2500ms ease-out;
+
+    z-index: 2;
 }
 
 #input_area:focus {
-    outline: 1px solid #51CBEE; /* ou rgba(81, 203, 238, 1);*/
+    outline: none;
+
+    border: 1px solid #51CBEE;
+    box-shadow: 0px 0 5px #51CBEE;
 }
 
 #submit_button {
-    -webkit-appearance: none; /* Empêche iOS de remplacer les boutons */
+    -webkit-appearance: none;
 
     flex-basis: 15%; 
 

@@ -1,19 +1,18 @@
-var site_brand = document.querySelector("#brand");
-var body = document.querySelector("body");
-var container_fluid = document.querySelector(".my_container");
-var form = document.querySelector("form");
-var chat_input = document.getElementById("input_area");
-var chat_zone = document.getElementById("dialogue_area");
-var reactions = 0;
+const site_brand = document.querySelector("#brand");
+const my_container = document.querySelector(".my_container");
+const form = document.querySelector("form");
+const input_area = document.getElementById("input_area");
+const dialogue_area = document.getElementById("dialogue_area");
+let reactions = 0;
 
 function ajaxCommunicate(method, target, value, callback) {
     
     // Envoie les données au serveur et gère ce qu'il se passe quand le serveur renvoie des données  
     
-    var request = new XMLHttpRequest(); 
+    let request = new XMLHttpRequest(); 
     request.open(method, target);
     request.addEventListener("load", function() {
-        var response = request.responseText;
+        let response = request.responseText;
         callback(response);     
         // Pas de gestion des erreurs ? 
     });
@@ -27,21 +26,33 @@ function displayMessage(user, message, timeout) {
     window.setTimeout(function(){
         
         // Retire toutes les animations de chargement
-        var loading_animation = chat_zone.querySelectorAll(".ld-square");
+        let loading_animation = dialogue_area.querySelectorAll(".ld-square");
+        
         if (user === "GrandPy" && loading_animation !== null) {
-            
-            for (var i = 0; i < loading_animation.length; i++) {
+            for (let i = 0; i < loading_animation.length; i++) {
                 if (loading_animation[i].style.display !== "none") {
                     loading_animation[i].style.display = "none";
                 };
             };
         };
 
-        // Base message : Grandy: <balisemessage>
-        chat_zone.insertAdjacentHTML("beforeend", `<p class='message'> <strong>${user}</strong> : <span> </span> </p>`);
+        // Génère conteneur message
+        dialogue_area.insertAdjacentHTML("beforeend", "<div class='message_container'></div>");
+        let last_message_container = document.querySelector(".message_container:last-child");
+
+        // Structure conteneur message
+        if (user === "GrandPy") {
+            last_message_container.insertAdjacentHTML("afterbegin", `<div class='grandpy message'></div>`);
+            last_message_container.insertAdjacentHTML("beforeend", "<div class='profile_icon'>🤖</div>");
+
+        } else if (user === "Vous") {
+            last_message_container.insertAdjacentHTML("afterbegin", `<div class='user message'></div>`);
+            last_message_container.insertAdjacentHTML("beforeend", "<div class='profile_icon'>😱</div>");
+        }
         
         // Cible la balise message
-        var last_message_zone = chat_zone.querySelector(".message:last-child span");
+        let last_message_zone = last_message_container.querySelector(".message");
+
         // Cas de l'anecdocte
         if (message.anecdocte !== undefined) {
             last_message_zone.textContent = "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? " + message.anecdocte;
@@ -50,13 +61,14 @@ function displayMessage(user, message, timeout) {
             last_message_zone.textContent += message;
         }
        
+        // Affiche une animation de chargement
         if (user === "Vous") { 
-            chat_zone.insertAdjacentHTML("beforeend",`<div class="ld ld-square ld-spin" style=”display:block”></div>`);
+            dialogue_area.insertAdjacentHTML("beforeend",`<div class="loading ld ld-square ld-spin" style=”display:block”></div>`);
         };
 
         // Permet de toujours afficher à l'écran le dernier message
         last_message_zone.scrollIntoView({block: "start", inline: "nearest"});
-        container_fluid.scrollIntoView({block: "start", inline: "nearest"});
+        my_container.scrollIntoView({block: "start", inline: "nearest"});
 
     }, 1000*timeout);
 };
@@ -67,13 +79,13 @@ function displayMap(latitude, longitude, zoom_level, timeout) {
 
     window.setTimeout(function() {
        
-        chat_zone.insertAdjacentHTML("beforeend", `<div class="map" style="height:300px; width:100%; "> </div>`);
+        dialogue_area.insertAdjacentHTML("beforeend", `<div class="map" style="height:300px; width:100%; "> </div>`);
                 
         function initMap() {
-            var map = new google.maps.Map(document.querySelector('.map:last-child'), {
+            let map = new google.maps.Map(document.querySelector('.map:last-child'), {
             center: {'lat': latitude, 'lng': longitude},
             zoom: zoom_level})
-            var marker = new google.maps.Marker({position: {lat: latitude, lng: longitude}, map: map});
+            let marker = new google.maps.Marker({position: {lat: latitude, lng: longitude}, map: map});
         }
         initMap(); 
 
@@ -93,13 +105,13 @@ form.addEventListener("submit", function(e) {
     
     // Gère ce qui se passe quand on valide le formulaire
 
-    var user_message = chat_input.value;
+    let user_message = input_area.value;
 
     displayMessage("Vous", user_message, 0);
     
     ajaxCommunicate("POST", "/grandpy", user_message, function(response) {
         
-        var gp_json = JSON.parse(response);
+        let gp_json = JSON.parse(response);
     
         displayMessage("GrandPy", gp_json.gp_message, 1);
                 
@@ -111,7 +123,7 @@ form.addEventListener("submit", function(e) {
             };
         });
     
-    chat_input.value = ""; 
+    input_area.value = ""; 
     e.preventDefault();
 });
 
@@ -119,7 +131,7 @@ site_brand.addEventListener("click", function (e) {
 
     // Gère ce qui se passe (la réponse de GrandPy) quand on clique sur le logo du site
 
-    var reaction_message = "...";
+    let reaction_message = "...";
 
     switch (reactions) {
         case 0:
@@ -157,9 +169,9 @@ site_brand.addEventListener("click", function (e) {
     };
     reactions++;
 
-    chat_zone.insertAdjacentHTML("beforeend",`<div class="ld ld-square ld-spin" style=”display:block”></div>`);
-    chat_zone.querySelector(".ld:last-child").scrollIntoView({block: "start", inline: "nearest"});
-    container_fluid.scrollIntoView({block: "start", inline: "nearest"});
+    dialogue_area.insertAdjacentHTML("beforeend",`<div class="loading ld ld-square ld-spin" style=”display:block”></div>`);
+    dialogue_area.querySelector(".ld:last-child").scrollIntoView({block: "start", inline: "nearest"});
+    my_container.scrollIntoView({block: "start", inline: "nearest"});
     displayMessage("GrandPy", reaction_message, 1);
 
     e.preventDefault() ;
