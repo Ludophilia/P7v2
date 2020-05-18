@@ -9,14 +9,16 @@ class GrandPy:
         self.wiki_info = {} 
 
     def build_stopwords(self):
+
+        stopwords_filepath = "app/gp_ressources/stopwords.js"
         
-        if not pth.exists("stopwords.js") : 
+        if not pth.exists(stopwords_filepath): 
             r = requests.get("https://raw.githubusercontent.com/6/stopwords-json/master/dist/fr.json")
             stopwords_txt = r.text
-            with open("stopwords.js", "x") as f:
+            with open(stopwords_filepath, "x") as f:
                 f.write(stopwords_txt)
         
-        with open("stopwords.js") as f:
+        with open(stopwords_filepath) as f:
             stopwords_list = f.read().replace('[','').replace(']','').replace("\"","").split(",")
             stopwords_list = stopwords_list + [word.capitalize() for word in stopwords_list]
 
@@ -45,20 +47,37 @@ class GrandPy:
 
     def get_maps_info(self):
         
-        if len(self.maps_info) == 0: #Design economique pour éviter d'apppeler l'API à chaque fois.
-            url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=openclassrooms+paris&key={}".format(cf.API_KEY) 
-            r = requests.get(url)
-            self.maps_info = r.json() 
-        
+        maps_url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=openclassrooms+paris&key={}".format(cf.API_KEY) 
+        maps_info_pth = "app/gp_ressources/maps_info.js"
+
+        if not pth.exists(maps_info_pth): 
+            r = requests.get(maps_url)
+            maps_info = r.text # donc <class 'str'>
+
+            with open(maps_info_pth, "w") as f:
+                f.write(maps_info)
+
+        if len(self.maps_info) == 0:
+            with open(maps_info_pth, "r") as f:
+                self.maps_info = json.loads(f.read())
+
         return self.maps_info 
 
     def get_wiki_info(self):
         
+        wiki_url = "https://fr.wikipedia.org/w/api.php?action=parse&format=json&prop=wikitext&page=Cité Paradis&section=1"
+        wiki_info_pth = "app/gp_ressources/wiki_info.js"
+
+        if not pth.exists(wiki_info_pth):
+            r = requests.get(wiki_url)
+            
+            with open(wiki_info_pth, "a") as f:
+                f.write(r.text)
+
         if len(self.wiki_info) == 0:
-            url = "https://fr.wikipedia.org/w/api.php?action=parse&format=json&prop=wikitext&page=Cité Paradis&section=1"
-            r = requests.get(url)
-            self.wiki_info = r.json()
-        
+            with open(wiki_info_pth,"r") as f:
+                self.wiki_info = json.loads(f.read())
+               
         return self.wiki_info 
 
     def get_anecdocte(self, r_formatted):
@@ -104,7 +123,7 @@ class GrandPy:
         keywords_list = self.remove_stopwords(string_to_parse)
         
         keywords_str = str()
-        for keyword in keywords_list: keywords_str += "{} ".format(keyword) #Bof la solution
+        for keyword in keywords_list: keywords_str += "{0} ".format(keyword) #Bof la solution
         
         grandpy_answer = ""
         json_answer = {}

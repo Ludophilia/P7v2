@@ -1,11 +1,20 @@
 from app import app
 from app.grandpy import requests, GrandPy
-import json
-
+import json, pytest
 
 class TestMapsApiDataTreatment():
 
-    def test_if_get_address_returns_the_correct_address(self, monkeypatch):
+    @pytest.mark.this2
+    def test_if_get_maps_info_retrieves_the_expected_data(self):
+        
+        self.gp = GrandPy()
+
+        maps_info = self.gp.get_maps_info() 
+
+        assert self.gp.get_address(maps_info) == "7 Cité Paradis, 75010 Paris"
+
+    @pytest.mark.that
+    def test_if_mocked_get_address_returns_the_correct_address(self, monkeypatch):
         
         self.gp = GrandPy()
         
@@ -39,7 +48,8 @@ class TestWikimediaApiData():
     #Objectif?
 
         # Vérifier que la fonction gp.answer_message("adresse oc connaitre") renvoie bien le json désiré (avec la réponse à la question, les coordonnées et la relance qui contient les infos wikipédia)
-
+    
+    @pytest.mark.this3
     def test_if_get_wiki_info_retrieves_the_expected_data(self):
 
         # Vérifier que la fonction wiki_info renvoie bien ce qui est attendu.

@@ -79,7 +79,7 @@ function displayMap(latitude, longitude, zoom_level, timeout) {
 
     window.setTimeout(function() {
        
-        dialogue_area.insertAdjacentHTML("beforeend", `<div class="map" style="height:300px; width:100%; "> </div>`);
+        dialogue_area.insertAdjacentHTML("beforeend", `<div class="map"></div>`);
                 
         function initMap() {
             let map = new google.maps.Map(document.querySelector('.map:last-child'), {

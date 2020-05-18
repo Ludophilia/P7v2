@@ -149,6 +149,10 @@ footer {
     margin: 10px 0;
 }
 
+.map {
+    height:300px; /* arbitraire */
+    width:100%;
+}
 /* ############## Chat (Input) ############## */
 
 #input_container {
@@ -178,7 +182,7 @@ footer {
     border-radius: 0px 0px 0px 10px;
     margin: 0px;
 
-    transition: border, box-shadow 2500ms ease-out;
+    transition: border, box-shadow 1500ms ease-out;
 
     z-index: 2;
 }
@@ -188,6 +192,7 @@ footer {
 
     border: 1px solid #51CBEE;
     box-shadow: 0px 0 5px #51CBEE;
+    -webkit-box-shadow: 0px 0 5px #51CBEE; /* Visible sur iOS ?*/
 }
 
 #submit_button {
