@@ -1,14 +1,13 @@
-import requests, json, random, re
+import requests, json, random, re, os
 import os.path as pth
 import config as cf 
+from app.gp_ressources.answers import answers
 
 class GrandPy:
 
-    def __init__(self):
-        self.maps_info = {}
-        self.wiki_info = {} 
-
     def build_stopwords(self):
+
+        """Telecharge la liste des stopwords si elle n'existe pas, construit à partir de la version texte de cette liste, une list python de ces stopwords (+majuscules)"""
 
         stopwords_filepath = "app/gp_ressources/stopwords.js"
         
@@ -20,13 +19,17 @@ class GrandPy:
         
         with open(stopwords_filepath) as f:
             stopwords_list = f.read().replace('[','').replace(']','').replace("\"","").split(",")
-            stopwords_list = stopwords_list + [word.capitalize() for word in stopwords_list]
+            stopwords_list += [word.capitalize() for word in stopwords_list]
 
         return stopwords_list
     
     def remove_pounctuation(self, string_to_parse):
-        
-        punctuations = ["\'", "\"", "?", ",", ".", "!?", "?!", "-", "!", ";", ":"]
+
+        """Retire la ponctuation de l'input utilisateur et renvoie un str de cet input"""
+
+        punctuations = ["\'", "\"", "?", ",", ".", "!?", "?!", "-", "!", ";", ":", 
+        "[", "]", "(", ")", "{", "}"]
+
         for punctuation in punctuations:
             while punctuation in string_to_parse: 
                 string_to_parse = string_to_parse.replace(punctuation," ")
@@ -35,126 +38,85 @@ class GrandPy:
 
     def remove_stopwords(self, string_to_parse):
         
+        """Retire les stopwords de l'input utilisateur et renvoie une list de mots clés"""
+
         stopwords_list = self.build_stopwords()
         
-        word_list = self.remove_pounctuation(string_to_parse).split()
+        keywords = self.remove_pounctuation(string_to_parse).split()
         
         for stopword in stopwords_list:
-            if stopword in word_list: 
-                [word_list.remove(stopword) for _ in range(word_list.count(stopword))]
-        
-        return word_list
+            while stopword in keywords: 
+                keywords.remove(stopword)   
 
-    def get_maps_info(self):
+        return keywords
+
+    def get_api_data(self, source):
+
+        """Telecharge les données Maps sur OC ou de Wikipédia sur la Cité Paradis si elles n'existent pas, les stocke dans un fichier .js, et les rappelle sous forme de dict"""
         
         maps_url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=openclassrooms+paris&key={}".format(cf.API_KEY) 
-        maps_info_pth = "app/gp_ressources/maps_info.js"
+        wiki_url = "https://fr.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Cité Paradis&formatversion=2&exsentences=3&exlimit=1&explaintext=1&exsectionformat=plain"
 
-        if not pth.exists(maps_info_pth): 
-            r = requests.get(maps_url)
-            maps_info = r.text # donc <class 'str'>
+        data_url = maps_url if source == "maps" else wiki_url
+        data_pth = "app/gp_ressources/{0}_info.js".format(source)
 
-            with open(maps_info_pth, "w") as f:
-                f.write(maps_info)
+        if not pth.exists(data_pth): 
+            r = requests.get(data_url)
+            api_data = r.text # donc <class 'str'>
 
-        if len(self.maps_info) == 0:
-            with open(maps_info_pth, "r") as f:
-                self.maps_info = json.loads(f.read())
+            with open(data_pth, "w") as f:
+                f.write(api_data)
 
-        return self.maps_info 
+        with open(data_pth, "r") as f:
+            api_data_js = json.loads(f.read())
 
-    def get_wiki_info(self):
-        
-        wiki_url = "https://fr.wikipedia.org/w/api.php?action=parse&format=json&prop=wikitext&page=Cité Paradis&section=1"
-        wiki_info_pth = "app/gp_ressources/wiki_info.js"
+        return api_data_js
 
-        if not pth.exists(wiki_info_pth):
-            r = requests.get(wiki_url)
-            
-            with open(wiki_info_pth, "a") as f:
-                f.write(r.text)
+    def get_anecdocte_and_url(self, wiki_data_js):
 
-        if len(self.wiki_info) == 0:
-            with open(wiki_info_pth,"r") as f:
-                self.wiki_info = json.loads(f.read())
-               
-        return self.wiki_info 
+        """Récupère l'anecdocte de GP sur la Cité Paradis et l'url de la fiche wikipédia associée à partir des données js de l'API Wikimedia. Renvoie un dict"""
 
-    def get_anecdocte(self, r_formatted):
-        
-        anecdocte_wikitext = r_formatted["parse"]["wikitext"]["*"].split('\n')
-        wiki_url = "https://fr.wikipedia.org/wiki/" + r_formatted["parse"]["title"].replace(" ", "_")
+        anecdocte_and_url = {} ; title = wiki_data_js["query"]["pages"][0]["title"]
 
-        symb_to_remove = ["[[wikt:", "[[", "]]", "{{", "}}"]
-        anecdocte = ""
+        anecdocte_and_url["url"] = "https://fr.wikipedia.org/wiki/{}".format(title).replace(" ", "_")
+        anecdocte_and_url["anecdocte"] = wiki_data_js["query"]["pages"][0]["extract"].split('\n')[-1]
 
-        anecdocte_complete = {}
-        anecdocte_complete["url"] = wiki_url
-
-        for line in anecdocte_wikitext:
-            if re.search(r"[La] cité [Pp]aradis est une voie publique", line): #Extrait la réponse à la question du wikitexte
-                anecdocte = line 
-
-        for symbol in symb_to_remove: 
-            anecdocte = anecdocte.replace(symbol,"") #Retire les {{}}, [[]] du wikitexte qui figurent toujours la réponse
-
-        anecdocte = re.sub(r"\|\w+\s?\w*\s?\w*", "", anecdocte) #Cherche à retirer "|10e", "|arrondissement de Paris"...
-
-        anecdocte_complete["anecdocte"] = anecdocte
-        
-        return anecdocte_complete
-
-    def get_address(self, r_formatted):
-        
-        for result in r_formatted["results"]:
-            if result["name"] == "Openclassrooms": 
-                address = result["formatted_address"].replace(", France", "")
-                return address 
-
-    def get_coordinates(self, r_formatted):
-        
-        for result in r_formatted["results"]:
-            if result["name"] == "Openclassrooms": 
-                coordinates = result["geometry"]["location"]
-                return coordinates
+        return anecdocte_and_url
 
     def answer_message(self, string_to_parse):
 
-        keywords_list = self.remove_stopwords(string_to_parse)
-        
-        keywords_str = str()
-        for keyword in keywords_list: keywords_str += "{0} ".format(keyword) #Bof la solution
-        
-        grandpy_answer = ""
-        json_answer = {}
-        reaction = 0
+        """Filtre l'input de l'utilisateur et renvoie une réponse en fonction des mots clés qui y figure"""
+    
+        message = "" ; grandpy_response = {} ; reactions = 0
+        keywords_str = " ".join(self.remove_stopwords(string_to_parse)) #En attendant de modifier ce que fait remove_stopwords par exemple (pour obtenir une str directement au lieu d'une list)
 
-        for keyword in keywords_list:
+        hello_pattern = r"([Bb]onjour|[Bb]jr|[Ss]a?lu?t|[Yy]o|[Hh]i)"
+        oc_pattern = r"([oO]pen[cC]las.{1,2}rooms?|[oO][cC])"
+        address_pattern = r"[Aa]d{1,2}res{1,2}e?"
+        know_pattern = r"[Cc]on{1,2}ai(tre|[ts]?)" #Dans un fichier à part ?
 
-            if re.fullmatch(r"(^[Bb]onjour$|^[Bb]jr$|^[Ss]a?lu?t$|^[Yy]o$|^[Hh]i$)", keyword):
-                reaction += 1
-                greetings = ["Bonjour!", "Salut!", "Yo!", "Hi!!"]
-                lucky_number = random.randint(0,len(greetings)-1)
-                grandpy_answer += "{}\n".format(greetings[lucky_number]) #Curieux, le \n n'est pas considéré comme un saut de ligne du point de vue front end...
+        if re.search(hello_pattern, keywords_str):
             
-            if re.fullmatch(r"(^[oO]pen[cC]las.{1,2}rooms?$|^[oO][cC]$)", keyword):
-                if re.search(r"[Aa]d{1,2}res{1,2}e?", keywords_str) and re.search(r"[Cc]on{1,2}ai(tre|[ts]?)", keywords_str):
+            reactions += 1 ; greetings = answers["greetings"]
+            message += "{}\n".format(greetings[random.randint(0,len(greetings)-1)]) 
+
+        if re.search(oc_pattern, keywords_str):
+
+            if re.search(know_pattern, keywords_str):
+            
+                if re.search(address_pattern, keywords_str):
+                        
+                    reactions += 1 ; oc_maps_data_js = self.get_api_data("maps")
                     
-                    reaction += 1
+                    oc_address = oc_maps_data_js["results"][0]["formatted_address"].replace(", France", "") 
+                    message += "Bien sûr mon poussin ! La voici : {}.\n".format(oc_address)
 
-                    maps_info = self.get_maps_info()
-                    address = self.get_address(maps_info)
-                    json_answer["pi_location"] = self.get_coordinates(maps_info)
-                    grandpy_answer += "Bien sûr mon poussin ! La voici : {}.\n".format(address)
+                    grandpy_response["anecdocte_and_url"] = self.get_anecdocte_and_url(self.get_api_data("wiki"))
+                    grandpy_response["location"] = oc_maps_data_js["results"][0]["geometry"]["location"]
 
-                    anecdocte_complete = self.get_anecdocte(self.get_wiki_info())
-                    json_answer["pi_anecdocte"] = anecdocte_complete
+        if not reactions: 
+            message = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... Et oui je suis borné moi :)"
 
-        if reaction == 0: 
-            grandpy_answer = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... Et oui je suis borné moi :)"
+        grandpy_response["message"] = message
 
-        json_answer["gp_message"] = grandpy_answer
-
-        json_answer = json.dumps(json_answer, ensure_ascii=False, sort_keys=True)
-
-        return json_answer
+        return json.dumps(grandpy_response, ensure_ascii=False, sort_keys=True)

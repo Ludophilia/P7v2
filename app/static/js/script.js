@@ -17,9 +17,8 @@ function ajaxCommunicate(method, target, value, callback) {
 
 function displayLoadingAnimation() {
     
-    const dialogue_area = document.getElementById("dialogue_area");
-
     // Affiche une animation de chargement
+    const dialogue_area = document.getElementById("dialogue_area");
 
     dialogue_area.insertAdjacentHTML("beforeend",`<div class="loading ld ld-square ld-spin" style=”display:block”></div>`);
 };
@@ -33,7 +32,7 @@ function removeLoadingAnimations() {
     const loading_animations = dialogue_area.querySelectorAll(".ld-square");
 
     if (!! loading_animations) {
-        loading_animations.forEach((animation)=> {
+        loading_animations.forEach((animation) => {
             animation.style.display !== "none" ? animation.style.display = "none" 
             : null ; // Un peu concon comme déclaration... mais c'est pour l'exemple.
         })
@@ -42,21 +41,21 @@ function removeLoadingAnimations() {
 
 function focusOnLastMessage() {
 
+    // Permet de toujours afficher à l'écran le dernier message
+
     const my_container = document.querySelector(".my_container");
     const dialogue_area = document.getElementById("dialogue_area");
-
-    // Permet de toujours afficher à l'écran le dernier message
 
     dialogue_area.lastElementChild.scrollIntoView({block: "start", inline: "nearest"});
     my_container.scrollIntoView({block: "start", inline: "nearest"});
 };
 
-function displayMessage(user, message, timeout) {
+function displayMessage(user, message, timeout, user_profile_icon) {
 
     // Est en charge d'afficher le message des participants au chat (utilisateur et GrandPy)
 
     const dialogue_area = document.getElementById("dialogue_area");
-    
+
     window.setTimeout(function() {
 
         if (user === "GrandPy") {
@@ -74,7 +73,7 @@ function displayMessage(user, message, timeout) {
 
         } else if (user === "Vous") {
             last_message_container.insertAdjacentHTML("afterbegin", `<div class='user message'></div>`);
-            last_message_container.insertAdjacentHTML("beforeend", "<div class='profile_icon'>😱</div>");
+            last_message_container.insertAdjacentHTML("beforeend", `<div class='profile_icon'>${user_profile_icon}</div>`);
         }
         
         // Cible la balise contenant le texte
@@ -84,10 +83,10 @@ function displayMessage(user, message, timeout) {
     
         // Cas de l'anecdocte (NON NON NON, EN BACKEND ÇA)
         if (!! message.anecdocte) {
-            last_message_zone.textContent = "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? " + message.anecdocte;
+            last_message_zone.innerText = "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? " + message.anecdocte;
             last_message_zone.insertAdjacentHTML("beforeend", ` [En savoir plus sur <a href="${message.url}" target="_blank">Wikipédia</a>]`)
         } else { // Cas général
-            last_message_zone.textContent += message;
+            last_message_zone.innerText += message;
         }
        
         if (user === "Vous") { 
@@ -126,6 +125,11 @@ function main() {
     const form = document.querySelector("form");
     const input_area = document.getElementById("input_area");
 
+    // A changer de place. L'idée finale c'est que l'utilisateur puisse choisir son icone de profil. Dans main() car on veut garder la même icon du début à la fin de la session.
+    const profile_icons = ["👩", "👤", "👨", "😎", "😱"];
+    const random_position = Math.floor(Math.random()*(profile_icons.length));
+    const random_user_profile_icon = profile_icons[random_position];
+
     form.addEventListener("keyup", function(e) {
 
         // Gère l'envoi du formulaire en cas d'appui sur la touche entrée
@@ -141,18 +145,19 @@ function main() {
 
         const user_message = input_area.value;
 
-        displayMessage("Vous", user_message, 0);
+        displayMessage("Vous", user_message, 0, random_user_profile_icon);
         
         ajaxCommunicate("POST", "/grandpy", user_message, function(response) {
             
-            const gp_json = JSON.parse(response);
+            const grandpy_response = JSON.parse(response);
         
-            displayMessage("GrandPy", gp_json.gp_message, 1);
+            displayMessage("GrandPy", grandpy_response.message, 1);
+            // console.log(grandpy_response.message); //Aretirer
                     
-            if (!! gp_json.pi_location.lat) {
+            if (!! grandpy_response.location) {
 
-                displayMap(gp_json.pi_location.lat, gp_json.pi_location.lng, 15, 1);
-                displayMessage("GrandPy", gp_json.pi_anecdocte, 1);
+                displayMap(grandpy_response.location.lat, grandpy_response.location.lng, 15, 1);
+                displayMessage("GrandPy", grandpy_response.anecdocte_and_url, 1);
 
                 };
             });
