@@ -61,7 +61,7 @@ class GrandPy:
 
         if not pth.exists(data_pth): 
             with open(data_pth, "w") as f:
-                f.write(requests.get(data_url).text) # requests.get(data_url).text est <class 'str'>
+                f.write(requests.get(data_url).text)
 
         with open(data_pth, "r") as f:
             json_formatted_api_data = json.loads(f.read())
@@ -72,7 +72,8 @@ class GrandPy:
 
         """Récupère l'anecdocte de GP sur la Cité Paradis et l'url de la fiche wikipédia associée à partir des données jsf (json-formatted) de l'API Wikimedia. Renvoie un dict"""
 
-        anecdocte_and_url = {} ; title = jsf_wiki_data["query"]["pages"][0]["title"]
+        anecdocte_and_url = {}
+        title = jsf_wiki_data["query"]["pages"][0]["title"]
 
         anecdocte_and_url["url"] = "https://fr.wikipedia.org/wiki/{}".format(title).replace(" ", "_")
         anecdocte_and_url["anecdocte"] = jsf_wiki_data["query"]["pages"][0]["extract"].split('\n')[-1]
@@ -83,31 +84,33 @@ class GrandPy:
 
         """Renvoie une réponse à l'input utilisteur en fonction des mots clés qui y figurent"""
     
-        message = "" ; grandpy_response = {} ; reactions = 0
+        message = "" ; grandpy_response = {}
         keywords = "\n".join(self.extract_keywords(user_input))
 
-        if re.search(patterns.HELLO, keywords, re.M):
+        hello_found = re.search(patterns.HELLO, keywords, re.M)
+        oc_found = re.search(patterns.OC, keywords, re.M)
+        know_found = re.search(patterns.KNOW, keywords, re.M)
+        address_found = re.search(patterns.ADDRESS, keywords, re.M)
+
+        if hello_found:
             
-            reactions += 1 ; greetings = speech.GREETINGS ; random_position = random.randint(0,len(greetings)-1)
+            greetings = speech.GREETINGS
+            random_position = random.randint(0,len(greetings)-1)
 
             message += "{}\n".format(greetings[random_position]) 
 
-        if re.search(patterns.OC, keywords, re.M):
+        if oc_found and know_found and address_found:
 
-            if re.search(patterns.KNOW, keywords, re.M):
-            
-                if re.search(patterns.ADDRESS, keywords, re.M):
+            oc_maps_data_js = self.get_api_data("maps")
+            oc_address = oc_maps_data_js["results"][0]["formatted_address"].replace(", France", "") 
 
-                    reactions += 1 ; oc_maps_data_js = self.get_api_data("maps")
-                    oc_address = oc_maps_data_js["results"][0]["formatted_address"].replace(", France", "") 
+            message += "Bien sûr mon poussin ! La voici : {}.\n".format(oc_address)
 
-                    message += "Bien sûr mon poussin ! La voici : {}.\n".format(oc_address)
+            grandpy_response["anecdocte_and_url"] = self.get_anecdocte_and_url(self.get_api_data("wiki"))
+            grandpy_response["location"] = oc_maps_data_js["results"][0]["geometry"]["location"]
 
-                    grandpy_response["anecdocte_and_url"] = self.get_anecdocte_and_url(self.get_api_data("wiki"))
-                    grandpy_response["location"] = oc_maps_data_js["results"][0]["geometry"]["location"]
-
-        if not reactions: 
-            message = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... Et oui je suis borné moi :)"
+        if not message: 
+            message = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... :/"
 
         grandpy_response["message"] = message
 

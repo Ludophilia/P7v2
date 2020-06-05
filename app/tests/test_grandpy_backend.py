@@ -142,6 +142,16 @@ class TestGrandPy():
         assert expected_message in grandpy_message
         assert re.search(hello_pattern, grandpy_message)
 
+    @pytest.mark.this6b
+    def test_what_answer_message_returns_if_the_user_says_nothing_interesting(self):
+        
+        self.gp = GrandPy()
+        grandpy_answer = json.loads(self.gp.answer_message("Wow"))
+
+        expected_answer = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... Et oui je suis borné moi :)"
+
+        assert grandpy_answer['message'] == expected_answer
+
     @pytest.mark.this6
     def test_what_answer_message_returns_if_the_user_says_hello(self):
         
