@@ -93,12 +93,61 @@ class TestWikimediaApiDataTreatment():
 
 class TestGrandPy():
 
+    @pytest.mark.this9
+    def test_if_build_stopwords_output_the_expected_stopwords_list(self):
+        
+        self.gp = GrandPy()
+        stopwords_list = self.gp.stopwords()
+        samples = ["nous-mêmes", "différentes", "ouverts", "dire", "directe", "absolument", "dit", "dite", "dits",
+        "divers", "comme", "suivantes", "ès", "dix-huit", "strictement", "rare", "dixième", "doit", "doivent"]
+
+        assert len(stopwords_list) >= 600 and type(stopwords_list) == type([])
+        for sample in samples: assert sample in stopwords_list
+
+    @pytest.mark.this8
+    def test_if_remove_punctuation_remove_punctuation_from_user_input(self):
+        
+        self.gp = GrandPy()
+
+        test_string = self.gp.extract_keywords("  Salut????!?!,' {comment} tu vas depuis le temps!!!, vieille; branche velue? ;)            ")
+        expected_result = "Salut comment tu vas depuis le temps vieille branche velue"
+
+        assert test_string == expected_result and type(test_string) == type("")
+
+    @pytest.mark.this7
+    def test_if_remove_stopwords_remove_stopwords_from_user_input(self):
+        
+        self.gp = GrandPy()
+        test_string = self.gp.extract_keywords("Salut, salut mon gros gros pote! Comment tu vas depuis le temps, vieille branche velue? ;)")
+        # test_string = self.gp.remove_stopwords("Salut tu connais l'adresse d'oc")
+
+        # expected_result = "Salut comment tu vas depuis le temps vieille branche velue "
+        expected_result =['salut', 'gros', 'pote', 'temps', 'vieille', 'branche', 'velue']
+        
+        assert test_string == expected_result and type(test_string) == type([])
+        # assert type(test_string) == type("")
+        # print("DE REMOVE_STOPWORDS", test_string)
+
+    @pytest.mark.this6a
+    def test_what_answer_message_returns_if_the_user_says_hello_and_asks_for_OC_address(self):
+        
+        self.gp = GrandPy()
+        
+        hello_pattern = r"[Bb]onjour|[Bb]jr|[Ss]a?lu?t|[Yy]o|[Hh]i"
+        expected_message = 'Bien sûr mon poussin ! La voici : 7 Cité Paradis, 75010 Paris.\n'
+        
+        grandpy_answer = self.gp.answer_message("salut grandpy ! Connais-tu l'adresse d'oc?")
+        grandpy_message = json.loads(grandpy_answer)["message"]
+
+        assert expected_message in grandpy_message
+        assert re.search(hello_pattern, grandpy_message)
+
     @pytest.mark.this6
     def test_what_answer_message_returns_if_the_user_says_hello(self):
         
         self.gp = GrandPy()
 
-        hello_pattern = r"([Bb]onjour|[Bb]jr|[Ss]a?lu?t|[Yy]o|[Hh]i)"
+        hello_pattern = r"[Bb]onjour|[Bb]jr|[Ss]a?lu?t|[Yy]o|[Hh]i"
         grandpy_answer = json.loads(self.gp.answer_message("salut"))
 
         assert re.search(hello_pattern, grandpy_answer['message'])
