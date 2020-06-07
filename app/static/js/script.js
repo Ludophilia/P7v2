@@ -1,23 +1,20 @@
-function ajaxCommunicate(method, target, value, callback) {
+function ajaxCommunicate(method, target_url, data_to_send, callback) {
     
     // Envoie les données au serveur et gère ce qu'il se passe quand le serveur renvoie des données  
     
     const request = new XMLHttpRequest(); 
 
-    request.open(method, target);
+    request.open(method, target_url);
     request.addEventListener("load", function() {
-        const response = request.responseText;
-        callback(response);     
-        // try {
-        // } catch(error) {
-        // };Pas de gestion des erreurs ? 
+        callback(request.responseText); //Pas de gestion des erreurs ? 
     });
-    request.send(value);
+    request.send(data_to_send);
 }; 
 
 function displayLoadingAnimation() {
     
     // Affiche une animation de chargement
+
     const dialogue_area = document.getElementById("dialogue_area");
 
     dialogue_area.insertAdjacentHTML("beforeend",`<div class="loading ld ld-square ld-spin" style=”display:block”></div>`);
@@ -28,15 +25,13 @@ function removeLoadingAnimations() {
     // Retire toutes les animations de chargement
 
     const dialogue_area = document.getElementById("dialogue_area");
-
     const loading_animations = dialogue_area.querySelectorAll(".ld-square");
 
-    if (!! loading_animations) {
-        loading_animations.forEach((animation) => {
-            animation.style.display !== "none" ? animation.style.display = "none" 
-            : null ; // Un peu concon comme déclaration... mais c'est pour l'exemple.
-        })
-    };
+    if (!loading_animations) return;
+
+    loading_animations.forEach((animation) => {
+        if (animation.style.display !== "none") animation.style.display = "none";
+    });
 };
 
 function focusOnLastMessage() {
@@ -45,54 +40,42 @@ function focusOnLastMessage() {
 
     const my_container = document.querySelector(".my_container");
     const dialogue_area = document.getElementById("dialogue_area");
+    const targeted_block = {block: "start", inline: "nearest"};
 
-    dialogue_area.lastElementChild.scrollIntoView({block: "start", inline: "nearest"});
-    my_container.scrollIntoView({block: "start", inline: "nearest"});
+    dialogue_area.lastElementChild.scrollIntoView(targeted_block);
+    my_container.scrollIntoView(targeted_block);
 };
 
-function displayMessage(user, message, timeout, user_profile_icon) {
+function displayMessage(user, message_data, timeout, user_profile_icon = null) {
 
     // Est en charge d'afficher le message des participants au chat (utilisateur et GrandPy)
 
     const dialogue_area = document.getElementById("dialogue_area");
+    const profile_icon = user_profile_icon || "🤖"
 
     window.setTimeout(function() {
 
-        if (user === "GrandPy") {
-            removeLoadingAnimations();
-        };
+        if (user === "grandpy") removeLoadingAnimations();
 
         // Génère conteneur message
         dialogue_area.insertAdjacentHTML("beforeend", "<div class='message_container'></div>");
         const last_message_container = document.querySelector(".message_container:last-child");
 
         // Structure le conteneur message
-        if (user === "GrandPy") {
-            last_message_container.insertAdjacentHTML("afterbegin", `<div class='grandpy message'></div>`);
-            last_message_container.insertAdjacentHTML("beforeend", "<div class='profile_icon'>🤖</div>");
-
-        } else if (user === "Vous") {
-            last_message_container.insertAdjacentHTML("afterbegin", `<div class='user message'></div>`);
-            last_message_container.insertAdjacentHTML("beforeend", `<div class='profile_icon'>${user_profile_icon}</div>`);
-        }
+        last_message_container.insertAdjacentHTML("afterbegin", `<div class="${user} message"></div>`);
+        last_message_container.insertAdjacentHTML("beforeend", `<div class='profile_icon'>${profile_icon}</div>`);
         
         // Cible la balise contenant le texte
         const last_message_zone = last_message_container.querySelector(".message");
-
-        // Ajoute le message dans la balise contenant le texte
     
-        // Cas de l'anecdocte (NON NON NON, EN BACKEND ÇA)
-        if (!! message.anecdocte) {
-            last_message_zone.innerText = "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? " + message.anecdocte;
-            last_message_zone.insertAdjacentHTML("beforeend", ` [En savoir plus sur <a href="${message.url}" target="_blank">Wikipédia</a>]`)
-        } else { // Cas général
-            last_message_zone.innerText += message;
-        }
-       
-        if (user === "Vous") { 
-            displayLoadingAnimation();
-        };
+        // Ajoute le message dans la balise contenant le texte avec gestion de l'anecdocte 
+        const message = message_data.anecdocte || message_data;
+        const wiki_url = message_data.wiki_url || null;
 
+        last_message_zone.innerText = message;
+        if (!! wiki_url) last_message_zone.insertAdjacentHTML("beforeend", wiki_url);
+       
+        if (user === "user") displayLoadingAnimation();
         focusOnLastMessage();
 
     }, 1000*timeout);
@@ -103,9 +86,11 @@ function displayMap(latitude, longitude, zoom_level, timeout) {
     // En charge d'afficher la carte Google Maps dans la fenêtre de chat
 
     const dialogue_area = document.getElementById("dialogue_area");
+    displayLoadingAnimation();
 
     window.setTimeout(function() {
        
+        removeLoadingAnimations()
         dialogue_area.insertAdjacentHTML("beforeend", `<div class="map"></div>`);
                 
         function initMap() {
@@ -119,102 +104,82 @@ function displayMap(latitude, longitude, zoom_level, timeout) {
     },1000*timeout);
 };
 
+function selectUserProfile() {
+    
+    // Attribue à l'utilisateur une icone de profil. Version intermédiaire, l'idée finale c'est que l'utilisateur puisse choisir son icone de profil.
+
+    const profile_icons = ["👩", "👤", "👨", "😎", "😱", "🥵", "🥶", "🧐", "🤑"];
+    const random_position = Math.floor(Math.random()*(profile_icons.length));
+    
+    return profile_icons[random_position];
+};
+
 function main() {
 
     const site_brand = document.querySelector("#brand");
     const form = document.querySelector("form");
     const input_area = document.getElementById("input_area");
-
-    // A changer de place. L'idée finale c'est que l'utilisateur puisse choisir son icone de profil. Dans main() car on veut garder la même icon du début à la fin de la session.
-    const profile_icons = ["👩", "👤", "👨", "😎", "😱"];
-    const random_position = Math.floor(Math.random()*(profile_icons.length));
-    const random_user_profile_icon = profile_icons[random_position];
-
-    form.addEventListener("keyup", function(e) {
-
-        // Gère l'envoi du formulaire en cas d'appui sur la touche entrée
-
-        if (e.code === "Enter") {
-            document.querySelector("#submit_button").click();
-        }
-    });
+    const random_user_profile_icon = selectUserProfile(); // A améliorer
+    let reactions = 0;
 
     form.addEventListener("submit", function(e) {
         
         // Gère ce qui se passe quand on valide le formulaire
 
         const user_message = input_area.value;
+        const is_string_empty = !user_message.trim();
 
-        displayMessage("Vous", user_message, 0, random_user_profile_icon);
-        
-        ajaxCommunicate("POST", "/grandpy", user_message, function(response) {
+        if (is_string_empty) return e.preventDefault();
+
+        displayMessage("user", user_message, 0, random_user_profile_icon);
+        ajaxCommunicate("POST", "/grandpy/chat/", user_message, function(response) {
             
             const grandpy_response = JSON.parse(response);
         
-            displayMessage("GrandPy", grandpy_response.message, 1);
-            // console.log(grandpy_response.message); //Aretirer
-                    
-            if (!! grandpy_response.location) {
+            displayMessage("grandpy", grandpy_response.message, 1);
+            
+            // PROBLEME : message de displayMessage() n'est pas d'un type constant, parfois str, parfois object. COMMENT ON GERE ?
 
-                displayMap(grandpy_response.location.lat, grandpy_response.location.lng, 15, 1);
-                displayMessage("GrandPy", grandpy_response.anecdocte_and_url, 1);
+            if (!grandpy_response.location) return;
 
-                };
-            });
+            displayMap(grandpy_response.location.lat, grandpy_response.location.lng, 15, 1);
+
+            // PROBLEME : Les animations sont vraiment gérées de façon chaotique, pas un meilleur moyen ?
+
+            displayLoadingAnimation();
+            displayMessage("grandpy", grandpy_response.anecdocte_and_url, 1);
+        });
         
         input_area.value = ""; 
         e.preventDefault();
     });
 
-    site_brand.addEventListener("click", function (e) {
+    form.addEventListener("keyup", function(e) {
+
+        // Gère l'envoi du formulaire en cas d'appui sur la touche entrée
+
+        const user_message = input_area.value;
+        const key_pushed = e.code;
+        const is_string_empty = !user_message.trim();
+
+        if (key_pushed !== 'Enter') return; 
+        if (is_string_empty) return;
+
+        document.querySelector("#submit_button").click();
+        
+    });
+
+    site_brand.addEventListener("click", function(e) {
 
         // Gère ce qui se passe (la réponse de GrandPy) quand on clique sur le logo du site
 
-        let reaction_message = "...";
-        let reactions = 0;
+        displayLoadingAnimation();
 
-        // Stocker les réponses dans un document à part
+        ajaxCommunicate("POST", "/grandpy/wtf/", `n${reactions}`, (response) => displayMessage("grandpy", response, 1)
+        );
 
-        switch (reactions) {
-            case 0:
-                reaction_message = "Pourquoi tu appuies sur mon logo, t'es fou ou quoi ? Je suis plus très jeune, c'est fragile ici !!";
-                break;
-
-            case 1:
-                reaction_message = "Mais !?";
-                break;
-
-            case 2:
-                reaction_message = "Ça va !?";
-                break;
-
-            case 3:
-                reaction_message = "Tu peux arrêter ??";
-                break;
-
-            case 4:
-                reaction_message = "C'EST FINI OUI ?";
-                break;
-
-            case 5:
-                reaction_message = "FRANCHEMENT ?";
-                break;
-
-            case 7:
-                reaction_message = "Aucune empathie hein :/";
-                break;
-
-            case 9:
-                reaction_message = "10 fois de suite...";
-                break;
-                        
-        };
         reactions++;
-
-        displayLoadingAnimation(); // démarre sans message de l'utilisateur donc... Il faut l'animation.
-        displayMessage("GrandPy", reaction_message, 1);
         focusOnLastMessage();
-
         e.preventDefault() ;
 
     });

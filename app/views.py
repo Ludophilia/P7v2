@@ -14,11 +14,10 @@ def index():
     
     return render_template("page.html", form=form, api_key=api_key)
 
-@app.route('/grandpy', methods=['GET', 'POST'])
-def test():
+@app.route('/grandpy/<path:mode>', methods=['GET', 'POST'])
+def grandpy(mode):
     if request.method == "POST":
         gp = GrandPy()
-        user_message = request.data.decode("utf-8")
-        answer = gp.answer_message(user_message)
+        user_data = request.data.decode("utf-8")
 
-        return answer
+        return gp.answer_message(user_data) if mode == "chat/" else gp.deal_with_clicks_on_logo(user_data)
