@@ -30,7 +30,7 @@ class GrandPy:
             """Retire la ponctuation et les whitespaces en trop de l'input utilisateur (str) et renvoie un str de cet input"""
 
             sp_punctuations = ["\'", "\""] #"-", 
-            punctuations = ["?", ",", ".", "!?", "?!", "!", ";", ":", "[", "]", "(", ")", "{", "}"] + sp_punctuations
+            punctuations = ["?", ",", ".", "!?", "?!", "!", ";", ":", "[", "]", "(", ")", "{", "}", ">", "<"] + sp_punctuations
 
             for punctuation in punctuations:
                 user_input = user_input.replace(punctuation, " ") if punctuation in sp_punctuations else user_input.replace(punctuation, "")
@@ -53,11 +53,11 @@ class GrandPy:
 
         """Telecharge les données Maps sur OC ou de Wikipédia sur la Cité Paradis si elles n'existent pas, les stocke dans un fichier .js, et les rappelle sous forme de dict"""
         
-        maps_url = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=openclassrooms+paris&key={}".format(cf.API_KEY) 
+        maps_url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=openclassrooms+paris&key={cf.API_KEY}"
         wiki_url = "https://fr.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Cité Paradis&formatversion=2&exsentences=3&exlimit=1&explaintext=1&exsectionformat=plain"
 
         data_url = maps_url if api_name == "maps" else wiki_url
-        data_pth = "app/ressources/{0}_data.js".format(api_name)
+        data_pth = f"app/ressources/{api_name}_data.js"
 
         if not pth.exists(data_pth): 
             with open(data_pth, "w") as f:
@@ -68,20 +68,17 @@ class GrandPy:
 
         return json_formatted_api_data
 
-    def get_anecdocte_and_url(self, jsf_wiki_data):
+    def get_anecdocte(self, jsf_wiki_data):
 
-        """Récupère l'anecdocte de GP sur la Cité Paradis et l'url de la fiche wikipédia associée à partir des données jsf (json-formatted) de l'API Wikimedia. Renvoie un dict"""
+        """Récupère l'anecdocte de GP sur la Cité Paradis et l'url de la fiche wikipédia associée à partir des données jsf (json-formatted) de l'API Wikimedia. Renvoie un str contenant l'anecdocte"""
 
         title = jsf_wiki_data["query"]["pages"][0]["title"]
+        wiki_url = f"https://fr.wikipedia.org/wiki/{title}".replace(" ", "_")
+
         wikipedia_part = jsf_wiki_data["query"]["pages"][0]["extract"].split('\n')[-1]
-        wiki_url = "https://fr.wikipedia.org/wiki/{}".format(title).replace(" ", "_")
+        knowmore_part = speech.KNOWMORE("Wikipédia", wiki_url)
 
-        anecdocte_and_url = dict(
-            anecdocte = "{} {} ".format(speech.ANECDOCTE_STARTER, wikipedia_part),
-            wiki_url = speech.KNOWMORE("Wikipédia", wiki_url)
-        )
-
-        return anecdocte_and_url
+        return f"{speech.ANECDOCTE_STARTER} {wikipedia_part} {knowmore_part}"
 
     def answer_message(self, user_input):
 
@@ -100,7 +97,7 @@ class GrandPy:
             greetings = speech.GREETINGS
             random_position = random.randint(0,len(greetings)-1)
 
-            message += "{}\n".format(greetings[random_position]) 
+            message += f"{greetings[random_position]}\n"
 
         if oc_found and know_found and address_found:
 
@@ -110,7 +107,7 @@ class GrandPy:
             message += speech.ADDRESSFOUND(oc_address)
 
             grandpy_response.update(
-                anecdocte_and_url = self.get_anecdocte_and_url(self.get_api_data("wiki")),
+                anecdocte = self.get_anecdocte(self.get_api_data("wiki")),
                 location = oc_maps_data_js["results"][0]["geometry"]["location"]
             )
 

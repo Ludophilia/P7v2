@@ -1,7 +1,7 @@
 """ Données utilisées pour construire les réponses de GrandPy """
 
 GREETINGS = ["Bonjour!", "Salut!", "Yo!", "Hi!!"]
-ADDRESSFOUND = lambda address: "Bien sûr mon poussin ! La voici : {}.\n".format(address)
+ADDRESSFOUND = lambda address: f"Bien sûr mon poussin ! La voici : {address}.\n"
 SORRY = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... :/"
 INTERROGATE_CLICK_ON_LOGO = "Pourquoi tu appuies sur mon logo, t'es fou ou quoi ? Je suis plus très jeune, c'est fragile ici !!"
 ANNOYED = dict(
@@ -14,7 +14,7 @@ ANNOYED = dict(
     n9 = "10 fois de suite..."
 )
 ANECDOCTE_STARTER = "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ?"
-KNOWMORE = lambda source, url: "[En savoir plus sur <a href='{1}' target='_blank'>{0}</a>]".format(source, url)
+KNOWMORE = lambda source, url: f"[En savoir plus sur <a href='{url}' target='_blank'>{source}</a>]"
 
 
 # Après les réponses supplémentaires :

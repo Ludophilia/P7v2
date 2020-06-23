@@ -83,13 +83,12 @@ class TestWikimediaApiDataTreatment():
         monkeypatch.setattr(self.gp, "get_api_data", mocked_get_api_data)
 
         wiki_data_js = self.gp.get_api_data("wiki")
-        anecdocte_and_url = self.gp.get_anecdocte_and_url(wiki_data_js)
+        anecdocte = self.gp.get_anecdocte(wiki_data_js)
 
         expected_anecdocte = "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse. "
         expected_wiki_url = "[En savoir plus sur <a href='https://fr.wikipedia.org/wiki/Cité_Paradis' target='_blank'>Wikipédia</a>]"
 
-        assert anecdocte_and_url["anecdocte"] == expected_anecdocte
-        assert anecdocte_and_url["wiki_url"] == expected_wiki_url
+        assert anecdocte == f"{expected_anecdocte}{expected_wiki_url}"
 
 class TestParser():
 
