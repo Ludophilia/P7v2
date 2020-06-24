@@ -39,7 +39,7 @@ async function displayMessage(message_str, { username, icon }, animationDuration
 
     if (username === "grandpy") {
         const animation_html = `<div class="loading ld ld-square ld-spin"\
-        style="display:block" id="animation${message_id}"></div>`;
+        id="animation${message_id}"></div>`;
         dialogue_area.insertAdjacentHTML("beforeend", animation_html);
         focusOnLastMessage();
 
@@ -128,7 +128,7 @@ function main() {
             if (anecdocte && location) {
                 displayMap(location, grandpy);
                 setTimeout(() => 
-                displayMessage(anecdocte, grandpy), 4500
+                    displayMessage(anecdocte, grandpy), 4500
                 );
             };
         });
