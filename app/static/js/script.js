@@ -25,7 +25,9 @@ function focusOnLastMessage() {
 
 async function displayMessage(message_str, { username, icon }, animationDuration=1) {
 
-    // Est en charge d'afficher le message des participants au chat (utilisateur et GrandPy). Affiche une animation de chargement avant d'afficher le message de GrandPy pendant timeout secondes.
+    // Est en charge d'afficher le message des participants au chat (utilisateur et GrandPy). 
+
+    MESSAGE_ID +=1;
 
     const message_id = MESSAGE_ID;
     const dialogue_area = document.getElementById("dialogue_area");
@@ -38,7 +40,7 @@ async function displayMessage(message_str, { username, icon }, animationDuration
     if (username === "grandpy") {
         const animation_html = `<div class="loading ld ld-square ld-spin"\
         style="display:block" id="animation${message_id}"></div>`;
-        dialogue_area.innerHTML += animation_html;
+        dialogue_area.insertAdjacentHTML("beforeend", animation_html);
         focusOnLastMessage();
 
         await new Promise((resolve) => {
@@ -47,18 +49,17 @@ async function displayMessage(message_str, { username, icon }, animationDuration
                 animation.outerHTML = message_container_html;
                 resolve();
             }, 1000*animationDuration);
-        });
+        }); // Pas fan de cette solution, mais connait pas mieux pour le moment.
 
     } else {
-        dialogue_area.innerHTML += message_container_html;
+        dialogue_area.insertAdjacentHTML("beforeend", message_container_html);
         const message_block = dialogue_area.querySelector(`#message${message_id}`);
         message_block.innerText = message_str;
     };
 
-    MESSAGE_ID +=1;
     focusOnLastMessage();
 
-    return Promise.resolve();
+    return Promise.resolve(message_id);
 };
 
 async function displayMap(location, user, animationDuration=1) {
@@ -66,11 +67,11 @@ async function displayMap(location, user, animationDuration=1) {
     const center_coordinates = location;
     const map_html = `<div class="map"></div>`;
 
-    await displayMessage(map_html, user, animationDuration);
+    const message_id = await displayMessage(map_html, user, animationDuration);
 
     function initMap() {
         const map = new google.maps.Map(
-                document.querySelectorAll('.map')[document.querySelectorAll('.map').length-1], {
+                document.querySelector(`#message${message_id} .map`), {
                 center: center_coordinates,
                 zoom: 19,
                 gestureHandling: 'cooperative'
@@ -105,7 +106,7 @@ function main() {
     const user = {username: "user", icon: selectUserProfile()};
     const grandpy = {username: "grandpy", icon: "🤖"};
 
-    const reactions = 0; 
+    let reactions = 0; 
 
     form.addEventListener("submit", (e) => {
         
@@ -127,7 +128,8 @@ function main() {
             if (anecdocte && location) {
                 displayMap(location, grandpy);
                 setTimeout(() => 
-                    displayMessage(anecdocte, grandpy), 4000);
+                displayMessage(anecdocte, grandpy), 4500
+                );
             };
         });
         
