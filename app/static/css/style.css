@@ -1,5 +1,5 @@
 
-/* Customized style written exclusively for you */
+/* Customized tailor-made stylesheet written exclusively for this very website */
 
 /* ############## Custom Fonts ############## */
 
@@ -12,27 +12,36 @@
 /* ############## Container ############## */
 
 body {
+    /* position: fixed; /* Really ?*/
     height: 100vh; 
 
-    background-color: #1D1F26;
+    background-color: #fff; /* ou #1D1F26 */
 
-    border: red dotted 5px; /* A retirer */
+    /*border: red dotted 5px; /* A retirer */
     box-sizing: border-box;
 
     margin: 0px;
 } 
 
 .my_container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    display: grid;
 
+    grid-template-columns: 20fr 80fr;
+    grid-template-rows: 90fr 10fr;
+    grid-template-areas: "a b" "c b";
     height: 100%;
 }
 
 /* ############## Header ############## */
 
 header {
+
+    grid-area: a;
+
+    height: 100%;
+    width: 20vw;
+    box-sizing: border-box;
+
     text-align: center;
 
     background-color:#1D1F26;
@@ -57,6 +66,13 @@ header {
 /* ############## Footer ############## */
 
 footer {
+
+    grid-area: c;
+
+    height: 100%;
+    width: 20vw;
+    box-sizing: border-box;
+
     font-family: krungthep, downloaded-krungthep;
     font-size: 12px;
     text-align: center;
@@ -75,7 +91,11 @@ footer {
 /* ############## Chat ############## */
 
 #chat_window {
-    height: 80%; /* 80vh ? */
+
+    grid-area: b;
+
+    height: 100%; /* 80vh ? */
+    width: 80vw;
 
     background-color: #1C2E40;
 
