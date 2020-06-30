@@ -100,15 +100,15 @@ function main() {
     MESSAGE_ID = 0; 
 
     const site_brand = document.querySelector("#brand");
-    const form = document.querySelector("form");
     const input_area = document.getElementById("input_area");
+    const submit_button = document.querySelector("#submit_button");
 
     const user = {username: "user", icon: selectUserProfile()};
     const grandpy = {username: "grandpy", icon: "🤖"};
 
     let reactions = 0; 
 
-    form.addEventListener("submit", (e) => {
+    submit_button.addEventListener("click", (e) => {
         
         // Gère ce qui se passe quand on valide le formulaire
 
@@ -116,7 +116,7 @@ function main() {
         const is_string_empty = !user_message.trim();
 
         if (is_string_empty) return e.preventDefault();
-        
+
         displayMessage(user_message, user);
 
         sendDataToServer("POST", "/grandpy/chat/", user_message, (response) => {
@@ -137,7 +137,7 @@ function main() {
         e.preventDefault();
     });
 
-    form.addEventListener("keyup", (e) => {
+    input_area.addEventListener("keyup", (e) => {
 
         // Gère l'envoi du formulaire en cas d'appui sur la touche entrée
 
@@ -148,7 +148,7 @@ function main() {
         if (key_pushed !== 'Enter') return; 
         if (is_string_empty) return;
 
-        document.querySelector("#submit_button").click();
+        submit_button.click();
         
     });
 

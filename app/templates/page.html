@@ -21,7 +21,9 @@
                     <form method="post" action="" novalidate id="input_container">
                         {{ form.hidden_tag() }}
                         {{ form.textarea(class="", id="input_area") }}
-                        {{ form.submit_button(class="", id="submit_button") }}
+                        <button id="submit_button">
+                            <i class="fa fa-envelope" id="envelope" aria-hidden="true"></i>
+                        </button>
                     </form>
                 </section>
             </section>
@@ -31,12 +33,13 @@
                 </div>
                 <div>
                     <a href="https://github.com/Ludophilia/P7v2" target="_blank">
-                        <image src="static/img/GitHub-Mark-Light-32px.png" alt="Octocat" width="25" height="25"/>
+                        <img src="{{ url_for('static', filename='img/GitHub-Mark-Light-32px.png') }}" alt="Octocat" width="25" height="25"/>
                     </a>
                 </div>
             </footer>
         </div>
         <script defer src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}" async></script>
         <script defer src="static/js/script.js"></script> 
+        <script defer src="https://use.fontawesome.com/{{ fa_key }}.js"></script>
     </body>
 </html>
