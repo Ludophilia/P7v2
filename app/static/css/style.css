@@ -25,16 +25,33 @@ body {
 .my_container {
     display: grid;
 
-    grid-template-columns: 20fr 80fr;
-    grid-template-rows: 90fr 10fr;
+    grid-template-columns: 20vw 80vw;
+    grid-template-rows: 87.75vh 12.25vh;
     grid-template-areas: "a b" "c b";
     height: 100%;
 }
 
+@media (max-width: 800px) {
+
+    .my_container {        
+        grid-template-columns: auto;
+        grid-template-rows: 8vh 92vh;
+        grid-template-areas: "a" "b";
+    }
+
+}
+
 :root{
-    /* Pour les propriétés personnalisées */
     --input_area_width: 82%;
     --submit_button_width: calc(100% - var(--input_area_width));
+}
+
+@media (max-width: 800px) {
+
+    :root{
+        --input_area_width: 75%;
+    }
+
 }
 
 /* ############## Header ############## */
@@ -50,6 +67,14 @@ header {
     text-align: center;
 
     background-color:#1D1F26;
+
+}
+
+@media (max-width: 800px) {
+    header {
+        display: flex;
+        width: 100vw;
+    }
 }
 
 #brand {
@@ -57,6 +82,13 @@ header {
     font-size: 20px;
 
     margin: 15px 0px;
+}
+
+@media (max-width: 800px) {
+    #brand {
+        width: 100vw;
+        align-self: center;
+    }
 }
 
 #brand a {
@@ -89,8 +121,17 @@ footer {
     padding-bottom: 30px;
 }
 
+@media (max-width: 800px) {
+
+    footer {
+        display: none;
+    }
+
+}
+
 #footer-notes {
     margin-bottom: 8px;
+    overflow-wrap: break-word;
 }
 
 /* ############## Chat ############## */
@@ -106,6 +147,16 @@ footer {
 
     padding: 20px;
     box-sizing: border-box;
+}
+
+@media (max-width: 800px) {
+
+    #chat_window {
+    
+        width: 100vw;
+
+    }
+
 }
 
 /* ############## Chat (Dialogue) ############## */
@@ -173,7 +224,7 @@ footer {
 
 .map {
     height: 400px;
-    width: 75vw;
+    width: 100vw;
     max-width: calc(100% + 2*30px);
 
     margin: -15px -30px;
