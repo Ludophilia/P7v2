@@ -11,45 +11,69 @@
 
 /* ############## Container ############## */
 
-body {
-    height: 100vh; 
-
-    background-color: #fff;
-
-    /*border: red dotted 5px; */
-    box-sizing: border-box;
-
-    margin: 0px;
-} 
-
-.my_container {
-    display: grid;
-
-    grid-template-columns: 20vw 80vw;
-    grid-template-rows: 87.75vh 12.25vh;
-    grid-template-areas: "a b" "c b";
-    height: 100%;
-}
-
-@media (max-width: 800px) {
-
-    .my_container {        
-        grid-template-columns: auto;
-        grid-template-rows: 8vh 92vh;
-        grid-template-areas: "a" "b";
-    }
-
-}
-
 :root{
+    --header-height: 55px;
     --input_area_width: 82%;
     --submit_button_width: calc(100% - var(--input_area_width));
+
+    --chat_window_padding: 20px;
+    --message_padding: 15px 25px;
+    --dialogue_area_padding: 10px 30px;
+    --input_area_padding: 20px 30px;
+
+    --message_font_size: 16px;
+
+    --dialogue_area_border_radius: 10px 10px 0px 0px;
+    --input_area_border_radius: 0px 0px 0px 10px;
+    --submit_button_border_radius: 0px 0px 10px 0px;
 }
 
 @media (max-width: 800px) {
 
     :root{
         --input_area_width: 75%;
+
+        --chat_window_padding: 0;
+        --message_padding: 15px 25px;
+        --dialogue_area_padding: 0px 25px;
+        --input_area_padding: 15px 25px;    
+
+        --message_font_size: 15px;
+
+        --dialogue_area_border_radius: 0;
+        --input_area_border_radius: 0;
+        --submit_button_border_radius: 0;
+    }
+
+}
+
+body {
+    margin: 0px;
+
+    height: 100vh;
+    width: 100vw;
+
+    background-color:yellow; /* The new - border: red dotted 5px; */
+    box-sizing: border-box;
+} 
+
+.my_container {
+    display: grid;
+
+    height: 100%;
+    width: 100%;
+
+    grid-template-columns: 20% 80%;
+    grid-template-rows: 1fr 115px; /**/
+    grid-template-areas: "a b" "c b";
+}
+
+@media (max-width: 800px) {
+
+    .my_container {        
+        grid-template-columns: 100%;
+        grid-template-rows: var(--header-height) calc(100% - var(--header-height));
+        grid-template-areas: "a" "b";
     }
 
 }
@@ -61,7 +85,7 @@ header {
     grid-area: a;
 
     height: 100%;
-    width: 20vw;
+    width: 100%;
     box-sizing: border-box;
 
     text-align: center;
@@ -73,7 +97,6 @@ header {
 @media (max-width: 800px) {
     header {
         display: flex;
-        width: 100vw;
     }
 }
 
@@ -86,7 +109,7 @@ header {
 
 @media (max-width: 800px) {
     #brand {
-        width: 100vw;
+        width: 100%;
         align-self: center;
     }
 }
@@ -107,7 +130,7 @@ footer {
     grid-area: c;
 
     height: 100%;
-    width: 20vw;
+    width: 100%;
     box-sizing: border-box;
 
     font-family: krungthep, downloaded-krungthep;
@@ -118,7 +141,6 @@ footer {
     background-color:#1D1F26;
 
     padding-top: 20px;
-    padding-bottom: 30px;
 }
 
 @media (max-width: 800px) {
@@ -132,6 +154,7 @@ footer {
 #footer-notes {
     margin-bottom: 8px;
     overflow-wrap: break-word;
+    /* overflow: hidden; */
 }
 
 /* ############## Chat ############## */
@@ -141,43 +164,34 @@ footer {
     grid-area: b;
 
     height: 100%;
-    width: 80vw;
+    width: 100%;
 
     background-color: #1C2E40;
 
-    padding: 20px;
+    padding: var(--chat_window_padding);
     box-sizing: border-box;
-}
-
-@media (max-width: 800px) {
-
-    #chat_window {
-    
-        width: 100vw;
-
-    }
-
 }
 
 /* ############## Chat (Dialogue) ############## */
 
 #dialogue_container {
     height: 100%;
-    
+    width: 100%;
     background-color:#1C2E40;
 }
 
 #dialogue_area {
     height: 80%;
+    width: 100%;
+
     overflow: auto; 
-    overflow-wrap: break-word;
 
     color:#fff;
     background-color:#1D1F26;
 
-    padding: 25px 30px;
+    padding: var(--dialogue_area_padding);
     box-sizing: border-box;
-    border-radius: 10px 10px 0px 0px;
+    border-radius: var(--dialogue_area_border_radius);
 }
 
 .message_container {
@@ -188,12 +202,12 @@ footer {
 }
 
 .message {
-    font-size: 16px;
+    font-size: var(--message_font_size);
     text-align: justify;
 
     background-color: #1C2E40;
 
-    padding: 15px 30px;
+    padding: var(--message_padding);
     box-sizing: border-box;
 }
 
@@ -202,14 +216,14 @@ footer {
     border-radius: 20px 20px 20px 0px;
 }
 
-.user + .profile_icon {
-    text-align: left;
-    margin: 0 0 0 -10px;
-}
-
 .grandpy {
     font-family: krungthep, downloaded-krungthep;
     border-radius: 20px 20px 0px 20px;
+}
+
+.user + .profile_icon {
+    text-align: left;
+    margin: 0 0 0 -10px;
 }
 
 .grandpy + .profile_icon {
@@ -223,7 +237,7 @@ footer {
 }
 
 .map {
-    height: 400px;
+    height: 40vh;
     width: 100vw;
     max-width: calc(100% + 2*30px);
 
@@ -232,34 +246,40 @@ footer {
     border-radius: 10px 10px 0 10px;
 }
 
+@media (max-width: 800px) {
+    .map {
+        height: 50vh;
+    }
+}
+
 /* ############## Chat (Input) ############## */
 
 #input_container {
     display: flex;
 
     height: 20%;
+    width: 100%;
 
     box-sizing: border-box;
 }
 
 #input_area {
     resize: none;
+    border: none;
+    margin: 0px;
 
     flex-basis: var(--input_area_width);
-
     height: 100%;
 
     font-family: Verdana; /* A remplacer */
-    font-size: 16px; /* A remplacer */
+    font-size: var(--message_font_size);; /* A remplacer */
     color:#fff; /* A remplacer */
 
     background-color:#1D212A;
 
-    padding: 25px 30px;
+    padding: var(--input_area_padding);
     box-sizing: border-box;
-    border: none;
-    border-radius: 0px 0px 0px 10px;
-    margin: 0px;
+    border-radius: var(--input_area_border_radius);
 
     transition: border, box-shadow 1500ms ease-out;
 
@@ -270,29 +290,36 @@ footer {
     outline: none;
 
     border: 1px solid #51CBEE;
-    box-shadow: 0px 0 5px #51CBEE;
+
     -webkit-box-shadow: 0px 0 5px #51CBEE;
+    box-shadow: 0px 0 5px #51CBEE;
 }
 
 #submit_button {
     --webkit-appearance: none;
     border: none;
+    margin: 0;
+    padding: 0;
 
     display: flex;
 
     flex-basis: var(--submit_button_width);
+    height: 100%;
+
     color: #fff;
     background-color: #182736;
-    border-radius: 0px 0px 10px 0px;
+    border-radius: var(--submit_button_border_radius);
 }
 
 #submit_button:focus {    
     outline: none;
 }
 
-#submit_button:hover {    
-    color: #182736;
-    background-color: #fff;
+@media (pointer: fine) {
+    #submit_button:hover {    
+        color: #182736;
+        background-color: #fff;
+    }
 }
 
 #envelope {
