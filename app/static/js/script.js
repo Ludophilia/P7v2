@@ -135,8 +135,24 @@ function main() {
 
         $("body").style.height = `${this.innerHeight}px`;
 
-        $("#input_area").value = `ON LOAD: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}` 
+        // DEBUG
+        $("#dialogue_area").innerHTML += `<br><span>LOAD window.innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}</span>`;
+        focusOnLastMessage();
+    });
 
+    window.addEventListener("orientationchange", () => {
+
+        // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
+
+        const windowInnerHeight = `${this.innerHeight}px`;
+
+        //if (windowInnerHeight === $("body").style.height) return;
+
+        $("body").style.height = windowInnerHeight;
+
+        // DEBUG
+        $("#dialogue_area").innerHTML += `<br><span>ORIENTATION window.innerHeight: ${this.innerHeight}px}</span>`;
+        focusOnLastMessage();
     });
 
     window.addEventListener("resize", () => {
@@ -146,16 +162,12 @@ function main() {
         const windowInnerHeight = `${this.innerHeight}px`;
 
         //if (windowInnerHeight === $("body").style.height) return;
-        $("#input_area").value = `BEFORE RESIZE: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}` 
-   
-        $("body").style.height = windowInnerHeight;
-
-        $("#input_area").value += `AFTER RESIZE: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}`
 
         $("body").style.height = windowInnerHeight;
 
-        $("#input_area").value += `AFTER RESIZE 2: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}`
-
+        // DEBUG
+        $("#dialogue_area").innerHTML += `<br><span>RESIZE window.innerHeight: ${this.innerHeight}px}</span>`;
+        focusOnLastMessage();
 
     });
 
