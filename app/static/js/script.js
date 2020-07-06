@@ -142,8 +142,11 @@ function main() {
 
         const windowInnerHeight = `${this.innerHeight}px`;
 
-        //if (windowInnerHeight === $("body").style.height) return;     
+        //if (windowInnerHeight === $("body").style.height) return;
+        $("#input_area").value = `DEBUG: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}` 
+   
         $("body").style.height = windowInnerHeight;
+
     });
 
     $("#submit_button").addEventListener("click", (e) => {
