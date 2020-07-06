@@ -148,10 +148,40 @@ function main() {
 
         //if (windowInnerHeight === $("body").style.height) return;
 
-        $("body").style.height = windowInnerHeight;
+        // $("body").style.height = windowInnerHeight;
 
         // DEBUG
         $("#dialogue_area").innerHTML += `<br><span>ORIENTATION window.innerHeight: ${this.innerHeight}px}</span>`;
+        focusOnLastMessage();
+    });
+
+    window.addEventListener("deviceorientation", () => {
+
+        // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
+
+        const windowInnerHeight = `${this.innerHeight}px`;
+
+        //if (windowInnerHeight === $("body").style.height) return;
+
+        // $("body").style.height = windowInnerHeight;
+
+        // DEBUG
+        $("#dialogue_area").innerHTML += `<br><span>DEVICEORIENTATION window.innerHeight: ${this.innerHeight}px}</span>`;
+        focusOnLastMessage();
+    });
+
+    window.addEventListener("fullscreenchange", () => {
+
+        // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
+
+        const windowInnerHeight = `${this.innerHeight}px`;
+
+        //if (windowInnerHeight === $("body").style.height) return;
+
+        // $("body").style.height = windowInnerHeight;
+
+        // DEBUG
+        $("#dialogue_area").innerHTML += `<br><span>FULLSCREENCHANGE window.innerHeight: ${this.innerHeight}px}</span>`;
         focusOnLastMessage();
     });
 
