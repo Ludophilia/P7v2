@@ -151,7 +151,7 @@ function main() {
         // $("body").style.height = windowInnerHeight;
 
         // DEBUG
-        $("#dialogue_area").innerHTML += `<br><span>ORIENTATION window.innerHeight: ${this.innerHeight}px}</span>`;
+        $("#dialogue_area").innerHTML += `<br><span>ORIENTATION window.innerHeight: ${this.innerHeight}px</span>`;
         focusOnLastMessage();
     });
 
@@ -166,7 +166,7 @@ function main() {
         // $("body").style.height = windowInnerHeight;
 
         // DEBUG
-        $("#dialogue_area").innerHTML += `<br><span>DEVICEORIENTATION window.innerHeight: ${this.innerHeight}px}</span>`;
+        $("#dialogue_area").innerHTML += `<br><span>DEVICEORIENTATION window.innerHeight: ${this.innerHeight}px</span>`;
         focusOnLastMessage();
     });
 
@@ -178,10 +178,12 @@ function main() {
 
         //if (windowInnerHeight === $("body").style.height) return;
 
-        // $("body").style.height = windowInnerHeight;
 
         // DEBUG
-        $("#dialogue_area").innerHTML += `<br><span>CLICK window.innerHeight: ${this.innerHeight}px}</span>`;
+        $("#dialogue_area").innerHTML += `<br><span>CLICK window.innerHeight: ${windowInnerHeight}</span>`;
+
+        $("body").style.height = windowInnerHeight;
+
         focusOnLastMessage();
     });
 
