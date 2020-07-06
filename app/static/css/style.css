@@ -57,6 +57,7 @@ body {
 
     height: 100vh;
     width: 100vw;
+    overflow: hidden;
 
     background-color:yellow; /* The new - border: red dotted 5px; */
     box-sizing: border-box;

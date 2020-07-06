@@ -195,7 +195,7 @@ function main() {
         $("#submit_button").click();
     });
 
-    $("#brand").addEventListener("click", (e) => {
+    $("#brand_logo").addEventListener("click", (e) => {
 
         // Gère ce qui se passe (la réponse de GrandPy) quand on clique sur le logo du site
 
@@ -203,6 +203,14 @@ function main() {
 
         reactions++;
         e.preventDefault();
+    });
+
+    $("#brand").addEventListener("click", () => {
+
+        // Permet de remonter rapidement le fil de la conversation en appuyant sur le bloc contenant le logo
+
+        $("#dialogue_area").firstElementChild.scrollIntoView(false);
+
     });
 };
 
