@@ -19,8 +19,7 @@ function focusOnLastMessage() {
 
     // Permet de toujours afficher à l'écran le dernier message
 
-    const dialogue_area = document.getElementById("dialogue_area");
-    dialogue_area.lastElementChild.scrollIntoView(true);
+    $("#dialogue_area").lastElementChild.scrollIntoView(true);
 };
 
 async function displayMessage(message_str, { username, icon }, animationDuration=1) {
@@ -28,9 +27,7 @@ async function displayMessage(message_str, { username, icon }, animationDuration
     // Est en charge d'afficher le message des participants au chat (utilisateur et GrandPy). 
 
     MESSAGE_ID +=1;
-
     const message_id = MESSAGE_ID;
-    const dialogue_area = document.getElementById("dialogue_area");
 
     const message_container_html = `<div class='message_container'>\
     <div class="${username} message" id="message${message_id}">\
@@ -40,21 +37,20 @@ async function displayMessage(message_str, { username, icon }, animationDuration
     if (username === "grandpy") {
         const animation_html = `<div class="loading ld ld-square ld-spin"\
         id="animation${message_id}"></div>`;
-        dialogue_area.insertAdjacentHTML("beforeend", animation_html);
+
+        $("#dialogue_area").insertAdjacentHTML("beforeend", animation_html);
         focusOnLastMessage();
 
         await new Promise((resolve) => {
             setTimeout(() => {
-                const animation = document.querySelector(`#animation${message_id}`); 
-                animation.outerHTML = message_container_html;
+                $(`#animation${message_id}`).outerHTML = message_container_html;
                 resolve();
             }, 1000*animationDuration);
-        }); // Pas fan de cette solution, mais connait pas mieux pour le moment.
+        });
 
     } else {
-        dialogue_area.insertAdjacentHTML("beforeend", message_container_html);
-        const message_block = dialogue_area.querySelector(`#message${message_id}`);
-        message_block.innerText = message_str;
+        $("#dialogue_area").insertAdjacentHTML("beforeend", message_container_html);
+        $(`#message${message_id}`).innerText = message_str;
     };
 
     focusOnLastMessage();
@@ -71,7 +67,7 @@ async function displayMap(location, user, animationDuration=1) {
 
     function initMap() {
         const map = new google.maps.Map(
-                document.querySelector(`#message${message_id} .map`), {
+                $(`#message${message_id} .map`), {
                 center: center_coordinates,
                 zoom: 19,
                 gestureHandling: 'cooperative'
@@ -95,24 +91,66 @@ function selectUserProfile() {
     return profile_icons[random_position];
 };
 
+function ajustInputAreaHeight() {
+
+    // Modifie la taille du formulaire et de la fenetre de chat au dessus en fonction du contenu formulaire
+
+    const is_mobile_with = $("body").clientWidth <= 800;
+
+    const max_height = is_mobile_with ? 120 : 220;
+    const base_height = is_mobile_with ? 50 : 60;
+
+    const scroll_height = $("#input_area").scrollHeight > max_height ? max_height : $("#input_area").scrollHeight;
+    const container_height = parseInt(getComputedStyle($("#input_container")).height, 10);
+    
+    if (scroll_height >= max_height && 
+        $("#input_area").value != "" &&
+        container_height >= base_height+5) return;
+    
+    $("#input_container").style.height = 
+        $("#input_area").value != ""? 
+        `${scroll_height}px`: 
+        "var(--input_container_height)";
+
+    $("#dialogue_area").style.height = 
+        `calc(100% - ${$("#input_container").style.height})`;
+
+    if ($("#dialogue_area").lastElementChild) focusOnLastMessage();
+};
+
 function main() {
 
-    MESSAGE_ID = 0; 
+    $ = document.querySelector.bind(document); $$ = document.querySelectorAll.bind(document);
 
-    const site_brand = document.querySelector("#brand");
-    const input_area = document.getElementById("input_area");
-    const submit_button = document.querySelector("#submit_button");
+    MESSAGE_ID = 0;
 
-    const user = {username: "user", icon: selectUserProfile()};
-    const grandpy = {username: "grandpy", icon: "🤖"};
+    const user = { username: "user", icon: selectUserProfile() };
+    const grandpy = { username: "grandpy", icon: "🤖" };
 
-    let reactions = 0; 
+    let reactions = 0;
 
-    submit_button.addEventListener("click", (e) => {
+    window.addEventListener("load", () => {
+
+        // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
+
+        $("body").style.height = `${this.innerHeight}px`;
+    });
+
+    window.addEventListener("resize", () => {
+
+        // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
+
+        const windowInnerHeight = `${this.innerHeight}px`;
+
+        if (windowInnerHeight === $("body").style.height) return;     
+        $("body").style.height = windowInnerHeight;
+    });
+
+    $("#submit_button").addEventListener("click", (e) => {
         
         // Gère ce qui se passe quand on valide le formulaire
 
-        const user_message = input_area.value;
+        const user_message = $("#input_area").value;
         const is_string_empty = !user_message.trim();
 
         if (is_string_empty) return e.preventDefault();
@@ -133,26 +171,31 @@ function main() {
             };
         });
         
-        input_area.value = ""; 
+        $("#input_area").value = ""; 
+        ajustInputAreaHeight();
         e.preventDefault();
     });
 
-    input_area.addEventListener("keyup", (e) => {
+    $("#input_area").addEventListener("input", () => {
+
+        // Gère l'adaptation de la taille du formulaire à son contenu
+        ajustInputAreaHeight();
+    });
+
+    $("#input_area").addEventListener("keyup", (e) => {
 
         // Gère l'envoi du formulaire en cas d'appui sur la touche entrée
 
-        const user_message = input_area.value;
         const key_pushed = e.code;
-        const is_string_empty = !user_message.trim();
+        const is_string_empty = !($("#input_area").value.trim());
 
         if (key_pushed !== 'Enter') return; 
         if (is_string_empty) return;
 
-        submit_button.click();
-        
+        $("#submit_button").click();
     });
 
-    site_brand.addEventListener("click", (e) => {
+    $("#brand").addEventListener("click", (e) => {
 
         // Gère ce qui se passe (la réponse de GrandPy) quand on clique sur le logo du site
 

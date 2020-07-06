@@ -12,9 +12,12 @@
 /* ############## Container ############## */
 
 :root{
-    --header-height: 55px;
+    --header_height: 55px;
     --input_area_width: 82%;
     --submit_button_width: calc(100% - var(--input_area_width));
+
+    --input_container_height: calc(20px + 2*20px); 
+    --dialogue_area_height: calc(100% - var(--input_container_height));
 
     --chat_window_padding: 20px;
     --message_padding: 15px 25px;
@@ -33,12 +36,14 @@
     :root{
         --input_area_width: 75%;
 
+        --input_container_height: calc(20px + 2*15px); 
+
         --chat_window_padding: 0;
         --message_padding: 15px 25px;
         --dialogue_area_padding: 0px 25px;
         --input_area_padding: 15px 25px;    
 
-        --message_font_size: 15px;
+        --message_font_size: 16px;
 
         --dialogue_area_border_radius: 0;
         --input_area_border_radius: 0;
@@ -72,7 +77,7 @@ body {
 
     .my_container {        
         grid-template-columns: 100%;
-        grid-template-rows: var(--header-height) calc(100% - var(--header-height));
+        grid-template-rows: var(--header_height) calc(100% - var(--header_height));
         grid-template-areas: "a" "b";
     }
 
@@ -140,7 +145,7 @@ footer {
     color:#fff;
     background-color:#1D1F26;
 
-    padding-top: 20px;
+    padding: 15px;
 }
 
 @media (max-width: 800px) {
@@ -181,7 +186,8 @@ footer {
 }
 
 #dialogue_area {
-    height: 80%;
+    height: var(--dialogue_area_height);
+    /*max-height: 80%; /* NOUVEAU */
     width: 100%;
 
     overflow: auto; 
@@ -204,6 +210,7 @@ footer {
 .message {
     font-size: var(--message_font_size);
     text-align: justify;
+    overflow-wrap: break-word;
 
     background-color: #1C2E40;
 
@@ -257,7 +264,8 @@ footer {
 #input_container {
     display: flex;
 
-    height: 20%;
+    height: var(--input_container_height); /*20%; */
+    /*max-height: 20%; /* NOUVEAU */
     width: 100%;
 
     box-sizing: border-box;
@@ -269,7 +277,7 @@ footer {
     margin: 0px;
 
     flex-basis: var(--input_area_width);
-    height: 100%;
+    /* height: 100%; */
 
     font-family: Verdana; /* A remplacer */
     font-size: var(--message_font_size);; /* A remplacer */
@@ -304,7 +312,7 @@ footer {
     display: flex;
 
     flex-basis: var(--submit_button_width);
-    height: 100%;
+    /* height: 100%; */
 
     color: #fff;
     background-color: #182736;
