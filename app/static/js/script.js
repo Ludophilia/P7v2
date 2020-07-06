@@ -150,7 +150,12 @@ function main() {
    
         $("body").style.height = windowInnerHeight;
 
-        $("#input_area").value += `AFTER RESIZE: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}` 
+        $("#input_area").value += `AFTER RESIZE: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}`
+
+        $("body").style.height = windowInnerHeight;
+
+        $("#input_area").value += `AFTER RESIZE 2: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}`
+
 
     });
 
