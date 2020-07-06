@@ -134,6 +134,9 @@ function main() {
         // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
 
         $("body").style.height = `${this.innerHeight}px`;
+
+        $("#input_area").value = `ON LOAD: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}` 
+
     });
 
     window.addEventListener("resize", () => {
@@ -143,12 +146,11 @@ function main() {
         const windowInnerHeight = `${this.innerHeight}px`;
 
         //if (windowInnerHeight === $("body").style.height) return;
-        $("#input_area").value = `BEFORE: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}` 
+        $("#input_area").value = `BEFORE RESIZE: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}` 
    
         $("body").style.height = windowInnerHeight;
 
-        $("#input_area").value = `AFTER: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}` 
-
+        $("#input_area").value = `AFTER RESIZE: innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}` 
 
     });
 
