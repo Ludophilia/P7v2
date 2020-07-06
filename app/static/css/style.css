@@ -53,6 +53,7 @@
 }
 
 body {
+    position: fixed;
     margin: 0px;
 
     height: 100vh;

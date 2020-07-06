@@ -142,7 +142,7 @@ function main() {
 
         const windowInnerHeight = `${this.innerHeight}px`;
 
-        if (windowInnerHeight === $("body").style.height) return;     
+        //if (windowInnerHeight === $("body").style.height) return;     
         $("body").style.height = windowInnerHeight;
     });
 
