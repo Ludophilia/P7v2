@@ -57,7 +57,7 @@ html {
     height: 100vh;
     width: 100vw;
     /*position: fixed;*/
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 body {
