@@ -148,6 +148,7 @@ function main() {
 
         //if (windowInnerHeight === $("body").style.height) return;
 
+        $("html").style.height = windowInnerHeight;
         $("body").style.height = windowInnerHeight;
 
         // DEBUG
@@ -213,6 +214,7 @@ function main() {
 
         //if (windowInnerHeight === $("body").style.height) return;
 
+        $("html").style.height = windowInnerHeight;
         $("body").style.height = windowInnerHeight;
 
         // DEBUG
