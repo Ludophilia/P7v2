@@ -149,7 +149,11 @@ function main() {
         //if (windowInnerHeight === $("body").style.height) return;
 
         //$("html").style.height = windowInnerHeight;
-        $("body").style.height = windowInnerHeight;
+        // $("body").style.height = windowInnerHeight;
+
+        $("body").style.height = window.innerHeight != $("html").clientHeight ? 
+                            `${$("html").clientHeight}px` : 
+                            `${window.innerHeight}px`;
 
         // DEBUG
         $("#dialogue_area").innerHTML += `<br><span>ORIENTATION window.innerHeight: ${windowInnerHeight}px</span>`;
@@ -178,6 +182,10 @@ function main() {
         //const windowInnerHeight = `${this.innerHeight}px`;
 
         //if (windowInnerHeight === $("body").style.height) return;
+
+        // $("body").style.height = window.innerHeight != $("html").clientHeight ? 
+        //                     `${$("html").clientHeight}px` : 
+        //                     `${window.innerHeight}px`;
 
         // DEBUG
         $("#dialogue_area").innerHTML += `<br><span>CLICK window.innerHeight: ${window.innerHeight}px</span>`;
@@ -215,7 +223,10 @@ function main() {
         //if (windowInnerHeight === $("body").style.height) return;
 
         //$("html").style.height = windowInnerHeight;
-        $("body").style.height = windowInnerHeight;
+        // $("body").style.height = windowInnerHeight;
+        $("body").style.height = window.innerHeight != $("html").clientHeight ? 
+                            `${$("html").clientHeight}px` : 
+                            `${window.innerHeight}px`;
 
         // DEBUG
         $("#dialogue_area").innerHTML += `<br><span>RESIZE window.innerHeight: ${windowInnerHeight}px}</span>`;
