@@ -184,8 +184,8 @@ function main() {
         // $("#dialogue_area").innerHTML += `<br><span>CLICK body.innerHeight: ${$("body").innerHeight}</span>`;
 
         $("#dialogue_area").innerHTML += `<br><span>CLICK document.documentElement.clientHeight: ${document.documentElement.clientHeight}px</span>`;
-        $("#dialogue_area").innerHTML += `<br><span>CLICK html.innerHeight: ${$("html").clientHeight}px</span>`;
-        $("#dialogue_area").innerHTML += `<br><span>CLICK html.innerHeight: ${$("body").clientHeight}px</span>`;
+        $("#dialogue_area").innerHTML += `<br><span>CLICK html.clientHeight: ${$("html").clientHeight}px</span>`;
+        $("#dialogue_area").innerHTML += `<br><span>CLICK body.clientHeight: ${$("body").clientHeight}px</span>`;
 
         focusOnLastMessage();
     });

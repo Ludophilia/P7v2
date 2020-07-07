@@ -54,15 +54,20 @@
 
 html {
     background-color:red;
+    height: 100vh;
+    width: 100vw;
 }
 
 body {
     position: fixed;
     margin: 0px;
 
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
+    /* height: 100vh;
+    width: 100vw; */
+
+    height: 100%;
+    width: 100%;
+    /* overflow: hidden; */
 
     background-color:yellow; /* The new - border: red dotted 5px; */
     box-sizing: border-box;
