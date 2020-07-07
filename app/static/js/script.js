@@ -174,15 +174,15 @@ function main() {
 
         // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
 
-        const windowInnerHeight = `${this.innerHeight}px`;
+        //const windowInnerHeight = `${this.innerHeight}px`;
 
         //if (windowInnerHeight === $("body").style.height) return;
 
-
         // DEBUG
-        $("#dialogue_area").innerHTML += `<br><span>CLICK window.innerHeight: ${windowInnerHeight}</span>`;
+        $("#dialogue_area").innerHTML += `<br><span>CLICK window.innerHeight: ${`${this.innerHeight}px`}</span>`;
+        $("#dialogue_area").innerHTML += `<br><span>CLICK document.documentElement.clientHeight: ${document.documentElement.clientHeight}</span>`;
 
-        $("body").style.height = windowInnerHeight;
+        // $("body").style.height = windowInnerHeight;
 
         focusOnLastMessage();
     });
