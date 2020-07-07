@@ -57,12 +57,15 @@ html {
     height: 100vh;
     width: 100vw;
     /*position: fixed;*/
-    overflow: hidden;
-    white-space: nowrap;
+    /* overflow: hidden;
+    white-space: nowrap; */
 }
 
 body {
-    position: fixed;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    
     margin: 0px;
 
     /* height: 100vh;
