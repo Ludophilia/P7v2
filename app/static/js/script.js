@@ -129,14 +129,23 @@ function main() {
 
     let reactions = 0;
 
+    $("body").addEventListener("click", () => {
+        
+        // DEBUG
+        $("#dialogue_area").innerHTML += `<br><span>CLICK 1/window.innerHeight: ${window.innerHeight}px</span>`;
+        $("#dialogue_area").innerHTML += `<br><span>CLICK 2/html.clientHeight: ${$("html").clientHeight}px</span>`;
+        $("#dialogue_area").innerHTML += `<br><span>CLICK 3/document.documentElement.clientHeight: ${document.documentElement.clientHeight}px</span>`;
+        $("#dialogue_area").innerHTML += `<br><span>CLICK 4/body.clientHeight: ${$("body").clientHeight}px</span>`;
+
+        focusOnLastMessage();
+    });
+
     window.addEventListener("load", () => {
 
         // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
 
-        // $("body").style.height = `${this.innerHeight}px`;
-
         // DEBUG
-        $("#dialogue_area").innerHTML += `<br><span>LOAD window.innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height}</span>`;
+        $("#dialogue_area").innerHTML += `<br><span>LOAD window.innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height || "none"}</span>`;
         focusOnLastMessage();
     });
 
@@ -145,88 +154,31 @@ function main() {
         // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
 
         const windowInnerHeight = `${this.innerHeight}px`;
+        const isPortrait = window.innerHeight > window.innerWidth;
 
         //if (windowInnerHeight === $("body").style.height) return;
 
-        //$("html").style.height = windowInnerHeight;
-        // $("body").style.height = windowInnerHeight;
-
-        $("body").style.height = window.innerHeight != $("html").clientHeight ? 
-                            `${$("html").clientHeight}px` : 
-                            `${window.innerHeight}px`;
+        $("body").style.height = isPortrait ? 
+                                `${window.innerHeight}px` :
+                                `${$("html").clientHeight}px`;
 
         // DEBUG
         $("#dialogue_area").innerHTML += `<br><span>ORIENTATION window.innerHeight: ${windowInnerHeight}px</span>`;
         focusOnLastMessage();
     });
 
-    // window.addEventListener("deviceorientation", () => {
-
-    //     // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
-
-    //     const windowInnerHeight = `${this.innerHeight}px`;
-
-    //     //if (windowInnerHeight === $("body").style.height) return;
-
-    //     // $("body").style.height = windowInnerHeight;
-
-    //     // DEBUG
-    //     $("#dialogue_area").innerHTML += `<br><span>DEVICEORIENTATION window.innerHeight: ${this.innerHeight}px</span>`;
-    //     focusOnLastMessage();
-    // });
-
-    $("body").addEventListener("click", () => {
-
-        // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
-
-        //const windowInnerHeight = `${this.innerHeight}px`;
-
-        //if (windowInnerHeight === $("body").style.height) return;
-
-        // $("body").style.height = window.innerHeight != $("html").clientHeight ? 
-        //                     `${$("html").clientHeight}px` : 
-        //                     `${window.innerHeight}px`;
-
-        // DEBUG
-        $("#dialogue_area").innerHTML += `<br><span>CLICK window.innerHeight: ${window.innerHeight}px</span>`;
-        // $("#dialogue_area").innerHTML += `<br><span>CLICK html.innerHeight: ${$("html").innerHeight}px</span>`;
-        // $("#dialogue_area").innerHTML += `<br><span>CLICK body.innerHeight: ${$("body").innerHeight}</span>`;
-
-        $("#dialogue_area").innerHTML += `<br><span>CLICK document.documentElement.clientHeight: ${document.documentElement.clientHeight}px</span>`;
-        $("#dialogue_area").innerHTML += `<br><span>CLICK html.clientHeight: ${$("html").clientHeight}px</span>`;
-        $("#dialogue_area").innerHTML += `<br><span>CLICK body.clientHeight: ${$("body").clientHeight}px</span>`;
-
-        focusOnLastMessage();
-    });
-
-    // window.addEventListener("fullscreenchange", () => {
-
-    //     // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
-
-    //     const windowInnerHeight = `${this.innerHeight}px`;
-
-    //     //if (windowInnerHeight === $("body").style.height) return;
-
-    //     // $("body").style.height = windowInnerHeight;
-
-    //     // DEBUG
-    //     $("#dialogue_area").innerHTML += `<br><span>FULLSCREENCHANGE window.innerHeight: ${this.innerHeight}px}</span>`;
-    //     focusOnLastMessage();
-    // });
-
     window.addEventListener("resize", () => {
 
         // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
 
         const windowInnerHeight = `${this.innerHeight}px`;
+        const isPortrait = window.innerHeight > window.innerWidth;
 
         //if (windowInnerHeight === $("body").style.height) return;
 
-        //$("html").style.height = windowInnerHeight;
-        // $("body").style.height = windowInnerHeight;
-        $("body").style.height = window.innerHeight != $("html").clientHeight ? 
-                            `${$("html").clientHeight}px` : 
-                            `${window.innerHeight}px`;
+        $("body").style.height = isPortrait ? 
+                                `${window.innerHeight}px` :
+                                `${$("html").clientHeight}px`;
 
         // DEBUG
         $("#dialogue_area").innerHTML += `<br><span>RESIZE window.innerHeight: ${windowInnerHeight}px}</span>`;
