@@ -67,7 +67,7 @@ body {
 
     height: 100%;
     width: 100%;
-    /* overflow: hidden; */
+    overflow: hidden;
 
     background-color:yellow; /* The new - border: red dotted 5px; */
     box-sizing: border-box;
