@@ -190,7 +190,7 @@ function main() {
         $("#submit_button").click();
     });
 
-    $("#brand_logo").addEventListener("click", (e) => {
+    $("#brand_logo > span").addEventListener("click", (e) => {
 
         // Gère ce qui se passe (la réponse de GrandPy) quand on clique sur le logo du site
 
