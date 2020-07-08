@@ -56,6 +56,7 @@ html {
     background-color:red;
     height: 100vh;
     width: 100vw;
+    z-index: 1;
     /*position: fixed;*/
     /* overflow: hidden;
     white-space: nowrap; */
@@ -63,8 +64,10 @@ html {
 
 body {
     position: fixed;
-    /*top: 0px;
-    left: 0px;*/
+    top: 0px;
+    left: 0px;
+
+    z-index: 10;
 
     margin: 0px;
 
@@ -308,7 +311,7 @@ footer {
 
     transition: border, box-shadow 1500ms ease-out;
 
-    z-index: 2;
+    /* z-index: 2; */
 }
 
 #input_area:focus {

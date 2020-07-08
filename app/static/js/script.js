@@ -91,7 +91,7 @@ function selectUserProfile() {
     return profile_icons[random_position];
 };
 
-function ajustInputAreaHeight() {
+function adjustInputAreaHeight() {
 
     // Modifie la taille du formulaire et de la fenetre de chat au dessus en fonction du contenu formulaire
 
@@ -118,6 +118,18 @@ function ajustInputAreaHeight() {
     if ($("#dialogue_area").lastElementChild) focusOnLastMessage();
 };
 
+function adjustWebAppHeight() {
+
+    // Solution au problème posé par Safari iOS qui ne supporte pas correctement les 100vh comme hauteur
+
+    const isPortrait = window.innerHeight > window.innerWidth;
+    const visibleAreaHeight = isPortrait ? `${this.innerHeight}px` : `${$("html").clientHeight}px`;
+
+    if (visibleAreaHeight === $("body").style.height) return;
+
+    $("body").style.height = visibleAreaHeight;
+};
+
 function main() {
 
     $ = document.querySelector.bind(document); $$ = document.querySelectorAll.bind(document);
@@ -129,62 +141,9 @@ function main() {
 
     let reactions = 0;
 
-    $("body").addEventListener("click", () => {
-        
-        // DEBUG
-        $("#dialogue_area").innerHTML += `<br><span>CLICK 1/window.innerHeight: ${window.innerHeight}px</span>`;
-        $("#dialogue_area").innerHTML += `<br><span>CLICK 2/html.clientHeight: ${$("html").clientHeight}px</span>`;
-        $("#dialogue_area").innerHTML += `<br><span>CLICK 3/document.documentElement.clientHeight: ${document.documentElement.clientHeight}px</span>`;
-        $("#dialogue_area").innerHTML += `<br><span>CLICK 4/body.clientHeight: ${$("body").clientHeight}px</span>`;
+    window.addEventListener("orientationchange", adjustWebAppHeight);
 
-        focusOnLastMessage();
-    });
-
-    window.addEventListener("load", () => {
-
-        // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
-
-        // DEBUG
-        $("#dialogue_area").innerHTML += `<br><span>LOAD window.innerHeight: ${this.innerHeight}px / Height: ${$("body").style.height || "none"}</span>`;
-        focusOnLastMessage();
-    });
-
-    window.addEventListener("orientationchange", () => {
-
-        // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
-
-        const windowInnerHeight = `${this.innerHeight}px`;
-        const isPortrait = window.innerHeight > window.innerWidth;
-
-        //if (windowInnerHeight === $("body").style.height) return;
-
-        $("body").style.height = isPortrait ? 
-                                `${window.innerHeight}px` :
-                                `${$("html").clientHeight}px`;
-
-        // DEBUG
-        $("#dialogue_area").innerHTML += `<br><span>ORIENTATION window.innerHeight: ${windowInnerHeight}px</span>`;
-        focusOnLastMessage();
-    });
-
-    window.addEventListener("resize", () => {
-
-        // Solution au problème posé par Safari qui ne supporte pas correctement les 100vh comme hauteur
-
-        const windowInnerHeight = `${this.innerHeight}px`;
-        const isPortrait = window.innerHeight > window.innerWidth;
-
-        //if (windowInnerHeight === $("body").style.height) return;
-
-        $("body").style.height = isPortrait ? 
-                                `${window.innerHeight}px` :
-                                `${$("html").clientHeight}px`;
-
-        // DEBUG
-        $("#dialogue_area").innerHTML += `<br><span>RESIZE window.innerHeight: ${windowInnerHeight}px}</span>`;
-        focusOnLastMessage();
-
-    });
+    window.addEventListener("resize", adjustWebAppHeight);
 
     $("#submit_button").addEventListener("click", (e) => {
         
@@ -212,15 +171,11 @@ function main() {
         });
         
         $("#input_area").value = ""; 
-        ajustInputAreaHeight();
+        adjustInputAreaHeight();
         e.preventDefault();
     });
 
-    $("#input_area").addEventListener("input", () => {
-
-        // Gère l'adaptation de la taille du formulaire à son contenu
-        ajustInputAreaHeight();
-    });
+    $("#input_area").addEventListener("input", adjustInputAreaHeight);
 
     $("#input_area").addEventListener("keyup", (e) => {
 
@@ -248,6 +203,8 @@ function main() {
     $("#brand").addEventListener("click", () => {
 
         // Permet de remonter rapidement le fil de la conversation en appuyant sur le bloc contenant le logo
+
+        if (!$("#dialogue_area").firstElementChild) return;
 
         $("#dialogue_area").firstElementChild.scrollIntoView(false);
 
