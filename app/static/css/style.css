@@ -53,13 +53,10 @@
 }
 
 html {
-    background-color:red;
+    /* background-color:red;*/
     height: 100vh;
     width: 100vw;
     z-index: 1;
-    /*position: fixed;*/
-    /* overflow: hidden;
-    white-space: nowrap; */
 }
 
 body {
@@ -71,14 +68,11 @@ body {
 
     margin: 0px;
 
-    /* height: 100vh;
-    width: 100vw; */
-
     height: 100%;
     width: 100%;
     overflow: hidden;
 
-    background-color:yellow; /* The new - border: red dotted 5px; */
+    /* background-color:yellow;*/
     box-sizing: border-box;
 } 
 
@@ -89,7 +83,7 @@ body {
     width: 100%;
 
     grid-template-columns: 20% 80%;
-    grid-template-rows: 1fr 115px; /**/
+    grid-template-rows: 1fr 250px;
     grid-template-areas: "a b" "c b";
 }
 
@@ -177,10 +171,28 @@ footer {
 }
 
 #footer-notes {
+    margin-top: 150px;
     margin-bottom: 8px;
     overflow-wrap: break-word;
-    /* overflow: hidden; */
 }
+
+@media (max-width: 1192px) {
+
+    #footer-notes {
+        margin-top: 135px;
+    }
+
+}
+
+@media (max-width: 849px) {
+
+    #footer-notes {
+        margin-top: 120px;
+    }
+
+}
+
+
 
 /* ############## Chat ############## */
 
@@ -207,7 +219,6 @@ footer {
 
 #dialogue_area {
     height: var(--dialogue_area_height);
-    /*max-height: 80%; /* NOUVEAU */
     width: 100%;
 
     overflow: auto; 
@@ -284,8 +295,7 @@ footer {
 #input_container {
     display: flex;
 
-    height: var(--input_container_height); /*20%; */
-    /*max-height: 20%; /* NOUVEAU */
+    height: var(--input_container_height); 
     width: 100%;
 
     box-sizing: border-box;
@@ -300,8 +310,8 @@ footer {
     /* height: 100%; */
 
     font-family: Verdana; /* A remplacer */
-    font-size: var(--message_font_size);; /* A remplacer */
-    color:#fff; /* A remplacer */
+    font-size: var(--message_font_size);
+    color:#fff;
 
     background-color:#1D212A;
 
@@ -310,8 +320,6 @@ footer {
     border-radius: var(--input_area_border_radius);
 
     transition: border, box-shadow 1500ms ease-out;
-
-    /* z-index: 2; */
 }
 
 #input_area:focus {
