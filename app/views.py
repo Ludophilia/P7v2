@@ -17,8 +17,20 @@ def index():
 
 @app.route('/grandpy/<path:mode>', methods=['GET', 'POST'])
 def grandpy(mode):
+
+    gp = GrandPy()
+
     if request.method == "POST":
-        gp = GrandPy()
+
         user_data = request.data.decode("utf-8")
 
-        return gp.answer_message(user_data) if mode == "chat/" else gp.deal_with_clicks_on_logo(user_data)
+        if mode == "chat/":
+            return gp.answer_message(user_data) 
+        
+        elif mode == "wtf/":
+            return gp.deal_with_clicks_on_logo(user_data)
+    
+    if request.method == "GET":
+
+        if mode == "footer/":
+            return gp.give_footer_info()

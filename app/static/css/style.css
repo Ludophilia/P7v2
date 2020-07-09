@@ -97,6 +97,7 @@ body {
 
 }
 
+
 /* ############## Header ############## */
 
 header {
@@ -154,12 +155,28 @@ footer {
 
     font-family: krungthep, downloaded-krungthep;
     font-size: 12px;
-    text-align: center;
 
     color:#fff;
     background-color:#1D1F26;
 
     padding: 0 15px;
+    padding-top: 165px;
+}
+
+@media (max-width: 1192px) {
+
+    footer {
+        padding-top: 150px;
+    }
+
+}
+
+@media (max-width: 849px) {
+
+    footer {
+        padding-top: 135px;
+    }
+
 }
 
 @media (max-width: 800px) {
@@ -170,29 +187,24 @@ footer {
 
 }
 
-#footer-notes {
-    margin-top: 165px;
+#footer_text {
+    text-align: center;
+
     margin-bottom: 8px;
     overflow-wrap: break-word;
 }
 
-@media (max-width: 1192px) {
-
-    #footer-notes {
-        margin-top: 150px;
-    }
-
+#footer_sns {
+    text-align: center;
 }
 
-@media (max-width: 849px) {
-
-    #footer-notes {
-        margin-top: 135px;
-    }
-
+#footer_sns a {
+    text-decoration: none;
 }
 
-
+#footer_sns span {
+    margin-left: 2px;
+}
 
 /* ############## Chat ############## */
 

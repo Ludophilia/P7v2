@@ -12,7 +12,10 @@ function sendDataToServer(method, target_url, data_to_send, callback) {
             console.error(error);
         };
     });
-    request.send(data_to_send);
+    request.addEventListener("error", (error) => {
+        console.error(`Erreur: ${error}`);
+    });
+    request.send(method === "POST" ? data_to_send : null);
 }; 
 
 function focusOnLastMessage() {
@@ -29,10 +32,14 @@ async function displayMessage(message_str, { username, icon }, animationDuration
     MESSAGE_ID +=1;
     const message_id = MESSAGE_ID;
 
-    const message_container_html = `<div class='message_container'>\
-    <div class="${username} message" id="message${message_id}">\
-    ${username === "grandpy"? message_str : ""}</div>\
-    <div class='profile_icon'>${icon}</div></div>`;
+    const message_container_html = `
+    <div class='message_container'>\
+        <div class="${username} message" id="message${message_id}">\
+            ${username === "grandpy"? message_str : ""}\
+        </div>\
+        <div class='profile_icon'>${icon}</div>\
+    </div>
+    `;
 
     if (username === "grandpy") {
         const animation_html = `<div class="loading ld ld-square ld-spin"\
@@ -145,6 +152,18 @@ function main() {
 
     window.addEventListener("resize", adjustWebAppHeight);
 
+    window.addEventListener("load", () => {
+
+        // Permet d'avoir les infos du footer pour les configurations mobiles
+
+        if (window.innerWidth > 800) return;
+         
+        sendDataToServer("GET", "/grandpy/footer/", "", (response) => {
+            displayMessage(response, grandpy);
+        });
+        
+    });
+
     $("#submit_button").addEventListener("click", (e) => {
         
         // Gère ce qui se passe quand on valide le formulaire
@@ -190,7 +209,7 @@ function main() {
         $("#submit_button").click();
     });
 
-    $("#brand_logo > span").addEventListener("click", (e) => {
+    $("#brand_logo").addEventListener("click", (e) => {
 
         // Gère ce qui se passe (la réponse de GrandPy) quand on clique sur le logo du site
 
@@ -200,15 +219,16 @@ function main() {
         e.preventDefault();
     });
 
-    $("#brand").addEventListener("click", () => {
+    // $("#brand").addEventListener("click", () => {
 
-        // Permet de remonter rapidement le fil de la conversation en appuyant sur le bloc contenant le logo
+    //     // Permet de remonter rapidement le fil de la conversation en appuyant sur le bloc contenant le logo
+            // Ajoutez un bouton pour remonter le fil (dans une v3 ?) dans la zone de chat qui apparait dès que l'utilisateur dépasse un certain point
 
-        if (!$("#dialogue_area").firstElementChild) return;
+    //     if (!$("#dialogue_area").firstElementChild) return;
 
-        $("#dialogue_area").firstElementChild.scrollIntoView(false);
+    //     $("#dialogue_area").firstElementChild.scrollIntoView(false);
 
-    });
+    // });
 };
 
 main();

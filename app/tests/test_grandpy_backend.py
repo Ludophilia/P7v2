@@ -137,7 +137,7 @@ class TestParser():
 
 class TestGrandPy():
 
-    @pytest.mark.this6a
+    @pytest.mark.testgp1
     def test_what_answer_message_returns_if_the_user_says_hello_and_asks_for_OC_address(self):
         
         self.gp = GrandPy()
@@ -151,7 +151,7 @@ class TestGrandPy():
         assert expected_message in grandpy_message
         assert re.search(hello_pattern, grandpy_message)
 
-    @pytest.mark.this6b
+    @pytest.mark.testgp2
     def test_what_answer_message_returns_if_the_user_says_nothing_interesting(self):
         
         self.gp = GrandPy()
@@ -161,7 +161,7 @@ class TestGrandPy():
 
         assert grandpy_answer['message'] == expected_answer
 
-    @pytest.mark.this6
+    @pytest.mark.testgp3
     def test_what_answer_message_returns_if_the_user_says_hello(self):
         
         self.gp = GrandPy()
@@ -172,7 +172,7 @@ class TestGrandPy():
         assert re.search(hello_pattern, grandpy_answer['message'])
         print("Réponse de GP:", grandpy_answer['message'])
 
-    @pytest.mark.this5
+    @pytest.mark.testgp4
     def test_what_answer_message_returns_if_the_user_asks_for_OC_address(self):
         
         self.gp = GrandPy()
@@ -189,3 +189,20 @@ class TestGrandPy():
         grandpy_answer = self.gp.answer_message("adresse oc connaitre")
 
         assert expected_answer_js == grandpy_answer
+
+    @pytest.mark.testgp5
+    def test_give_footer_info_returns_the_expected_string(self):
+        
+        expected_answer = """
+        <div id='footer-notes'>
+            2019, 2020 — Créé par Jeffrey G.<br/>pour OpenClassrooms
+        </div>
+        <div>
+            <a href="https://github.com/Ludophilia/P7v2" target="_blank">
+                <img src="{{ url_for('static', filename='img/GitHub-Mark-Light-32px.png') }}" alt="Octocat" width="25" height="25"/>
+            </a>
+        </div>
+        """
+        gp = GrandPy()
+
+        assert gp.give_footer_info() == expected_answer

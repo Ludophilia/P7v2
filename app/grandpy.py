@@ -82,7 +82,7 @@ class GrandPy:
 
     def answer_message(self, user_input):
 
-        """Renvoie une réponse à l'input utilisteur en fonction des mots clés qui y figurent"""
+        """Renvoie une réponse (sous forme de json) à l'input utilisteur en fonction des mots clés qui y figurent"""
 
         message = "" ; grandpy_response = {}
         keywords = "\n".join(self.extract_keywords(user_input))
@@ -120,6 +120,22 @@ class GrandPy:
 
     def deal_with_clicks_on_logo(self, nth_time):
 
-        """Renvoie une réponse à l'utilisateur en fonction du nombre de fois qu'il a appuyé sur le logo de grandpy"""
+        """Renvoie une réponse (sous forme de str) à l'utilisateur en fonction du nombre de fois qu'il a appuyé sur le logo de grandpy"""
 
         return speech.INTERROGATE_CLICK_ON_LOGO if nth_time == "n0" else speech.ANNOYED.get(nth_time, "...")
+    
+    def give_footer_info(self):
+
+        """Renvoie le footer (sous forme d'une html str)"""
+
+        return speech.FOOTER
+
+        # <div id="footer-notes">
+        #     2019, 2020 — Créé par Jeffrey G.<br/>pour OpenClassrooms
+        # </div>
+        # <div>
+        #     <a href="https://github.com/Ludophilia/P7v2" target="_blank">
+        #         <img src="{{ url_for('static', filename='img/GitHub-Mark-Light-32px.png') }}" alt="Octocat" width="25" height="25"/>
+        #     </a>
+        # </div>
+        # """
