@@ -153,6 +153,7 @@ footer {
     width: 100%;
     box-sizing: border-box;
 
+    text-align: center;
     font-family: krungthep, downloaded-krungthep;
     font-size: 12px;
 
@@ -187,15 +188,13 @@ footer {
 
 }
 
-#footer_text {
+#footer_container {
     text-align: center;
-
-    margin-bottom: 8px;
     overflow-wrap: break-word;
 }
 
-#footer_sns {
-    text-align: center;
+#footer_text {
+    margin-bottom: 8px;
 }
 
 #footer_sns a {
@@ -205,6 +204,16 @@ footer {
 #footer_sns span {
     margin-left: 2px;
 }
+
+
+@media (min-width: 801px) {
+
+    .footer_message {
+        display: none;
+    }
+
+}
+
 
 /* ############## Chat ############## */
 
@@ -245,9 +254,23 @@ footer {
 
 .message_container {
     width: max-content;
-    max-width: 100%;
+    max-width: 99%;
 
     margin: 10px 0; 
+}
+
+@media (max-width: 800px) {
+
+    .message_container {
+        max-width: 95%;
+    }
+}
+
+.message_container.grandpy_type {
+    margin-right: auto; 
+}
+.message_container.user_type {
+    margin-left: auto; 
 }
 
 .message {
@@ -263,22 +286,22 @@ footer {
 
 .user {
     font-family: Verdana;
-    border-radius: 20px 20px 20px 0px;
+    border-radius: 20px 20px 0px 20px;
 }
 
 .grandpy {
     font-family: krungthep, downloaded-krungthep;
-    border-radius: 20px 20px 0px 20px;
+    border-radius: 20px 20px 20px 0px;
 }
 
 .user + .profile_icon {
-    text-align: left;
-    margin: 0 0 0 -10px;
+    text-align: right;
+    margin: 0 -10px 0 0;
 }
 
 .grandpy + .profile_icon {
-    text-align: right;
-    margin: 0 -10px 0 0;
+    text-align: left;
+    margin: 0 0 0 -10px;
 }
 
 .loading {
@@ -291,9 +314,9 @@ footer {
     width: 100vw;
     max-width: calc(100% + 2*30px);
 
-    margin: -15px -30px;
+    margin: -15px -25px;
 
-    border-radius: 10px 10px 0 10px;
+    border-radius: 10px 10px 10px 0;
 }
 
 @media (max-width: 800px) {

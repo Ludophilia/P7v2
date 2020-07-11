@@ -25,7 +25,7 @@ function focusOnLastMessage() {
     $("#dialogue_area").lastElementChild.scrollIntoView(true);
 };
 
-async function displayMessage(message_str, { username, icon }, animationDuration=1) {
+async function displayMessage(message_str, { username, icon }, custom_class="", animationDuration=1) {
 
     // Est en charge d'afficher le message des participants au chat (utilisateur et GrandPy). 
 
@@ -33,7 +33,7 @@ async function displayMessage(message_str, { username, icon }, animationDuration
     const message_id = MESSAGE_ID;
 
     const message_container_html = `
-    <div class='message_container'>\
+    <div class='message_container ${username}_type ${custom_class}'>\
         <div class="${username} message" id="message${message_id}">\
             ${username === "grandpy"? message_str : ""}\
         </div>\
@@ -70,7 +70,7 @@ async function displayMap(location, user, animationDuration=1) {
     const center_coordinates = location;
     const map_html = `<div class="map"></div>`;
 
-    const message_id = await displayMessage(map_html, user, animationDuration);
+    const message_id = await displayMessage(map_html, user, undefined, animationDuration);
 
     function initMap() {
         const map = new google.maps.Map(
@@ -159,9 +159,15 @@ function main() {
         if (window.innerWidth > 800) return;
          
         sendDataToServer("GET", "/grandpy/footer/", "", (response) => {
-            displayMessage(response, grandpy);
+            displayMessage(response, grandpy, "footer_message");
         });
         
+    });
+
+    window.addEventListener("load", () => {
+        sendDataToServer("GET", "/grandpy/starter/", "", (response) => {
+            displayMessage(response, grandpy);
+        });
     });
 
     $("#submit_button").addEventListener("click", (e) => {
@@ -212,6 +218,11 @@ function main() {
     $("#brand_logo").addEventListener("click", (e) => {
 
         // Gère ce qui se passe (la réponse de GrandPy) quand on clique sur le logo du site
+
+        // const teasing_messages = ["[Click sur le logo]"];
+        // const random_position = Math.floor(Math.random()*(teasing_messages.length));
+
+        // displayMessage(teasing_messages[random_position], user);
 
         sendDataToServer("POST", "/grandpy/wtf/", `n${reactions}`, (response) => displayMessage(response, grandpy));
 

@@ -191,7 +191,7 @@ class TestGrandPy():
         assert expected_answer_js == grandpy_answer
 
     @pytest.mark.testgp5
-    def test_give_footer_info_returns_the_expected_string(self):
+    def test_if_give_footer_info_returns_the_expected_string(self):
         
         expected_answer = """
         <div id='footer-notes'>
@@ -206,3 +206,26 @@ class TestGrandPy():
         gp = GrandPy()
 
         assert gp.give_footer_info() == expected_answer
+
+    @pytest.mark.testgp6
+    def test_if_start_conversation_returns_the_expected_string(self):
+        
+        expected_answer = """<span>Salut 👋, qu'est-ce que je peux faire pour toi ?<br><br>
+        Tu peux me demander:<br>
+        - L'adresse d'OpenClassrooms (ex: "tu connais l'adresse d'OC ?")<br>
+        - Quelle heure il est<br>
+        - Quel temps il fait aujourd'hui<br>
+        <br>
+        ...Ou tout simplement me saluer ou me demander comment je vais, ça fait toujours plaisir !
+        </span>
+        """
+       
+        gp = GrandPy()
+
+        # start_conversation = re.sub(r"\t+", " ", gp.start_conversation()).strip()
+        # expected_answer = re.sub(r"\t+",  " ", expected_answer)
+
+        # start_conversation = re.sub(r"\s+", " ", gp.start_conversation()).strip()
+        # expected_answer = re.sub(r"\s+",  " ", expected_answer)
+
+        assert expected_answer == gp.start_conversation()

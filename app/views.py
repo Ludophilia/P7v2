@@ -34,3 +34,6 @@ def grandpy(mode):
 
         if mode == "footer/":
             return gp.give_footer_info()
+
+        elif mode == "starter/":
+            return gp.start_conversation()

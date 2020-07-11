@@ -130,12 +130,8 @@ class GrandPy:
 
         return speech.FOOTER
 
-        # <div id="footer-notes">
-        #     2019, 2020 — Créé par Jeffrey G.<br/>pour OpenClassrooms
-        # </div>
-        # <div>
-        #     <a href="https://github.com/Ludophilia/P7v2" target="_blank">
-        #         <img src="{{ url_for('static', filename='img/GitHub-Mark-Light-32px.png') }}" alt="Octocat" width="25" height="25"/>
-        #     </a>
-        # </div>
-        # """
+    def start_conversation(self):
+
+        """Renvoie un message sympa pour démarrer la conversation avec l'utilisateur """
+
+        return speech.STARTER
