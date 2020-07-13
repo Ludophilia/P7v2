@@ -3,6 +3,7 @@ import os.path as pth
 import config as cf 
 import app.ressources.gp_speech as speech
 import app.ressources.gp_patterns as patterns
+from datetime import date as dt
 
 class GrandPy:
 
@@ -91,6 +92,9 @@ class GrandPy:
         oc_found = re.search(patterns.OC, keywords, re.M)
         know_found = re.search(patterns.KNOW, keywords, re.M)
         address_found = re.search(patterns.ADDRESS, keywords, re.M)
+        how_found = re.search(patterns.HOW, keywords, re.M)
+        at_found = re.search(patterns.AT, keywords, re.M)
+        go_found = re.search(patterns.GO, keywords, re.M)
 
         if hello_found:
             
@@ -98,6 +102,10 @@ class GrandPy:
             random_position = random.randint(0,len(greetings)-1)
 
             message += f"{greetings[random_position]}\n"
+
+        if how_found and go_found and not at_found:
+            day = dt.today().weekday()
+            message += speech.STATE_OF_MIND[day]
 
         if oc_found and know_found and address_found:
 

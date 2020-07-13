@@ -166,7 +166,7 @@ function main() {
 
     window.addEventListener("load", () => {
         sendDataToServer("GET", "/grandpy/starter/", "", (response) => {
-            displayMessage(response, grandpy);
+            setTimeout(() => displayMessage(response, grandpy), 0);
         });
     });
 

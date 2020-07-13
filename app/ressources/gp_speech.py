@@ -1,8 +1,20 @@
 """ Données utilisées pour construire les réponses de GrandPy """
 
+KNOWMORE = lambda source, url: f"[En savoir plus sur <a href='{url}' target='_blank'>{source}</a>]"
+
 GREETINGS = ["Bonjour!", "Salut!", "Yo!", "Hi!!", "👋"]
 
-SORRY = "Désolé, je n'ai compris ta réponse :/ Dans une prochaine version (v3) peut-être ?"
+SORRY = "Désolé, je n'ai compris ton message :/ Dans une prochaine version (v3) peut-être ?"
+
+STATE_OF_MIND = [
+    "Le Lundi, ça ne va jamais très fort n'est-ce pas 🥱 ? Après le week-end, la reprise ! Mais faut se reprendre 💪",
+    "Ça va ça va... 😐 Un Mardi comme les autres.",
+    "Correct ! 😺 Mercredi... Il doit y avoir des sorties ciné aujourd'hui ! 🎦🍿",
+    f"Oui ! Savais-tu que dans le temps 👴, dans les années 60 et au début 70, le jeudi était une journée libre pour les enfants ? Maintenant c'est le Mercredi, et encore ça dépend {KNOWMORE('Wikipédia', 'https://fr.wikipedia.org/wiki/Rythmes_scolaires_en_France')}. Que le temps passe vite !😔",
+    "Oh déjà Vendredi 😱! Bientôt le week-end 😺! À part ça ça va bien !",
+    "Oui ! C'est Samedi ! J'espère que tu t'en protites bien 😎! ",
+    "Ça va ! C'est Dimanche, mais pour nous les 🤖, pas de repit ! 🦾"
+]
 
 INTERROGATE_CLICK_ON_LOGO = "Pourquoi tu appuies sur mon logo, t'es fou ou quoi ? Je suis plus très jeune, c'est fragile ici !!"
 ANNOYED = dict(
@@ -18,7 +30,6 @@ ANECDOCTE_STARTER = "Mais t'ai-je déjà raconté l'histoire de ce quartier qui 
 
 ADDRESSFOUND = lambda address: f"<span>Bien sûr mon poussin ! La voici : \"{address}\". <br> Et voilà une carte pour t'aider en plus !!</span>"
 
-KNOWMORE = lambda source, url: f"[En savoir plus sur <a href='{url}' target='_blank'>{source}</a>]"
 
 FOOTER = """
         <div id="footer_container">
@@ -45,7 +56,6 @@ STARTER = """<span>Salut 👋, qu'est-ce que je peux faire pour toi ?<br><br>
 
 
 # Après les réponses supplémentaires :
-    # comment vas-tu, (aléatoire)
     # quelle heure est-il, 
     # quel temps il fait)
-    # Pile ou face ???
+    # Pile ou face ??? (Dans la V3)

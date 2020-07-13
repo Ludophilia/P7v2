@@ -191,6 +191,44 @@ class TestGrandPy():
         assert expected_answer_js == grandpy_answer
 
     @pytest.mark.testgp5
+    def test_what_answer_message_returns_if_the_user_asks_how_grandpy_is_doing(self):
+
+        # expected_answer = {
+        #     'message': 'Bien sûr mon poussin ! La voici : 7 Cité Paradis, 75010 Paris.\n',
+        #     }
+        
+        # expected_answer_js = json.dumps(expected_answer, ensure_ascii=False, sort_keys=True)
+
+        KNOWMORE = lambda source, url: f"[En savoir plus sur <a href='{url}' target='_blank'>{source}</a>]"
+        
+        EXP_STATE_OF_MIND = [
+            "Le Lundi, ça ne va jamais très fort n'est-ce pas 🥱 ? Après le week-end, la reprise ! Mais faut se reprendre 💪",
+            "Ça va ça va... 😐 Un Mardi comme les autres.",
+            "Correct ! 😺 Mercredi... Il doit y avoir des sorties ciné aujourd'hui ! 🎦🍿",
+            f"Oui ! Savais-tu que dans le temps 👴, dans les années 60 et au début 70, le jeudi était une journée libre pour les enfants ? Maintenant c'est le Mercredi, et encore ça dépend {KNOWMORE('Wikipédia', 'https://fr.wikipedia.org/wiki/Rythmes_scolaires_en_France')}. Que le temps passe vite !😔",
+            "Oh déjà Vendredi 😱! Bientôt le week-end 😺! À part ça ça va bien !",
+            "Oui ! C'est Samedi ! J'espère que tu t'en protites bien 😎! ",
+            "Ça va ! C'est Dimanche, mais pour nous les 🤖, pas de repit ! 🦾"
+        ]
+
+        self.gp = GrandPy()
+
+        grandpy_answer = lambda message: json.loads(self.gp.answer_message(message))["message"]
+
+        assert grandpy_answer("Comment ça va ?") in EXP_STATE_OF_MIND
+        assert grandpy_answer("Comment va ?") in EXP_STATE_OF_MIND
+        assert grandpy_answer("comment vas-tu ?") in EXP_STATE_OF_MIND
+        assert grandpy_answer("comment tu vas ???") in EXP_STATE_OF_MIND
+        assert grandpy_answer("Comment allez vous ?") in EXP_STATE_OF_MIND
+
+        assert grandpy_answer("comment vas-tu à la boulangerie d'à côté") not in EXP_STATE_OF_MIND
+        assert grandpy_answer("Comment allez vous à la piscine municipale ?") not in EXP_STATE_OF_MIND
+
+        #print(grandpy_answer("comment vas-tu ?"))
+
+class TestGrandPyAutoResponses():
+
+    @pytest.mark.testgpau1
     def test_if_give_footer_info_returns_the_expected_string(self):
         
         expected_answer = """
@@ -207,7 +245,7 @@ class TestGrandPy():
 
         assert gp.give_footer_info() == expected_answer
 
-    @pytest.mark.testgp6
+    @pytest.mark.testgpau2
     def test_if_start_conversation_returns_the_expected_string(self):
         
         expected_answer = """<span>Salut 👋, qu'est-ce que je peux faire pour toi ?<br><br>
