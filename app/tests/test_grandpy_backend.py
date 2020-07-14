@@ -1,6 +1,6 @@
 from app import app
 from app.grandpy import requests, GrandPy
-import json, pytest, re
+import json, pytest, re, time
 
 class TestMapsApiDataTreatment():
 
@@ -135,6 +135,12 @@ class TestParser():
         # assert type(test_string) == type("")
         # print("DE REMOVE_STOPWORDS", test_string)
 
+    @pytest.mark.th0
+    def test_what_extract_keywords_do(self):
+        self.gp = GrandPy()
+
+        print(self.gp.extract_keywords("tu connais l'adresse d'oc?"))
+
 class TestGrandPy():
 
     @pytest.mark.testgp1
@@ -142,13 +148,14 @@ class TestGrandPy():
         
         self.gp = GrandPy()
         
-        hello_pattern = r"[Bb]onjour|[Bb]jr|[Ss]a?lu?t|[Yy]o|[Hh]i"
-        expected_message = 'Bien sûr mon poussin ! La voici : 7 Cité Paradis, 75010 Paris.\n'
+        hello_pattern = r"Bonjour!|Salut!|Yo!|Hi!!|👋"
+        expected_message = "Bien sûr mon poussin ! La voici : \"7 Cité Paradis, 75010 Paris\". <br> Et voilà une carte pour t'aider en plus !!<br>"
         
         grandpy_answer = self.gp.answer_message("salut grandpy ! Connais-tu l'adresse d'oc?")
         grandpy_message = json.loads(grandpy_answer)["message"]
 
         assert expected_message in grandpy_message
+        print(grandpy_message)
         assert re.search(hello_pattern, grandpy_message)
 
     @pytest.mark.testgp2
@@ -157,7 +164,7 @@ class TestGrandPy():
         self.gp = GrandPy()
         grandpy_answer = json.loads(self.gp.answer_message("Wow"))
 
-        expected_answer = "Désolé, je ne sais rien faire d'autre que saluer ou donner une certaine adresse... :/"
+        expected_answer = "<span>Désolé, je n'ai compris ton message... 😕 Dans une prochaine version peut-être ?</span>"
 
         assert grandpy_answer['message'] == expected_answer
 
@@ -166,7 +173,7 @@ class TestGrandPy():
         
         self.gp = GrandPy()
 
-        hello_pattern = r"[Bb]onjour|[Bb]jr|[Ss]a?lu?t|[Yy]o|[Hh]i"
+        hello_pattern = r"Bonjour!|Salut!|Yo!|Hi!!|👋"
         grandpy_answer = json.loads(self.gp.answer_message("salut"))
 
         assert re.search(hello_pattern, grandpy_answer['message'])
@@ -178,10 +185,9 @@ class TestGrandPy():
         self.gp = GrandPy()
         
         expected_answer = {
-            'message': 'Bien sûr mon poussin ! La voici : 7 Cité Paradis, 75010 Paris.\n',
+            'message': "<span>Bien sûr mon poussin ! La voici : \"7 Cité Paradis, 75010 Paris\". <br> Et voilà une carte pour t'aider en plus !!<br></span>",
             'location': {'lat': 48.8748465, 'lng': 2.3504873}, #lat 48.8747265 et lng ont changé 2.3505517
-            'anecdocte_and_url' : {"anecdocte": "La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse.",
-            "url": "https://fr.wikipedia.org/wiki/Cité_Paradis"}
+            'anecdocte' : "<span>Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse. [En savoir plus sur <a href='https://fr.wikipedia.org/wiki/Cité_Paradis' target='_blank'>Wikipédia</a>]</span>",
             }
         
         expected_answer_js = json.dumps(expected_answer, ensure_ascii=False, sort_keys=True)
@@ -202,20 +208,22 @@ class TestGrandPy():
         KNOWMORE = lambda source, url: f"[En savoir plus sur <a href='{url}' target='_blank'>{source}</a>]"
         
         EXP_STATE_OF_MIND = [
-            "Le Lundi, ça ne va jamais très fort n'est-ce pas 🥱 ? Après le week-end, la reprise ! Mais faut se reprendre 💪",
-            "Ça va ça va... 😐 Un Mardi comme les autres.",
+            "Le Lundi, ça ne va jamais très fort n'est-ce pas 🥱 ? Mais faut se reprendre !! 💪",
+            "Ça va ça va... Un Mardi comme les autres. 😐",
             "Correct ! 😺 Mercredi... Il doit y avoir des sorties ciné aujourd'hui ! 🎦🍿",
-            f"Oui ! Savais-tu que dans le temps 👴, dans les années 60 et au début 70, le jeudi était une journée libre pour les enfants ? Maintenant c'est le Mercredi, et encore ça dépend {KNOWMORE('Wikipédia', 'https://fr.wikipedia.org/wiki/Rythmes_scolaires_en_France')}. Que le temps passe vite !😔",
-            "Oh déjà Vendredi 😱! Bientôt le week-end 😺! À part ça ça va bien !",
-            "Oui ! C'est Samedi ! J'espère que tu t'en protites bien 😎! ",
+            f"Oui ! Savais-tu que dans le temps 👴, dans les années 60 et au début 70, le jeudi était une journée libre pour les enfants ? Maintenant c'est le Mercredi, et encore ça dépend {KNOWMORE('Wikipédia', 'https://fr.wikipedia.org/wiki/Rythmes_scolaires_en_France')}. Que le temps passe vite ! 😔",
+            "Oh déjà Vendredi ! Bientôt le week-end ! 😺 À part ça ça va bien !",
+            "Oui ! C'est Samedi ! J'espère que tu t'en protites bien ! 😎",
             "Ça va ! C'est Dimanche, mais pour nous les 🤖, pas de repit ! 🦾"
         ]
 
         self.gp = GrandPy()
 
-        grandpy_answer = lambda message: json.loads(self.gp.answer_message(message))["message"]
+        grandpy_answer = lambda message: json.loads(self.gp.answer_message(message))["message"].replace("<span>", "").replace("</span>", "").replace("<br>", "")
 
         assert grandpy_answer("Comment ça va ?") in EXP_STATE_OF_MIND
+        assert grandpy_answer("ça va ?") in EXP_STATE_OF_MIND
+        assert grandpy_answer("ca va ?") in EXP_STATE_OF_MIND
         assert grandpy_answer("Comment va ?") in EXP_STATE_OF_MIND
         assert grandpy_answer("comment vas-tu ?") in EXP_STATE_OF_MIND
         assert grandpy_answer("comment tu vas ???") in EXP_STATE_OF_MIND
@@ -225,6 +233,20 @@ class TestGrandPy():
         assert grandpy_answer("Comment allez vous à la piscine municipale ?") not in EXP_STATE_OF_MIND
 
         #print(grandpy_answer("comment vas-tu ?"))
+
+    @pytest.mark.testgp6
+    def test_if_grandpy_replies_as_expected_when_asked_for_the_time(self):
+        
+        current_time = time.strftime("%H:%M (%Z)")
+        expected_answer = f"🕗 Il est {current_time}, du moins là où je suis !"
+
+        self.gp = GrandPy()
+        grandpy_answer = lambda message: json.loads(self.gp.answer_message(message))["message"].replace("<span>", "").replace("</span>", "").replace("<br>", "")
+
+        assert grandpy_answer(" il est quelle heure ?") == expected_answer
+        assert grandpy_answer("quelle heure est-il ?") == expected_answer
+        assert grandpy_answer("tu as l'heure ?") == expected_answer
+        assert grandpy_answer("Quelle heure il est") == expected_answer
 
 class TestGrandPyAutoResponses():
 

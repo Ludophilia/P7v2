@@ -3,6 +3,7 @@ import os.path as pth
 import config as cf 
 import app.ressources.gp_speech as speech
 import app.ressources.gp_patterns as patterns
+import time
 from datetime import date as dt
 
 class GrandPy:
@@ -30,11 +31,18 @@ class GrandPy:
 
             """Retire la ponctuation et les whitespaces en trop de l'input utilisateur (str) et renvoie un str de cet input"""
 
-            sp_punctuations = ["\'", "\""] #"-", 
-            punctuations = ["?", ",", ".", "!?", "?!", "!", ";", ":", "[", "]", "(", ")", "{", "}", ">", "<"] + sp_punctuations
+            gp1 = ["\'", "\""] #"-",
+            gp2 = ["!?", "!", "?", "?!"] #"-", 
+            gp3 = [",", ".", ";", ":", "[", "]", "(", ")", "{", "}", ">", "<"]
 
-            for punctuation in punctuations:
-                user_input = user_input.replace(punctuation, " ") if punctuation in sp_punctuations else user_input.replace(punctuation, "")
+            for punctuation in gp1 + gp2 + gp3:
+
+                if punctuation in gp1: 
+                    user_input = user_input.replace(punctuation, f" ")
+                elif punctuation in gp2: 
+                    user_input = user_input.replace(punctuation, f" {punctuation}")
+                elif punctuation in gp3:
+                    user_input = user_input.replace(punctuation, "")
 
             return re.sub(r"\s+", " ", user_input).strip()
 
@@ -79,13 +87,13 @@ class GrandPy:
         wikipedia_part = jsf_wiki_data["query"]["pages"][0]["extract"].split('\n')[-1]
         knowmore_part = speech.KNOWMORE("Wikipédia", wiki_url)
 
-        return f"{speech.ANECDOCTE_STARTER} {wikipedia_part} {knowmore_part}"
+        return f"<span>{speech.ANECDOCTE_STARTER} {wikipedia_part} {knowmore_part}</span>"
 
     def answer_message(self, user_input):
 
         """Renvoie une réponse (sous forme de json) à l'input utilisteur en fonction des mots clés qui y figurent"""
 
-        message = "" ; grandpy_response = {}
+        message = "<span>" ; grandpy_response = {}
         keywords = "\n".join(self.extract_keywords(user_input))
 
         hello_found = re.search(patterns.HELLO, keywords, re.M)
@@ -95,32 +103,43 @@ class GrandPy:
         how_found = re.search(patterns.HOW, keywords, re.M)
         at_found = re.search(patterns.AT, keywords, re.M)
         go_found = re.search(patterns.GO, keywords, re.M)
+        question_found = re.search(patterns.QUESTION, keywords, re.M)
+        what_found = re.search(patterns.WHAT, keywords, re.M)
+        time_found = re.search(patterns.TIME, keywords, re.M)
 
         if hello_found:
             
             greetings = speech.GREETINGS
             random_position = random.randint(0,len(greetings)-1)
 
-            message += f"{greetings[random_position]}\n"
+            message += f"{greetings[random_position]}<br>"
 
-        if how_found and go_found and not at_found:
+        if (how_found or question_found) and go_found and not at_found:
+
             day = dt.today().weekday()
-            message += speech.STATE_OF_MIND[day]
+            message += f"{speech.STATE_OF_MIND[day]}<br>"
+
+        if (question_found or what_found) and time_found:
+
+            current_time = time.strftime("%H:%M (%Z)")
+            message += speech.CURRENT_TIME(current_time)
 
         if oc_found and know_found and address_found:
 
             oc_maps_data_js = self.get_api_data("maps")
             oc_address = oc_maps_data_js["results"][0]["formatted_address"].replace(", France", "") 
 
-            message += speech.ADDRESSFOUND(oc_address)
+            message += f"{speech.ADDRESSFOUND(oc_address)}<br>"
 
             grandpy_response.update(
                 anecdocte = self.get_anecdocte(self.get_api_data("wiki")),
                 location = oc_maps_data_js["results"][0]["geometry"]["location"]
             )
 
-        if not message: 
-            message = speech.SORRY
+        if len(message) == 6: 
+            message += f"{speech.SORRY}</span>"
+        else:
+            message += f"</span>" 
 
         grandpy_response["message"] = message
 
@@ -136,10 +155,25 @@ class GrandPy:
 
         """Renvoie le footer (sous forme d'une html str)"""
 
-        return speech.FOOTER
+        footer = f"""
+        <div id="footer_container">
+            <div id="footer_text">
+                {speech.FOOTER_TEXT}
+            </div>
+            <div id="footer_sns">
+                <a href="https://github.com/Ludophilia/P7v2" target="_blank">
+                    <img src="static/img/GitHub-Mark-Light-32px.png" alt="Octocat" width="25" height="25"/>
+                </a><span>{speech.FOOTER_SNS}</span>
+            </div>
+        </div>
+        """
+
+        return footer
 
     def start_conversation(self):
 
         """Renvoie un message sympa pour démarrer la conversation avec l'utilisateur """
 
-        return speech.STARTER
+        starter = f"<span>{speech.STARTER}</span>"
+
+        return starter
