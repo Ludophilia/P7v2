@@ -10,9 +10,9 @@ STATE_OF_MIND = [
     "Le Lundi, ça ne va jamais très fort n'est-ce pas 🥱 ? Mais faut se reprendre !! 💪",
     "Ça va ça va... Un Mardi comme les autres. 😐",
     "Correct ! Mercredi... Il doit y avoir des sorties ciné aujourd'hui ! 🎦🍿",
-    f"Oui ! Savais-tu que dans le temps 👴, dans les années 60 et au début 70, le jeudi était une journée libre pour les enfants ? Maintenant c'est le Mercredi, et encore ça dépend {KNOWMORE('Wikipédia', 'https://fr.wikipedia.org/wiki/Rythmes_scolaires_en_France')}. Que le temps passe vite ! 😔",
+    f"Ça va ! Ça va ! Savais-tu que dans le temps 👴, dans les années 60 et au début 70, le jeudi était une journée libre pour les enfants ? Maintenant c'est le Mercredi, et encore ça dépend {KNOWMORE('Wikipédia', 'https://fr.wikipedia.org/wiki/Rythmes_scolaires_en_France')}. Que le temps passe vite ! 😔",
     "Oh déjà Vendredi ! Bientôt le week-end ! 😺 À part ça ça va bien !",
-    "Oui ! C'est Samedi ! J'espère que tu t'en protites bien ! 😎",
+    "Bien ! C'est Samedi ! J'espère que tu t'en protites bien ! 😎",
     "Ça va ! C'est Dimanche, mais pour nous les 🤖, pas de repit ! 🦾"
 ]
 
@@ -32,24 +32,27 @@ ANECDOCTE_STARTER = "Mais t'ai-je déjà raconté l'histoire de ce quartier qui 
 
 ADDRESSFOUND = lambda address: f"Bien sûr mon poussin ! La voici : \"{address}\". <br> Et voilà une carte pour t'aider en plus !!"
 
-CURRENT_TIME = lambda current_time: f"🕗 Il est {current_time}, du moins là où je suis !"
+CURRENT_TIME = lambda user_current_time: f"🕗 Il est {user_current_time}"
+CURRENT_TIME_EXTRA = " !!"
+DTZ_EXTRA = lambda gp_current_time: f"...du moins là où tu es car chez moi il est {gp_current_time} ! Que de distance nous sépare, c'est beau internet 🥺!"
 
 FOOTER_TEXT = "2019, 2020 — Créé par Jeffrey G. pour OpenClassrooms."
 FOOTER_SNS = "pour en savoir plus"
 
 STARTER = """Salut 👋, qu'est-ce que je peux faire pour toi ?<br><br>
-        Tu peux me demander:<br>
+        Tu peux entre autres me demander:<br>
         - L'adresse d'OpenClassrooms (ex: "tu connais l'adresse d'OC ?")<br>
-        - Quelle heure il est<br>
-        - Quel temps il fait aujourd'hui<br>
         <br>
-        ...Ou tout simplement me saluer ou me demander comment je vais, ça fait toujours plaisir !
+        ...sinon tu peux toujours me saluer ou me demander comment je vais, ça fait toujours plaisir !<br><br>
+        On peut jouer quelque chose aussi, mais juste pile ou face pour le moment !<br>
         """
 
+"Je suis là"
 
 # Après les réponses supplémentaires :
     # quelle heure est-il, 
     # quel temps il fait)
     # Quel est le sens de la vie
     # Raconte moi une blague
-    # Pile ou face ??? (Dans la V3)
+    # Pile ou face ??? 
+    # TIc tac toe (Dans la V3)

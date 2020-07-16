@@ -15,7 +15,7 @@ function sendDataToServer(method, target_url, data_to_send, callback) {
     request.addEventListener("error", (error) => {
         console.error(`Erreur: ${error}`);
     });
-    request.send(method === "POST" ? data_to_send : null);
+    request.send(data_to_send);
 }; 
 
 function focusOnLastMessage() {
@@ -25,7 +25,7 @@ function focusOnLastMessage() {
     $("#dialogue_area").lastElementChild.scrollIntoView(true);
 };
 
-async function displayMessage(message_str, { username, icon }, custom_class="", animationDuration=1) {
+async function displayMessage(message_str, { username, icon }, { custom_class = "", animationDuration = 1 } = {}) {
 
     // Est en charge d'afficher le message des participants au chat (utilisateur et GrandPy). 
 
@@ -69,8 +69,9 @@ async function displayMap(location, user, animationDuration=1) {
     
     const center_coordinates = location;
     const map_html = `<div class="map"></div>`;
-
-    const message_id = await displayMessage(map_html, user, undefined, animationDuration);
+    
+    const options = { animationDuration: animationDuration }
+    const message_id = await displayMessage(map_html, user, options);
 
     function initMap() {
         const map = new google.maps.Map(
@@ -158,14 +159,14 @@ function main() {
 
         if (window.innerWidth > 800) return;
          
-        sendDataToServer("GET", "/grandpy/footer/", "", (response) => {
-            displayMessage(response, grandpy, "footer_message");
+        sendDataToServer("GET", "/grandpy/footer/", null, (response) => {
+            displayMessage(response, grandpy, { custom_class: "footer_message" });
         });
         
     });
 
     window.addEventListener("load", () => {
-        sendDataToServer("GET", "/grandpy/starter/", "", (response) => {
+        sendDataToServer("GET", "/grandpy/starter/", null, (response) => {
             setTimeout(() => displayMessage(response, grandpy), 0);
         });
     });
@@ -175,13 +176,14 @@ function main() {
         // Gère ce qui se passe quand on valide le formulaire
 
         const user_message = $("#input_area").value;
-        const is_string_empty = !user_message.trim();
+        const options = { timezone: new Date().getTimezoneOffset()/-60 };
+        const user_data = JSON.stringify({ user_message: user_message, options: options });
 
+        const is_string_empty = !user_message.trim();
         if (is_string_empty) return e.preventDefault();
 
         displayMessage(user_message, user);
-
-        sendDataToServer("POST", "/grandpy/chat/", user_message, (response) => {
+        sendDataToServer("POST", "/grandpy/chat/", user_data, (response) => {
                     
             const { message, anecdocte, location } = JSON.parse(response);
 
@@ -224,7 +226,9 @@ function main() {
 
         // displayMessage(teasing_messages[random_position], user);
 
-        sendDataToServer("POST", "/grandpy/wtf/", `n${reactions}`, (response) => displayMessage(response, grandpy));
+        const user_data = JSON.stringify({ reactions: `n${reactions}` })
+
+        sendDataToServer("POST", "/grandpy/wtf/", user_data, (response) => displayMessage(response, grandpy));
 
         reactions++;
         e.preventDefault();

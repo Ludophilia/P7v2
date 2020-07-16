@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request 
 from app.forms import Form
 from app.grandpy import GrandPy
-import os, config
+import os, config, json
 
 app = Flask("app") #ou __name__ vu que __name__ == "app"
 
@@ -22,7 +22,7 @@ def grandpy(mode):
 
     if request.method == "POST":
 
-        user_data = request.data.decode("utf-8")
+        user_data = json.loads(request.data.decode("utf-8"))
 
         if mode == "chat/":
             return gp.answer_message(user_data) 

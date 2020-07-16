@@ -89,13 +89,15 @@ class GrandPy:
 
         return f"<span>{speech.ANECDOCTE_STARTER} {wikipedia_part} {knowmore_part}</span>"
 
-    def answer_message(self, user_input):
+    def answer_message(self, user_data):
 
         """Renvoie une réponse (sous forme de json) à l'input utilisteur en fonction des mots clés qui y figurent"""
 
+        user_message = user_data.get("user_message", "")
         message = "<span>" ; grandpy_response = {}
-        keywords = "\n".join(self.extract_keywords(user_input))
+        keywords = "\n".join(self.extract_keywords(user_message))
 
+        # Ça commence à faire beaucoup. Comment gérer mieux la "liste" d'objets match ci dessous?
         hello_found = re.search(patterns.HELLO, keywords, re.M)
         oc_found = re.search(patterns.OC, keywords, re.M)
         know_found = re.search(patterns.KNOW, keywords, re.M)
@@ -121,8 +123,14 @@ class GrandPy:
 
         if (question_found or what_found) and time_found:
 
-            current_time = time.strftime("%H:%M (%Z)")
-            message += speech.CURRENT_TIME(current_time)
+            user_tzone = user_data.get("options").get("timezone")
+            gp_tzone = int((time.altzone if time.daylight else time.timezone) / -3600)
+
+            user_current_time = time.strftime("%H:%M", time.gmtime(time.time() + user_tzone * 3600))
+            gp_current_time = time.strftime("%H:%M")
+
+            message += speech.CURRENT_TIME(user_current_time)
+            message += speech.DTZ_EXTRA(gp_current_time) if user_tzone != gp_tzone else speech.CURRENT_TIME_EXTRA
 
         if oc_found and know_found and address_found:
 
@@ -145,9 +153,11 @@ class GrandPy:
 
         return json.dumps(grandpy_response, ensure_ascii=False, sort_keys=True)
 
-    def deal_with_clicks_on_logo(self, nth_time):
+    def deal_with_clicks_on_logo(self, user_data):
 
         """Renvoie une réponse (sous forme de str) à l'utilisateur en fonction du nombre de fois qu'il a appuyé sur le logo de grandpy"""
+
+        nth_time = user_data.get("reactions", "")
 
         return speech.INTERROGATE_CLICK_ON_LOGO if nth_time == "n0" else speech.ANNOYED.get(nth_time, "...")
     
