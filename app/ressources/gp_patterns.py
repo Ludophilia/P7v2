@@ -9,4 +9,4 @@ GO = r"^[Vv]as?(-tu)?$|^[Aa]l{1,2}ez(-vous)?$"
 AT = r"^[àÀaA]$" # [aA] = dangereux
 QUESTION = r"^\?{1,3}\!{0,2}$"
 WHAT = r"^[Qq]uel(le)?$"
-TIME = r"[Hh]eure"
+TIME = r"^[Hh]eure$"

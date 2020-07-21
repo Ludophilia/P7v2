@@ -16,14 +16,14 @@ class GrandPy:
 
             stopwords_filepath = "app/ressources/stopwords.js"
 
-            if not pth.exists(stopwords_filepath): 
-                with open(stopwords_filepath, "w") as stopwords_file:
-                    stopwords_list = requests.get("https://raw.githubusercontent.com/6/stopwords-json/master/dist/fr.json").json()
+            # if not pth.exists(stopwords_filepath): 
+            #     with open(stopwords_filepath, "w") as stopwords_file:
+            #         stopwords_list = requests.get("https://raw.githubusercontent.com/6/stopwords-json/master/dist/fr.json").json()
 
-                    json.dump(stopwords_list, stopwords_file, ensure_ascii=False)
-            else:
-                with open(stopwords_filepath) as stopwords_file:
-                    stopwords_list = json.load(stopwords_file)
+            #         json.dump(stopwords_list, stopwords_file, ensure_ascii=False)
+            # else:
+            with open(stopwords_filepath) as stopwords_file:
+                stopwords_list = json.load(stopwords_file)
 
             return stopwords_list
     
@@ -89,6 +89,46 @@ class GrandPy:
 
         return f"<span>{speech.ANECDOCTE_STARTER} {wikipedia_part} {knowmore_part}</span>"
 
+    def search_patterns(self, keywords):
+
+        """ Analyse les keywords à la recherche de patterns """
+        
+        matches = [] 
+        
+        # Ah, ça s'allonge...
+        
+        if re.search(patterns.HELLO, keywords, re.M):
+            matches += ["hello"]
+
+        if re.search(patterns.OC, keywords, re.M):
+            matches += ["oc"]
+
+        if re.search(patterns.KNOW, keywords, re.M):
+            matches += ["know"]
+
+        if re.search(patterns.ADDRESS, keywords, re.M):
+            matches += ["address"]
+                
+        if re.search(patterns.HOW, keywords, re.M):
+            matches += ["how"]
+
+        if re.search(patterns.AT, keywords, re.M):
+            matches += ["at"]
+
+        if re.search(patterns.GO, keywords, re.M):
+            matches += ["go"]
+
+        if re.search(patterns.QUESTION, keywords, re.M):
+            matches += ["question"]
+
+        if re.search(patterns.WHAT, keywords, re.M):
+            matches += ["what"]
+
+        if re.search(patterns.TIME, keywords, re.M):
+            matches += ["time"]
+
+        return matches
+
     def answer_message(self, user_data):
 
         """Renvoie une réponse (sous forme de json) à l'input utilisteur en fonction des mots clés qui y figurent"""
@@ -96,32 +136,22 @@ class GrandPy:
         user_message = user_data.get("user_message", "")
         message = "<span>" ; grandpy_response = {}
         keywords = "\n".join(self.extract_keywords(user_message))
+        matches = self.search_patterns(keywords)
 
-        # Ça commence à faire beaucoup. Comment gérer mieux la "liste" d'objets match ci dessous?
-        hello_found = re.search(patterns.HELLO, keywords, re.M)
-        oc_found = re.search(patterns.OC, keywords, re.M)
-        know_found = re.search(patterns.KNOW, keywords, re.M)
-        address_found = re.search(patterns.ADDRESS, keywords, re.M)
-        how_found = re.search(patterns.HOW, keywords, re.M)
-        at_found = re.search(patterns.AT, keywords, re.M)
-        go_found = re.search(patterns.GO, keywords, re.M)
-        question_found = re.search(patterns.QUESTION, keywords, re.M)
-        what_found = re.search(patterns.WHAT, keywords, re.M)
-        time_found = re.search(patterns.TIME, keywords, re.M)
-
-        if hello_found:
+        if "hello" in matches:
             
             greetings = speech.GREETINGS
             random_position = random.randint(0,len(greetings)-1)
 
             message += f"{greetings[random_position]}<br>"
 
-        if (how_found or question_found) and go_found and not at_found:
+        if ("how" in matches or "question" in matches) and ("go" in matches) and (
+        not "at" in matches):
 
             day = dt.today().weekday()
             message += f"{speech.STATE_OF_MIND[day]}<br>"
 
-        if (question_found or what_found) and time_found:
+        if ("question" in matches or "what" in matches) and "time" in matches:
 
             user_tzone = user_data.get("options").get("timezone")
             gp_tzone = int((time.altzone if time.daylight else time.timezone) / -3600)
@@ -130,9 +160,9 @@ class GrandPy:
             gp_current_time = time.strftime("%H:%M")
 
             message += speech.CURRENT_TIME(user_current_time)
-            message += speech.DTZ_EXTRA(gp_current_time) if user_tzone != gp_tzone else speech.CURRENT_TIME_EXTRA
+            message += speech.DFTZ_EXTRA(gp_current_time) if user_tzone != gp_tzone else speech.NRML_EXTRA
 
-        if oc_found and know_found and address_found:
+        if "oc" in matches and "know" in matches and "address" in matches:
 
             oc_maps_data_js = self.get_api_data("maps")
             oc_address = oc_maps_data_js["results"][0]["formatted_address"].replace(", France", "") 
@@ -144,11 +174,8 @@ class GrandPy:
                 location = oc_maps_data_js["results"][0]["geometry"]["location"]
             )
 
-        if len(message) == 6: 
-            message += f"{speech.SORRY}</span>"
-        else:
-            message += f"</span>" 
-
+        message += f"{speech.SORRY}</span>" if len(message) == 6 else "</span>" 
+      
         grandpy_response["message"] = message
 
         return json.dumps(grandpy_response, ensure_ascii=False, sort_keys=True)

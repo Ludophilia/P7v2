@@ -141,6 +141,20 @@ class TestParser():
 
         print(self.gp.extract_keywords("tu connais l'adresse d'oc?"))
 
+class TestPatternRecognition():
+    
+    @pytest.mark.pr1
+    def test_what_patterns_is_recognized_when_user_ask_for_the_time(self):
+
+        gp = GrandPy()
+
+        keywords = "\n".join(["quelle", "heure", "?"])
+        matches = gp.search_patterns(keywords)
+        print(matches)
+        
+        for item in matches:
+            assert item in ["what", "time", "question"]
+
 class TestGrandPy():
 
     @pytest.mark.testgp1
@@ -199,12 +213,6 @@ class TestGrandPy():
     @pytest.mark.testgp5
     def test_what_answer_message_returns_if_the_user_asks_how_grandpy_is_doing(self):
 
-        # expected_answer = {
-        #     'message': 'Bien sûr mon poussin ! La voici : 7 Cité Paradis, 75010 Paris.\n',
-        #     }
-        
-        # expected_answer_js = json.dumps(expected_answer, ensure_ascii=False, sort_keys=True)
-
         KNOWMORE = lambda source, url: f"[En savoir plus sur <a href='{url}' target='_blank'>{source}</a>]"
         
         EXP_STATE_OF_MIND = [
@@ -243,10 +251,10 @@ class TestGrandPy():
         self.gp = GrandPy()
         grandpy_answer = lambda message: json.loads(self.gp.answer_message(message))["message"].replace("<span>", "").replace("</span>", "").replace("<br>", "")
 
-        assert grandpy_answer(" il est quelle heure ?") == expected_answer
-        assert grandpy_answer("quelle heure est-il ?") == expected_answer
-        assert grandpy_answer("tu as l'heure ?") == expected_answer
-        assert grandpy_answer("Quelle heure il est") == expected_answer
+        assert grandpy_answer({"user_message": "il est quelle heure ?"}) == expected_answer
+        assert grandpy_answer({"user_message": "quelle heure est-il ?"}) == expected_answer
+        assert grandpy_answer({"user_message": "tu as l'heure ?"}) == expected_answer
+        assert grandpy_answer({"user_message": "Quelle heure il est"}) == expected_answer
 
 class TestGrandPyAutoResponses():
 

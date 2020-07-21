@@ -1,8 +1,8 @@
 function sendDataToServer(method, target_url, data_to_send, callback) {
     
-    // Envoie les données au serveur et gère ce qu'il se passe quand le serveur renvoie des données  
+    // Envoie les données au serveur et gère ce qu'il se passe quand le serveur renvoie des données. J'aurais pu utiliser l'API Fetch, mais laissons comme ça... à l'ancienne.
     
-    const request = new XMLHttpRequest(); 
+    const request = new XMLHttpRequest();
 
     request.open(method, target_url);
     request.addEventListener("load", () => {
@@ -138,11 +138,51 @@ function adjustWebAppHeight() {
     $("body").style.height = visibleAreaHeight;
 };
 
+function getUserPosition() {
+
+    if (!navigator.geolocation) {
+        USER_LOCATION = "PIKA";
+    } else {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                USER_LOCATION = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.latitude
+                }
+            },
+            (error) => {
+                USER_LOCATION = "PIKA";
+                console.error(`Erreur code ${error.code}: ${error.message}`);
+            }
+        );
+    };
+    console.log("FROM GETPOS", USER_LOCATION);
+};
+
+function make_json(user_message) {
+
+    // Permet de créer un JSON avec différentes options en fonction de l'input utilisateur.
+
+    let options = {};
+
+    if (/[Hh]eure/gm.test(user_message)) {
+        options.timezone = new Date().getTimezoneOffset()/-60;
+    };
+
+    if (/[Tt]emps/gm.test(user_message)) {
+
+        console.log("FR MKJS", USER_LOCATION);
+    };
+
+    return JSON.stringify({ user_message: user_message, options: options })
+};
+
 function main() {
 
     $ = document.querySelector.bind(document); $$ = document.querySelectorAll.bind(document);
 
     MESSAGE_ID = 0;
+    USER_LOCATION = null;
 
     const user = { username: "user", icon: selectUserProfile() };
     const grandpy = { username: "grandpy", icon: "🤖" };
@@ -155,20 +195,17 @@ function main() {
 
     window.addEventListener("load", () => {
 
-        // Permet d'avoir les infos du footer pour les configurations mobiles
+        if (window.innerWidth <= 800) {
+            sendDataToServer("GET", "/grandpy/footer/", null, (response) => {
+                displayMessage(response, grandpy, { custom_class: "footer_message" });
+            });
+        }
 
-        if (window.innerWidth > 800) return;
-         
-        sendDataToServer("GET", "/grandpy/footer/", null, (response) => {
-            displayMessage(response, grandpy, { custom_class: "footer_message" });
-        });
-        
-    });
-
-    window.addEventListener("load", () => {
         sendDataToServer("GET", "/grandpy/starter/", null, (response) => {
             setTimeout(() => displayMessage(response, grandpy), 0);
         });
+
+        getUserPosition();
     });
 
     $("#submit_button").addEventListener("click", (e) => {
@@ -176,11 +213,11 @@ function main() {
         // Gère ce qui se passe quand on valide le formulaire
 
         const user_message = $("#input_area").value;
-        const options = { timezone: new Date().getTimezoneOffset()/-60 };
-        const user_data = JSON.stringify({ user_message: user_message, options: options });
-
         const is_string_empty = !user_message.trim();
         if (is_string_empty) return e.preventDefault();
+
+        const user_data = make_json(user_message); // mon dieu
+        console.log(USER_LOCATION);
 
         displayMessage(user_message, user);
         sendDataToServer("POST", "/grandpy/chat/", user_data, (response) => {
