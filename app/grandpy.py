@@ -196,7 +196,7 @@ class GrandPy:
                 data = self.get_weather_data(user_location)
                 wc_icon = data['icon']
 
-                message += f"<img src='http://openweathermap.org/img/wn/{wc_icon}.png' alt='weather-icon' width='25' height='25'> "
+                message += f"<img src='https://openweathermap.org/img/wn/{wc_icon}.png' alt='weather-icon' width='25' height='25'> "
                 message += speech.CURRENT_WEATHER(data)
             
             message += "<br>"

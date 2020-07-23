@@ -147,7 +147,7 @@ function getUserPosition() {
             (position) => {
                 USER_LOCATION = {
                     latitude: position.coords.latitude,
-                    longitude: position.coords.latitude
+                    longitude: position.coords.longitude
                 }
             },
             (error) => {
