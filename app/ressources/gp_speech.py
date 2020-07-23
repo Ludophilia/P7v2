@@ -46,11 +46,13 @@ CURRENT_TIME = lambda user_current_time: f"🕗 Il est {user_current_time}"
 NRML_EXTRA = " !!"
 DFTZ_EXTRA = lambda gp_current_time: f" ...du moins là où tu es car chez moi il est {gp_current_time} ! Que de distance nous sépare, c'est beau internet !🥺"
 
+CURRENT_WEATHER = lambda data: f"Il fait actuellement {data['tcur']}°C à {data['city']}. Le temps est {data['description']}. Les températures min et max de la journée seront respectivement de {data['tmin']}°C et {data['tmax']}°C."
+NO_CURRENT_WEATHER = f"Désolé, impossible de te donner la météo. As-tu bien accepté que je te géolocalise quand je te l'ai demandé ? 🤔"
+
 FOOTER_TEXT = "2019, 2020 — Créé par Jeffrey G. pour OpenClassrooms."
 FOOTER_SNS = "pour en savoir plus"
 
 # Après les réponses supplémentaires :
-    # quel temps il fait)
     # Quel est le sens de la vie
     # Raconte moi une blague
     # Pile ou face ??? 

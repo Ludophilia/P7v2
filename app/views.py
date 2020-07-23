@@ -10,10 +10,10 @@ app.config.from_object("config")
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = Form()
-    api_key=config.API_KEY
+    gm_api_key=config.GM_API_KEY
     fa_key=config.FA_KEY
     
-    return render_template("page.html", form=form, api_key=api_key, fa_key=fa_key)
+    return render_template("page.html", form=form, gm_api_key=gm_api_key, fa_key=fa_key)
 
 @app.route('/grandpy/<path:mode>', methods=['GET', 'POST'])
 def grandpy(mode):

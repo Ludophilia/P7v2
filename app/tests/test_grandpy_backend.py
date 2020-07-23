@@ -1,6 +1,6 @@
 from app import app
 from app.grandpy import requests, GrandPy
-import json, pytest, re, time
+import json, pytest, re, time, math
 
 class TestMapsApiDataTreatment():
 
@@ -89,6 +89,25 @@ class TestWikimediaApiDataTreatment():
         expected_wiki_url = "[En savoir plus sur <a href='https://fr.wikipedia.org/wiki/Cité_Paradis' target='_blank'>Wikipédia</a>]"
 
         assert anecdocte == f"{expected_anecdocte}{expected_wiki_url}"
+
+class TestOpenWeatherMapApiDataTreatment():
+
+    @pytest.mark.testowm1
+    def test_if_get_weather_data_retrieve_the_correct_data(self):
+
+        self.gp = GrandPy()
+
+        user_location = {"latitude": "48.896735799681274", "longitude": "2.325297188151602"}
+
+        result = self.gp.get_weather_data(user_location)
+
+        assert type(result) == type(dict())
+        assert type(result["tcur"]) == type(int())
+        assert type(result["city"]) == type(str())
+        assert type(result["description"]) == type(str())
+        assert type(result["tmin"]) == type(int())
+        assert type(result["tmax"]) == type(int())
+        assert type(result["icon"]) == type(str())
 
 class TestParser():
 
@@ -245,16 +264,77 @@ class TestGrandPy():
     @pytest.mark.testgp6
     def test_if_grandpy_replies_as_expected_when_asked_for_the_time(self):
         
-        current_time = time.strftime("%H:%M (%Z)")
-        expected_answer = f"🕗 Il est {current_time}, du moins là où je suis !"
+        current_time = time.strftime("%H:%M")
+        expected_answer = f"🕗 Il est {current_time} !!"
 
         self.gp = GrandPy()
         grandpy_answer = lambda message: json.loads(self.gp.answer_message(message))["message"].replace("<span>", "").replace("</span>", "").replace("<br>", "")
 
-        assert grandpy_answer({"user_message": "il est quelle heure ?"}) == expected_answer
-        assert grandpy_answer({"user_message": "quelle heure est-il ?"}) == expected_answer
-        assert grandpy_answer({"user_message": "tu as l'heure ?"}) == expected_answer
-        assert grandpy_answer({"user_message": "Quelle heure il est"}) == expected_answer
+        assert grandpy_answer({"user_message": "il est quelle heure ?", "options": {'timezone': 2}}) == expected_answer
+        assert grandpy_answer({"user_message": "quelle heure est-il ?", "options": {'timezone': 2}}) == expected_answer
+        assert grandpy_answer({"user_message": "tu as l'heure ?", "options": {'timezone': 2}}) == expected_answer
+        assert grandpy_answer({"user_message": "Quelle heure il est", "options": {'timezone': 2}}) == expected_answer
+
+    @pytest.mark.testgp7
+    def test_if_grandpy_replies_as_expected_when_asked_for_the_weather(self, monkeypatch):
+
+        # Qu'est-ce qu'on essaie de faire ?
+        #### Vérifier si grandpy_answer() renvoie la bonne réponse à la question "quel temps il fait"
+
+        # r["weather"]["icon"].replace("d", "").replace("n", "")
+        # http://openweathermap.org/img/wn/10d@2x.png
+
+        self.gp = GrandPy()
+
+        grandpy_answer = lambda message: json.loads(self.gp.answer_message(message))["message"].replace("<span>", "").replace("</span>", "").replace("<br>", "")
+        round = lambda x: math.ceil(x) if x - math.floor(x) > 0.5 else math.floor(x)
+
+        def get_fake_weather_data(user_location):
+
+            if not user_location: return None
+
+            response = {
+                "weather": [{
+                    "description": "couvert",
+                    "icon": "04d"
+                }],
+                "main": {
+                    "temp": 21.94,
+                    "feels_like": 18.89,
+                    "temp_min": 21,
+                    "temp_max": 24.44,
+                    "humidity": 40
+                },
+                "name": "Paris"
+            }
+
+
+            fake_weather_data = dict(
+                tcur = round(response["main"]["temp"]),
+                city = response["name"],
+                description = response["weather"][0]["description"],
+                tmin = round(response["main"]["temp_min"]),
+                tmax = round(response["main"]["temp_max"]),
+                icon = response["weather"][0]["icon"]
+            )
+
+            return fake_weather_data
+
+        monkeypatch.setattr(self.gp, "get_weather_data", get_fake_weather_data)
+
+        expected_answer = f"<img src='http://openweathermap.org/img/wn/04d.png' alt='weather-icon' width='25' height='25'> Il fait actuellement 22°C à Paris. Le temps est couvert. Les températures min et max de la journée seront respectivement de 21°C et 24°C."
+        expected_unexpected_answer = f"Désolé, impossible de te donner la météo. As-tu bien accepté que je te géolocalise quand je te l'ai demandé ? 🤔"
+
+        options1 = {"location": {"latitude": 48.896, "longitude": 2.32}}
+        options2 = {"location": None} 
+
+        questions = ["Quel temps il fait ?", "Quel temps fait-il ?", "quel temps ?", "quel temps aujourd'hui ?"]
+
+        for question in questions:
+            assert grandpy_answer({"user_message": f"{question}", 
+                                "options": options1}) == expected_answer
+            assert grandpy_answer({"user_message": f"{question}", 
+                                "options": options2}) == expected_unexpected_answer
 
 class TestGrandPyAutoResponses():
 

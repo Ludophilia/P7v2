@@ -10,3 +10,4 @@ AT = r"^[àÀaA]$" # [aA] = dangereux
 QUESTION = r"^\?{1,3}\!{0,2}$"
 WHAT = r"^[Qq]uel(le)?$"
 TIME = r"^[Hh]eure$"
+WEATHER = r"^[tT]emps$"

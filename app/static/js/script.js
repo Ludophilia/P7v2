@@ -141,7 +141,7 @@ function adjustWebAppHeight() {
 function getUserPosition() {
 
     if (!navigator.geolocation) {
-        USER_LOCATION = "PIKA";
+        USER_LOCATION = null;
     } else {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -151,12 +151,11 @@ function getUserPosition() {
                 }
             },
             (error) => {
-                USER_LOCATION = "PIKA";
+                USER_LOCATION = null;
                 console.error(`Erreur code ${error.code}: ${error.message}`);
             }
         );
     };
-    console.log("FROM GETPOS", USER_LOCATION);
 };
 
 function make_json(user_message) {
@@ -170,8 +169,7 @@ function make_json(user_message) {
     };
 
     if (/[Tt]emps/gm.test(user_message)) {
-
-        console.log("FR MKJS", USER_LOCATION);
+        options.location = USER_LOCATION;
     };
 
     return JSON.stringify({ user_message: user_message, options: options })
@@ -181,8 +179,7 @@ function main() {
 
     $ = document.querySelector.bind(document); $$ = document.querySelectorAll.bind(document);
 
-    MESSAGE_ID = 0;
-    USER_LOCATION = null;
+    MESSAGE_ID = 0; USER_LOCATION = null;
 
     const user = { username: "user", icon: selectUserProfile() };
     const grandpy = { username: "grandpy", icon: "🤖" };
@@ -216,10 +213,10 @@ function main() {
         const is_string_empty = !user_message.trim();
         if (is_string_empty) return e.preventDefault();
 
-        const user_data = make_json(user_message); // mon dieu
-        console.log(USER_LOCATION);
+        const user_data = make_json(user_message);
 
         displayMessage(user_message, user);
+        
         sendDataToServer("POST", "/grandpy/chat/", user_data, (response) => {
                     
             const { message, anecdocte, location } = JSON.parse(response);
@@ -257,11 +254,6 @@ function main() {
     $("#brand_logo").addEventListener("click", (e) => {
 
         // Gère ce qui se passe (la réponse de GrandPy) quand on clique sur le logo du site
-
-        // const teasing_messages = ["[Click sur le logo]"];
-        // const random_position = Math.floor(Math.random()*(teasing_messages.length));
-
-        // displayMessage(teasing_messages[random_position], user);
 
         const user_data = JSON.stringify({ reactions: `n${reactions}` })
 

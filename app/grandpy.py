@@ -1,9 +1,8 @@
-import requests, json, random, re, os
+import requests, json, random, re, os, time, math
 import os.path as pth
 import config as cf 
 import app.ressources.gp_speech as speech
 import app.ressources.gp_patterns as patterns
-import time
 from datetime import date as dt
 
 class GrandPy:
@@ -62,7 +61,7 @@ class GrandPy:
 
         """Telecharge les données Maps sur OC ou de Wikipédia sur la Cité Paradis si elles n'existent pas, les stocke dans un fichier .js, et les rappelle sous forme de dict"""
         
-        maps_url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=openclassrooms+paris&key={cf.API_KEY}"
+        maps_url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=openclassrooms+paris&key={cf.GM_API_KEY}"
         wiki_url = "https://fr.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Cité Paradis&formatversion=2&exsentences=3&exlimit=1&explaintext=1&exsectionformat=plain"
 
         data_url = maps_url if api_name == "maps" else wiki_url
@@ -76,6 +75,27 @@ class GrandPy:
             json_formatted_api_data = json.loads(f.read())
 
         return json_formatted_api_data
+
+    def get_weather_data(self, user_location):
+        
+        """Acquière les données météo de et renvoie certaine d'entres elles sous forme de dict."""
+
+        latitude, longitude = user_location["latitude"], user_location["longitude"]
+        round = lambda x: math.ceil(x) if x - math.floor(x) > 0.5 else math.floor(x)
+
+        owm_url = f"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={cf.OWM_API_KEY}&lang=fr&units=metric"
+        response = requests.get(owm_url).json()
+
+        weather_data = dict(
+            tcur = round(response["main"]["temp"]),
+            city = response["name"],
+            description = response["weather"][0]["description"],
+            tmin = round(response["main"]["temp_min"]),
+            tmax = round(response["main"]["temp_max"]),
+            icon = response["weather"][0]["icon"]
+        )
+
+        return weather_data
 
     def get_anecdocte(self, jsf_wiki_data):
 
@@ -95,7 +115,7 @@ class GrandPy:
         
         matches = [] 
         
-        # Ah, ça s'allonge...
+        # Aie aie aie, ça s'allonge...
         
         if re.search(patterns.HELLO, keywords, re.M):
             matches += ["hello"]
@@ -127,14 +147,16 @@ class GrandPy:
         if re.search(patterns.TIME, keywords, re.M):
             matches += ["time"]
 
+        if re.search(patterns.WEATHER, keywords, re.M):
+            matches += ["weather"]
+
         return matches
 
     def answer_message(self, user_data):
 
         """Renvoie une réponse (sous forme de json) à l'input utilisteur en fonction des mots clés qui y figurent"""
 
-        user_message = user_data.get("user_message", "")
-        message = "<span>" ; grandpy_response = {}
+        user_message = user_data.get("user_message", "") ; message = "<span>" ; grandpy_response = {}
         keywords = "\n".join(self.extract_keywords(user_message))
         matches = self.search_patterns(keywords)
 
@@ -161,6 +183,23 @@ class GrandPy:
 
             message += speech.CURRENT_TIME(user_current_time)
             message += speech.DFTZ_EXTRA(gp_current_time) if user_tzone != gp_tzone else speech.NRML_EXTRA
+            message += "<br>"
+
+        if ("question" in matches or "what" in matches) and "weather" in matches:
+            
+            user_location = user_data.get("options").get("location")
+
+            if not user_location:
+                message += speech.NO_CURRENT_WEATHER
+
+            else:
+                data = self.get_weather_data(user_location)
+                wc_icon = data['icon']
+
+                message += f"<img src='http://openweathermap.org/img/wn/{wc_icon}.png' alt='weather-icon' width='25' height='25'> "
+                message += speech.CURRENT_WEATHER(data)
+            
+            message += "<br>"
 
         if "oc" in matches and "know" in matches and "address" in matches:
 
