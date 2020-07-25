@@ -83,18 +83,22 @@ class GrandPy:
         latitude, longitude = user_location["latitude"], user_location["longitude"]
         round = lambda x: math.ceil(x) if x - math.floor(x) > 0.5 else math.floor(x)
 
-        owm_url = f"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={cf.OWM_API_KEY}&lang=fr&units=metric"
-        response = requests.get(owm_url).json()
+        owm_cur_url = f"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={cf.OWM_API_KEY}&lang=fr&units=metric"
+        owm_dal_url = f"https://api.openweathermap.org/data/2.5/onecall?lat={latitude}&lon={longitude}&appid={cf.OWM_API_KEY}&lang=fr&units=metric&exclude=current,hourly"
+
+        forecast = {
+            **requests.get(owm_cur_url).json(),
+            **requests.get(owm_dal_url).json()
+        }
 
         weather_data = dict(
-            tcur = round(response["main"]["temp"]),
-            city = response["name"],
-            description = response["weather"][0]["description"],
-            tmin = round(response["main"]["temp_min"]),
-            tmax = round(response["main"]["temp_max"]),
-            icon = response["weather"][0]["icon"]
+            tcur = round(forecast["main"]["temp"]),
+            city = forecast["name"],
+            description = forecast["weather"][0]["description"],
+            icon = forecast["weather"][0]["icon"],
+            tmin = round(forecast["daily"][0]["temp"]["min"]),
+            tmax = round(forecast["daily"][0]["temp"]["max"])
         )
-
         return weather_data
 
     def get_anecdocte(self, jsf_wiki_data):
@@ -190,14 +194,14 @@ class GrandPy:
             user_location = user_data.get("options").get("location")
 
             if not user_location:
-                message += speech.NO_CURRENT_WEATHER
+                message += speech.NO_COORDS_GIVEN
 
             else:
-                data = self.get_weather_data(user_location)
-                wc_icon = data['icon']
+                weather_data = self.get_weather_data(user_location)
+                wc_icon = weather_data['icon']
 
-                message += f"<img src='https://openweathermap.org/img/wn/{wc_icon}.png' alt='weather-icon' width='25' height='25'> "
-                message += speech.CURRENT_WEATHER(data)
+                message += f"<img src='https://openweathermap.org/img/wn/{wc_icon}.png' alt='weather-icon' width='25' height='25'>"
+                message += speech.CURRENT_WEATHER(weather_data)
             
             message += "<br>"
 

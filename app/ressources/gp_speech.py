@@ -4,7 +4,7 @@ STARTER = """Salut 👋, qu'est-ce que je peux faire pour toi ?<br><br>
         Tu peux me demander :<br>
         - L'adresse d'OpenClassrooms (ex: "tu connais l'adresse d'OC ?")<br>
         - L'heure qu'il est... mais en as-tu vraiment besoin ? 😂<br>
-        - Quel temps il fait actuellement !
+        - Quel temps il fait actuellement (j'ai besoin de te 📍localiser pour ça) !
         <br><br>
         ...sinon tu peux toujours me saluer ou me demander comment je vais, ça fait toujours plaisir !<br><br>
         On peut jouer à quelque chose aussi, mais juste pile ou face pour le moment !<br>
@@ -44,10 +44,10 @@ ADDRESSFOUND = lambda address: f"Bien sûr mon poussin ! La voici : \"{address}\
 
 CURRENT_TIME = lambda user_current_time: f"🕗 Il est {user_current_time}"
 NRML_EXTRA = " !!"
-DFTZ_EXTRA = lambda gp_current_time: f" ...du moins là où tu es car chez moi il est {gp_current_time} ! Que de distance nous sépare, c'est beau internet !🥺"
+DFTZ_EXTRA = lambda gp_current_time: f"... du moins là où tu es car chez moi il est {gp_current_time} ! Que de distance nous sépare, c'est beau internet !🥺"
 
 CURRENT_WEATHER = lambda data: f"Il fait actuellement {data['tcur']}°C à {data['city']}. Le temps est {data['description']}. Les températures min et max de la journée seront respectivement de {data['tmin']}°C et {data['tmax']}°C."
-NO_CURRENT_WEATHER = f"Désolé, impossible de te donner la météo. As-tu bien accepté que je te géolocalise quand je te l'ai demandé ? 🤔"
+NO_COORDS_GIVEN = f"Désolé, impossible de te donner la météo. As-tu bien accepté que je te géolocalise quand je te l'ai demandé ? 🤔"
 
 FOOTER_TEXT = "2019, 2020 — Créé par Jeffrey G. pour OpenClassrooms."
 FOOTER_SNS = "pour en savoir plus"

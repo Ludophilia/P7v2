@@ -293,7 +293,7 @@ class TestGrandPy():
 
             if not user_location: return None
 
-            response = {
+            current_f = {
                 "weather": [{
                     "description": "couvert",
                     "icon": "04d"
@@ -305,24 +305,34 @@ class TestGrandPy():
                     "temp_max": 24.44,
                     "humidity": 40
                 },
-                "name": "Paris"
+                "name": "Paris"            
             }
 
+            daily_f = {
+                "daily": [
+                    {"temp": {
+                        "min": 21,
+                        "max": 24.44,
+                    }}
+                ]
+            }
+
+            forecast = {**current_f, **daily_f}
 
             fake_weather_data = dict(
-                tcur = round(response["main"]["temp"]),
-                city = response["name"],
-                description = response["weather"][0]["description"],
-                tmin = round(response["main"]["temp_min"]),
-                tmax = round(response["main"]["temp_max"]),
-                icon = response["weather"][0]["icon"]
+                tcur = round(forecast["main"]["temp"]),
+                city = forecast["name"],
+                description = forecast["weather"][0]["description"],
+                icon = forecast["weather"][0]["icon"],
+                tmin = round(forecast["daily"][0]["temp"]["min"]),
+                tmax = round(forecast["daily"][0]["temp"]["max"])
             )
 
             return fake_weather_data
 
         monkeypatch.setattr(self.gp, "get_weather_data", get_fake_weather_data)
 
-        expected_answer = f"<img src='http://openweathermap.org/img/wn/04d.png' alt='weather-icon' width='25' height='25'> Il fait actuellement 22°C à Paris. Le temps est couvert. Les températures min et max de la journée seront respectivement de 21°C et 24°C."
+        expected_answer = f"<img src='https://openweathermap.org/img/wn/04d.png' alt='weather-icon' width='25' height='25'> Il fait actuellement 22°C à Paris. Le temps est couvert. Les températures min et max de la journée seront respectivement de 21°C et 24°C."
         expected_unexpected_answer = f"Désolé, impossible de te donner la météo. As-tu bien accepté que je te géolocalise quand je te l'ai demandé ? 🤔"
 
         options1 = {"location": {"latitude": 48.896, "longitude": 2.32}}
