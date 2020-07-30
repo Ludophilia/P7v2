@@ -111,7 +111,8 @@ class Parser:
             (patterns.TAILS, "tails"), (patterns.OC, "oc"), (patterns.KNOW, "know"), 
             (patterns.ADDRESS, "address"), (patterns.HOW, "how"), (patterns.AT, "at"), 
             (patterns.GO, "go"), (patterns.QUESTION, "question"), (patterns.WHAT, "what"),
-            (patterns.TIME, "time"), (patterns.WEATHER, "weather")
+            (patterns.TIME, "time"), (patterns.WEATHER, "weather"),
+            (patterns.INFO, "info"), (patterns.WEBSITE, "website")
         ]
         
         for pattern, equiv in patterns_combi:
@@ -233,7 +234,7 @@ class GrandPy(Parser, APIManager):
 
                 message += speech.HT_TOSS_COIN
                 message += bravo if playerschoice == gamesresult else shame
-
+                if self.memory.get("HT_ERROR"): self.memory.pop("HT_ERROR")
                 self.isWaitingForAnAnswer.remove("#HT")
 
             else:
@@ -250,12 +251,29 @@ class GrandPy(Parser, APIManager):
 
         return message
 
+    def give_website_info(self, message):
+
+        """Donne des informations sur le site. Retourne le paramètre str modifié"""
+
+        project_glink = """
+        <span id="footer_sns">
+            <a href="https://github.com/Ludophilia/P7v2" target="_blank">
+                <img src="static/img/GitHub-Mark-Light-32px.png" alt="Octocat" width="25" height="25"/>
+            </a>
+        </span>
+        """
+
+        message += speech.SITE_INFO(project_glink)
+
+        return message
+
     def answer_message(self, user_data):
 
         """Renvoie une réponse (sous forme de json) à l'input utilisteur en fonction des mots clés qui y figurent"""
 
         user_message = user_data.get("user_message", "")
-        message, grandpy_response = "<span>", {}
+        message = ""
+        grandpy_response = {}
         keywords = "\n".join(self.extract_keywords(user_message))
         matches = self.search_patterns(keywords)
 
@@ -269,6 +287,10 @@ class GrandPy(Parser, APIManager):
             if "hello" in matches:
 
                 message += self.say_hello(message)
+
+            if "info" in matches and "website" in matches:
+                
+                message += self.give_website_info(message)
 
             if "play" in matches and "heads" in matches and "tails" in matches:
 
@@ -294,7 +316,7 @@ class GrandPy(Parser, APIManager):
                 grandpy_response = oc_address.get("grandpy_response")
                 message += oc_address.get("message")
 
-        message += f"{speech.SORRY}</span>" if len(message) == 6 else "</span>" 
+        message += f"{speech.SORRY}" if len(message) == 0 else "" 
         grandpy_response["message"] = message
         return json.dumps(grandpy_response, ensure_ascii=False, sort_keys=True)
 
@@ -305,25 +327,6 @@ class GrandPy(Parser, APIManager):
         nth_time = user_data.get("reactions", "")
 
         return speech.INTERROGATE_CLICK_ON_LOGO if nth_time == "n0" else speech.ANNOYED.get(nth_time, "...")
-    
-    def give_footer_info(self):
-
-        """Renvoie le footer (sous forme d'une html str)"""
-
-        footer = f"""
-        <div id="footer_container">
-            <div id="footer_text">
-                {speech.FOOTER_TEXT}
-            </div>
-            <div id="footer_sns">
-                <a href="https://github.com/Ludophilia/P7v2" target="_blank">
-                    <img src="static/img/GitHub-Mark-Light-32px.png" alt="Octocat" width="25" height="25"/>
-                </a><span>{speech.FOOTER_SNS}</span>
-            </div>
-        </div>
-        """
-
-        return footer
 
     def start_conversation(self):
 

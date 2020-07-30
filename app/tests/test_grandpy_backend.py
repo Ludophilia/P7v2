@@ -329,25 +329,28 @@ class TestGrandPyAnswerToASingleQuestion(TestTools):
             assert self.send_and_unwrap(self.wrap_message(f"{question}", options1)) == expected_answer
             assert self.send_and_unwrap(self.wrap_message(f"{question}", options2)) == expected_unexpected_answer
 
+    @pytest.mark.gpans7
+    def test_if_grandpy_replies_as_expected_when_asked_for_infos_bout_the_app(self):
+
+        project_glink = """
+        <span id="footer_sns">
+            <a href="https://github.com/Ludophilia/P7v2" target="_blank">
+                <img src="static/img/GitHub-Mark-Light-32px.png" alt="Octocat" width="25" height="25"/>
+            </a>
+        </span>
+        """
+
+        SITE_INFO = lambda link : f"Bien sûr ! Cette app web est la concrétisation d'un des projets à réaliser dans le cadre d'un des parcours-développeur proposé par OpenClassrooms.<br><br>En fait, il s'agit même de sa 2ème version, vu que la 1ère, des mots de Jeffrey G, son auteur, était \"un peu de la merde\".<br><br>D'un point de vue technique, côté frontend, l'app est construite avec le combo HTML5 + CSS3 + JS, sans l'aide d'un framework. Côté backend, est utilisé exclusivement Python3 avec le framework Flask.<br><br>Si ça t'intéresse davantage, je t'invite à te rendre sur {link}, tu en apprendras sans doute plus !"
+
+        message = "Puis-je avoir des infos sur ce site ?"
+
+        actual_message = json.loads(self.gp.answer_message(self.wrap_message(message))).get("message")
+        expected_message = SITE_INFO(project_glink)
+        
+        assert actual_message == expected_message
+        
 @pytest.mark.gpau #25/07/20 - OK
 class TestGrandPyAutoResponses(TestTools):
-
-    @pytest.mark.gpau1
-    def test_if_give_footer_info_returns_the_expected_string(self):
-        
-        expected_answer = """
-        <div id="footer_container">
-            <div id="footer_text">
-                2019, 2020 — Créé par Jeffrey G. pour OpenClassrooms.
-            </div>
-            <div id="footer_sns">
-                <a href="https://github.com/Ludophilia/P7v2" target="_blank">
-                    <img src="static/img/GitHub-Mark-Light-32px.png" alt="Octocat" width="25" height="25"/>
-                </a><span>pour en savoir plus</span>
-            </div>
-        </div>
-        """
-        assert self.gp.give_footer_info() == expected_answer
 
     @pytest.mark.gpau2
     def test_if_start_conversation_returns_the_expected_string(self):

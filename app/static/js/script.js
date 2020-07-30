@@ -192,12 +192,6 @@ function main() {
 
     window.addEventListener("load", () => {
 
-        if (window.innerWidth <= 800) {
-            sendDataToServer("GET", "/grandpy/footer/", null, (response) => {
-                displayMessage(response, grandpy, { custom_class: "footer_message" });
-            });
-        }
-
         sendDataToServer("GET", "/grandpy/starter/", null, (response) => {
             setTimeout(() => displayMessage(response, grandpy), 0);
         });

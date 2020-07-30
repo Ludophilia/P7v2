@@ -197,6 +197,20 @@ footer {
     margin-bottom: 8px;
 }
 
+/* @media (min-width: 801px) {
+
+    .footer_message {
+        display: none;
+    }
+
+} */
+
+/* ############## Infos Site ############## */
+
+#footer_sns {
+    display: inline-block;
+}
+
 #footer_sns a {
     text-decoration: none;
 }
@@ -204,16 +218,6 @@ footer {
 #footer_sns span {
     margin-left: 2px;
 }
-
-
-@media (min-width: 801px) {
-
-    .footer_message {
-        display: none;
-    }
-
-}
-
 
 /* ############## Chat ############## */
 
