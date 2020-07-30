@@ -93,7 +93,7 @@ function selectUserProfile() {
     
     // Attribue à l'utilisateur une icone de profil. Version intermédiaire, l'idée finale c'est que l'utilisateur puisse choisir son icone de profil.
 
-    const profile_icons = ["👩", "👤", "👨", "😎", "😱", "🥵", "🥶", "🧐", "🤑"];
+    const profile_icons = ["👩", "👤", "👨", "🥵", "🥶", "🤑"];
     const random_position = Math.floor(Math.random()*(profile_icons.length));
     
     return profile_icons[random_position];
@@ -164,14 +164,14 @@ function make_json(user_message) {
 
     let options = {};
 
-    if (/[Hh]eure/gm.test(user_message)) {
+    if (/heure/gmi.test(user_message)) {
         options.timezone = new Date().getTimezoneOffset()/-60;
     };
 
-    if (/[Tt]emps/gm.test(user_message)) {
+    if (/temps/gmi.test(user_message)) {
         options.location = USER_LOCATION;
     };
-
+ 
     return JSON.stringify({ user_message: user_message, options: options })
 };
 

@@ -5,57 +5,9 @@ import app.ressources.gp_speech as speech
 import app.ressources.gp_patterns as patterns
 from datetime import date as dt
 
-class GrandPy:
-
-    def extract_keywords(self, user_input):
-        
-        def stopwords():
-
-            """Renvoie une liste python de stopwords (minuscules). Télécharge et construit cette liste si elle n'existe pas"""
-
-            stopwords_filepath = "app/ressources/stopwords.js"
-
-            # if not pth.exists(stopwords_filepath): 
-            #     with open(stopwords_filepath, "w") as stopwords_file:
-            #         stopwords_list = requests.get("https://raw.githubusercontent.com/6/stopwords-json/master/dist/fr.json").json()
-
-            #         json.dump(stopwords_list, stopwords_file, ensure_ascii=False)
-            # else:
-            with open(stopwords_filepath) as stopwords_file:
-                stopwords_list = json.load(stopwords_file)
-
-            return stopwords_list
+class APIManager:
     
-        def remove_punctuation(user_input):
-
-            """Retire la ponctuation et les whitespaces en trop de l'input utilisateur (str) et renvoie un str de cet input"""
-
-            gp1 = ["\'", "\""] #"-",
-            gp2 = ["!?", "!", "?", "?!"] #"-", 
-            gp3 = [",", ".", ";", ":", "[", "]", "(", ")", "{", "}", ">", "<"]
-
-            for punctuation in gp1 + gp2 + gp3:
-
-                if punctuation in gp1: 
-                    user_input = user_input.replace(punctuation, f" ")
-                elif punctuation in gp2: 
-                    user_input = user_input.replace(punctuation, f" {punctuation}")
-                elif punctuation in gp3:
-                    user_input = user_input.replace(punctuation, "")
-
-            return re.sub(r"\s+", " ", user_input).strip()
-
-        """Retire les stopwords et les mots répétés de l'input utilisateur sans ponctuation (pf pour punctuation-free) et renvoie la list des mots "clés" restants (minuscules uniquement)"""
-
-        words_in_user_input = remove_punctuation(user_input).split()
-        keywords = []
-
-        for word in words_in_user_input:
-            word = word.lower()
-            if word not in stopwords() and word not in keywords:
-                keywords.append(word) 
-
-        return keywords
+    """Représente l'APIManager, c'est à dire le système qui télécharge les données des différentes API et les rend disponible à d'autres système"""
 
     def get_api_data(self, api_name):
 
@@ -101,6 +53,81 @@ class GrandPy:
         )
         return weather_data
 
+class Parser:
+
+    """Représente le Parser, c'est à dire le système qui analyse le message envoyé à l'utilisateur, en extrait les mots clés et les reconnait ceux qui font "reagir" GrandPy"""
+
+    def stopwords(self):
+
+        """Renvoie une liste python de stopwords (minuscules)."""
+
+        stopwords_filepath = "app/ressources/stopwords.js"
+
+        with open(stopwords_filepath) as stopwords_file:
+            stopwords_list = json.load(stopwords_file)
+
+        return stopwords_list
+    
+    def remove_punctuation(self, user_input):
+
+        """Retire la ponctuation et les whitespaces en trop de l'input utilisateur (str) et renvoie un str de cet input"""
+
+        gp1 = ["\'", "\""] #"-",
+        gp2 = ["!?", "!", "?", "?!"] #"-", 
+        gp3 = [",", ".", ";", ":", "[", "]", "(", ")", "{", "}", ">", "<"]
+
+        for punctuation in gp1 + gp2 + gp3:
+
+            if punctuation in gp1: 
+                user_input = user_input.replace(punctuation, f" ")
+            elif punctuation in gp2: 
+                user_input = user_input.replace(punctuation, f" {punctuation}")
+            elif punctuation in gp3:
+                user_input = user_input.replace(punctuation, "")
+
+        return re.sub(r"\s+", " ", user_input).strip()
+        
+    def extract_keywords(self, user_input):
+        
+        """Retire les stopwords et les mots répétés de l'input utilisateur sans ponctuation (pf pour punctuation-free) et renvoie la list des mots "clés" restants (minuscules uniquement)"""
+
+        words_in_user_input = self.remove_punctuation(user_input).split()
+        keywords = []
+
+        for word in words_in_user_input:
+            word = word.lower()
+            if word not in self.stopwords() and word not in keywords:
+                keywords.append(word) 
+
+        return keywords
+
+    def search_patterns(self, keywords):
+
+        """ Analyse les keywords à la recherche de patterns et retourne la liste des patterns trouvés """
+
+        matches = [] 
+        patterns_combi = [
+            (patterns.HELLO, "hello"), (patterns.PLAY, "play"), (patterns.HEADS, "heads"),
+            (patterns.TAILS, "tails"), (patterns.OC, "oc"), (patterns.KNOW, "know"), 
+            (patterns.ADDRESS, "address"), (patterns.HOW, "how"), (patterns.AT, "at"), 
+            (patterns.GO, "go"), (patterns.QUESTION, "question"), (patterns.WHAT, "what"),
+            (patterns.TIME, "time"), (patterns.WEATHER, "weather")
+        ]
+        
+        for pattern, equiv in patterns_combi:
+
+            if re.search(pattern, keywords, re.I|re.M):
+                matches += [equiv]
+
+        return matches
+
+class GrandPy(Parser, APIManager):
+
+    """Représente GrandPy, le robot qui répond aux messages et joue parfois avec l'utilisateur."""
+
+    memory = {}
+    isWaitingForAnAnswer = set()
+
     def get_anecdocte(self, jsf_wiki_data):
 
         """Récupère l'anecdocte de GP sur la Cité Paradis et l'url de la fiche wikipédia associée à partir des données jsf (json-formatted) de l'API Wikimedia. Renvoie un str contenant l'anecdocte"""
@@ -113,114 +140,162 @@ class GrandPy:
 
         return f"<span>{speech.ANECDOCTE_STARTER} {wikipedia_part} {knowmore_part}</span>"
 
-    def search_patterns(self, keywords):
+    def say_hello(self, message):
 
-        """ Analyse les keywords à la recherche de patterns """
+        """Génère un message de salutation de GrandPy."""
+
+        greetings = speech.GREETINGS
+        random_position = random.randint(0,len(greetings)-1)
+
+        message += f"{greetings[random_position]}<br>"
+
+        return message
+
+    def give_state_of_mind(self, message):
         
-        matches = [] 
+        """Génère un message où GrandPy explique comment il va."""
+
+        day = dt.today().weekday()
+        message += f"{speech.STATE_OF_MIND[day]}<br>"
+
+        return message
+
+    def give_time(self, user_data, message):
+
+        """Génère un message où GrandPy donne l'heure qu'il est en fonction du fuseau horaire de l'utilisateur."""
+
+        user_tzone = user_data.get("options").get("timezone")
+        gp_tzone = int((time.altzone if time.daylight else time.timezone) / -3600)
+
+        user_current_time = time.strftime("%H:%M", time.gmtime(time.time() + user_tzone * 3600))
+        gp_current_time = time.strftime("%H:%M")
+
+        message += speech.CURRENT_TIME(user_current_time)
+        message += speech.DFTZ_EXTRA(gp_current_time) if user_tzone != gp_tzone else speech.NRML_EXTRA
+        message += "<br>"
+
+        return message
+
+    def give_weather(self, user_data, message):
+
+        """Génère un message où GrandPy donne la météo (temperature actuelle, minimale, maximale) en fonction des coordonnées géo de l'utilisateur."""
+
+        user_location = user_data.get("options").get("location")
+
+        if not user_location:
+            message += speech.NO_COORDS_GIVEN
+
+        else:
+            weather_data = self.get_weather_data(user_location)
+            wc_icon = weather_data['icon']
+
+            message += f"<img src='https://openweathermap.org/img/wn/{wc_icon}.png' alt='weather-icon' width='25' height='25'>"
+            message += speech.CURRENT_WEATHER(weather_data)
         
-        # Aie aie aie, ça s'allonge...
+        message += "<br>"
+
+        return message
+
+    def give_oc_address(self, message, grandpy_response):
+
+        """Génère un message où GrandPy donne l'adresse d'openclassrooms.Génère aussi un autre message contenant une anecdocte sur la rue d'OC et renvoie les coordonnés du lieu pour un affichage sur une carte."""
+
+        oc_maps_data_js = self.get_api_data("maps")
+        oc_address = oc_maps_data_js["results"][0]["formatted_address"].replace(", France", "") 
+
+        message += f"{speech.ADDRESSFOUND(oc_address)}<br>"
+
+        grandpy_response.update(
+            anecdocte = self.get_anecdocte(self.get_api_data("wiki")),
+            location = oc_maps_data_js["results"][0]["geometry"]["location"]
+        )
+
+        return {"message": message, "grandpy_response": grandpy_response}
+
+    def play_heads_or_tails(self, matches, message):
+
+        """Gère tout ce qui a à voir avec le jeu pile ou face proposé par grandpy. Retourne le paramètre message modifié."""
+
+        if "play" in matches and not self.isWaitingForAnAnswer:
+
+            self.isWaitingForAnAnswer.add("#HT")
+            message += speech.HT_EXPLAIN_RULES
+
+        elif self.isWaitingForAnAnswer:
         
-        if re.search(patterns.HELLO, keywords, re.M):
-            matches += ["hello"]
+            if ("heads" in matches) ^ ("tails" in matches):
 
-        if re.search(patterns.OC, keywords, re.M):
-            matches += ["oc"]
+                playerschoice = 0 if "heads" in matches else 1
+                gamesresult = random.randint(0,1)
+                gr_readable = ["pile", "face"][gamesresult]
 
-        if re.search(patterns.KNOW, keywords, re.M):
-            matches += ["know"]
+                bravo, shame = speech.HT_PLAYER_VICTORY(gr_readable),speech.HT_PLAYER_DEFEAT(gr_readable)
 
-        if re.search(patterns.ADDRESS, keywords, re.M):
-            matches += ["address"]
-                
-        if re.search(patterns.HOW, keywords, re.M):
-            matches += ["how"]
+                message += speech.HT_TOSS_COIN
+                message += bravo if playerschoice == gamesresult else shame
 
-        if re.search(patterns.AT, keywords, re.M):
-            matches += ["at"]
+                self.isWaitingForAnAnswer.remove("#HT")
 
-        if re.search(patterns.GO, keywords, re.M):
-            matches += ["go"]
+            else:
+                self.memory["HT_ERROR"] = 1 if self.memory.get("HT_ERROR") == None else self.memory["HT_ERROR"] + 1
+                remaining = 3 - self.memory["HT_ERROR"]
 
-        if re.search(patterns.QUESTION, keywords, re.M):
-            matches += ["question"]
+                if remaining == 0:
+                    message += speech.HT_OUT_OF_TRIES
+                    self.memory.pop("HT_ERROR")
+                    self.isWaitingForAnAnswer.remove("#HT")
 
-        if re.search(patterns.WHAT, keywords, re.M):
-            matches += ["what"]
+                else:
+                    message += speech.HT_ERROR(remaining)
 
-        if re.search(patterns.TIME, keywords, re.M):
-            matches += ["time"]
-
-        if re.search(patterns.WEATHER, keywords, re.M):
-            matches += ["weather"]
-
-        return matches
+        return message
 
     def answer_message(self, user_data):
 
         """Renvoie une réponse (sous forme de json) à l'input utilisteur en fonction des mots clés qui y figurent"""
 
-        user_message = user_data.get("user_message", "") ; message = "<span>" ; grandpy_response = {}
+        user_message = user_data.get("user_message", "")
+        message, grandpy_response = "<span>", {}
         keywords = "\n".join(self.extract_keywords(user_message))
         matches = self.search_patterns(keywords)
 
-        if "hello" in matches:
-            
-            greetings = speech.GREETINGS
-            random_position = random.randint(0,len(greetings)-1)
+        if self.isWaitingForAnAnswer:
 
-            message += f"{greetings[random_position]}<br>"
+            if "#HT" in self.isWaitingForAnAnswer:
+                message += self.play_heads_or_tails(matches, message)
 
-        if ("how" in matches or "question" in matches) and ("go" in matches) and (
-        not "at" in matches):
+        else:
 
-            day = dt.today().weekday()
-            message += f"{speech.STATE_OF_MIND[day]}<br>"
+            if "hello" in matches:
 
-        if ("question" in matches or "what" in matches) and "time" in matches:
+                message += self.say_hello(message)
 
-            user_tzone = user_data.get("options").get("timezone")
-            gp_tzone = int((time.altzone if time.daylight else time.timezone) / -3600)
+            if "play" in matches and "heads" in matches and "tails" in matches:
 
-            user_current_time = time.strftime("%H:%M", time.gmtime(time.time() + user_tzone * 3600))
-            gp_current_time = time.strftime("%H:%M")
+                message += self.play_heads_or_tails(matches, message)
 
-            message += speech.CURRENT_TIME(user_current_time)
-            message += speech.DFTZ_EXTRA(gp_current_time) if user_tzone != gp_tzone else speech.NRML_EXTRA
-            message += "<br>"
+            if ("how" in matches or "question" in matches) and ("go" in matches) and (
+            not "at" in matches):
 
-        if ("question" in matches or "what" in matches) and "weather" in matches:
-            
-            user_location = user_data.get("options").get("location")
+                message += self.give_state_of_mind(message)
 
-            if not user_location:
-                message += speech.NO_COORDS_GIVEN
+            if ("question" in matches or "what" in matches) and "time" in matches:
 
-            else:
-                weather_data = self.get_weather_data(user_location)
-                wc_icon = weather_data['icon']
+                message += self.give_time(user_data, message)
 
-                message += f"<img src='https://openweathermap.org/img/wn/{wc_icon}.png' alt='weather-icon' width='25' height='25'>"
-                message += speech.CURRENT_WEATHER(weather_data)
-            
-            message += "<br>"
+            if ("question" in matches or "what" in matches) and "weather" in matches:
+                
+                message += self.give_weather(user_data, message)
 
-        if "oc" in matches and "know" in matches and "address" in matches:
+            if "oc" in matches and "know" in matches and "address" in matches:
 
-            oc_maps_data_js = self.get_api_data("maps")
-            oc_address = oc_maps_data_js["results"][0]["formatted_address"].replace(", France", "") 
+                oc_address = self.give_oc_address(message, grandpy_response)
 
-            message += f"{speech.ADDRESSFOUND(oc_address)}<br>"
-
-            grandpy_response.update(
-                anecdocte = self.get_anecdocte(self.get_api_data("wiki")),
-                location = oc_maps_data_js["results"][0]["geometry"]["location"]
-            )
+                grandpy_response = oc_address.get("grandpy_response")
+                message += oc_address.get("message")
 
         message += f"{speech.SORRY}</span>" if len(message) == 6 else "</span>" 
-      
         grandpy_response["message"] = message
-
         return json.dumps(grandpy_response, ensure_ascii=False, sort_keys=True)
 
     def deal_with_clicks_on_logo(self, user_data):

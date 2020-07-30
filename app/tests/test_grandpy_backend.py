@@ -2,116 +2,99 @@ from app import app
 from app.grandpy import requests, GrandPy
 import json, pytest, re, time, math
 
-class TestMapsApiDataTreatment():
+class TestTools():
 
-    @pytest.mark.this2
-    def test_if_get_maps_info_retrieves_the_expected_data(self):
-        
+    def setup_method(self):
         self.gp = GrandPy()
 
-        maps_info = self.gp.get_api_data("maps") 
+    def teardown_method(self):
+        pass
 
-        assert self.gp.get_address(maps_info) == "7 Cité Paradis, 75010 Paris"
+    def wrap_message(self, message, options={}): 
+        return {"user_message": message, "options": options}
 
-    @pytest.mark.this
-    def test_if_mocked_get_address_returns_the_correct_address(self, monkeypatch):
+    def send_and_unwrap(self, message, key="message"):
+
+        message_formatted = json.loads(self.gp.answer_message(message)).get(key)
+
+        return message_formatted if key == "location" else message_formatted.replace("<span>", "").replace("</span>", "").replace("<br>", "")
+    
+    def get_fake_weather_data(self, user_location):
+
+        round = lambda x: math.ceil(x) if x - math.floor(x) > 0.5 else math.floor(x)
+
+        if not user_location: return None
+
+        current_f = {
+            "weather": [{
+                "description": "couvert",
+                "icon": "04d"
+            }],
+            "main": {
+                "temp": 21.94,
+                "feels_like": 18.89,
+                "temp_min": 21,
+                "temp_max": 24.44,
+                "humidity": 40
+            },
+            "name": "Paris"            
+        }
+
+        daily_f = {
+            "daily": [
+                {"temp": {
+                    "min": 21,
+                    "max": 24.44,
+                }}
+            ]
+        }
+
+        forecast = {**current_f, **daily_f}
+
+        fake_weather_data = dict(
+            tcur = round(forecast["main"]["temp"]),
+            city = forecast["name"],
+            description = forecast["weather"][0]["description"],
+            icon = forecast["weather"][0]["icon"],
+            tmin = round(forecast["daily"][0]["temp"]["min"]),
+            tmax = round(forecast["daily"][0]["temp"]["max"])
+        )
+
+        return fake_weather_data
+
+    def get_fake_api_data(self, api_name):
         
-        self.gp = GrandPy()
+        gm_api_response = {
+            "html_attributions": [],
+            "results": [
+                {
+                    "formatted_address": "7 Cité Paradis, 75010 Paris, France",
+                    "geometry": {
+                        "location": {
+                            "lat": 48.8747265,
+                            "lng": 2.3505517
+                        }
+                    },
+                    "name": "Openclassrooms",
+                }
+            ]
+        }
 
-        def mocked_get_api_data(source):
-            
-            gm_api_response = {
-                "html_attributions": [],
-                "results": [
+        wiki_api_response = {
+            "query": {
+                "pages": [
                     {
-                        "formatted_address": "7 Cité Paradis, 75010 Paris, France",
-                        "geometry": {
-                            "location": {
-                                "lat": 48.8747265,
-                                "lng": 2.3505517
-                            }
-                        },
-                        "name": "Openclassrooms",
+                        "title": "Cité Paradis",
+                        "extract": "La cité Paradis est une voie publique située dans le 10e arrondissement de Paris.\n\n\nSituation et accès\nLa cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse."
                     }
                 ]
             }
-            return gm_api_response
+        }
+        return gm_api_response if api_name == "maps" else wiki_api_response
 
-        monkeypatch.setattr(self.gp, "get_api_data", mocked_get_api_data)
+class TestParser:
 
-        maps_info = self.gp.get_api_data("maps")
-
-        assert self.gp.get_address(maps_info) == "7 Cité Paradis, 75010 Paris"
-
-class TestWikimediaApiDataTreatment():
-    
-    @pytest.mark.this3
-    def test_if_get_wiki_info_retrieves_the_expected_data(self):
-
-        self.gp = GrandPy()
-
-        expected_anecdocte = "La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse."
-        expected_wiki_url = "https://fr.wikipedia.org/wiki/Cité_Paradis"
-
-        wiki_data_js = self.gp.get_api_data("wiki")
-        anecdocte_and_url = self.gp.get_anecdocte_and_wiki_url(wiki_data_js)
-
-        assert anecdocte_and_url["url"] == expected_wiki_url
-        assert anecdocte_and_url["anecdocte"] == expected_anecdocte
-
-    @pytest.mark.this4
-    def test_if_get_anecdocte_process_api_data_the_right_way(self, monkeypatch):
-                
-        """ Vérifie que la fonction get_anecdocte (qui s'alimente de get_wiki_info qui est ici mockée) renvoie bien la chaine de caractère demandée """
-
-        self.gp = GrandPy()
-
-        def mocked_get_api_data(source): 
-        
-            api_data_js = {
-                "query": {
-                    "pages": [
-                        {
-                            "title": "Cité Paradis",
-                            "extract": "La cité Paradis est une voie publique située dans le 10e arrondissement de Paris.\n\n\nSituation et accès\nLa cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse."
-                        }
-                    ]
-                }
-            }
-            return api_data_js
-
-        monkeypatch.setattr(self.gp, "get_api_data", mocked_get_api_data)
-
-        wiki_data_js = self.gp.get_api_data("wiki")
-        anecdocte = self.gp.get_anecdocte(wiki_data_js)
-
-        expected_anecdocte = "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse. "
-        expected_wiki_url = "[En savoir plus sur <a href='https://fr.wikipedia.org/wiki/Cité_Paradis' target='_blank'>Wikipédia</a>]"
-
-        assert anecdocte == f"{expected_anecdocte}{expected_wiki_url}"
-
-class TestOpenWeatherMapApiDataTreatment():
-
-    @pytest.mark.testowm1
-    def test_if_get_weather_data_retrieve_the_correct_data(self):
-
-        self.gp = GrandPy()
-
-        user_location = {"latitude": "48.896735799681274", "longitude": "2.325297188151602"}
-
-        result = self.gp.get_weather_data(user_location)
-
-        assert type(result) == type(dict())
-        assert type(result["tcur"]) == type(int())
-        assert type(result["city"]) == type(str())
-        assert type(result["description"]) == type(str())
-        assert type(result["tmin"]) == type(int())
-        assert type(result["tmax"]) == type(int())
-        assert type(result["icon"]) == type(str())
-
-class TestParser():
-
-    @pytest.mark.this9
+    @pytest.mark.tprs1
     def test_if_build_stopwords_output_the_expected_stopwords_list(self):
 
         pass
@@ -126,9 +109,8 @@ class TestParser():
         # assert len(stopwords_list) >= 600 and type(stopwords_list) == type([])
         # for sample in samples: assert sample in stopwords_list
 
-    @pytest.mark.this8
+    @pytest.mark.tprs2
     def test_if_remove_punctuation_remove_punctuation_from_user_input(self):
-
         pass
         
         #Implémentation modifiée
@@ -140,96 +122,154 @@ class TestParser():
 
         # assert test_string == expected_result and type(test_string) == type("")
 
-    @pytest.mark.this7
+    @pytest.mark.tprs3
     def test_if_remove_stopwords_remove_stopwords_from_user_input(self):
+        pass
         
-        self.gp = GrandPy()
-        test_string = self.gp.extract_keywords("Salut, salut mon gros gros pote! Comment tu vas depuis le temps, vieille branche velue? ;)")
-        # test_string = self.gp.remove_stopwords("Salut tu connais l'adresse d'oc")
+        # self.gp = GrandPy()
+        # test_string = self.gp.extract_keywords("Salut, salut mon gros gros pote! Comment tu vas depuis le temps, vieille branche velue? ;)")
+        # # test_string = self.gp.remove_stopwords("Salut tu connais l'adresse d'oc")
 
-        # expected_result = "Salut comment tu vas depuis le temps vieille branche velue "
-        expected_result =['salut', 'gros', 'pote', 'temps', 'vieille', 'branche', 'velue']
+        # # expected_result = "Salut comment tu vas depuis le temps vieille branche velue "
+        # expected_result =['salut', 'gros', 'pote', 'temps', 'vieille', 'branche', 'velue']
         
-        assert test_string == expected_result and type(test_string) == type([])
-        # assert type(test_string) == type("")
-        # print("DE REMOVE_STOPWORDS", test_string)
+        # assert test_string == expected_result and type(test_string) == type([])
+        # # assert type(test_string) == type("")
+        # # print("DE REMOVE_STOPWORDS", test_string)
 
-    @pytest.mark.th0
+    @pytest.mark.tprs4
     def test_what_extract_keywords_do(self):
-        self.gp = GrandPy()
+        pass
+        # self.gp = GrandPy()
 
-        print(self.gp.extract_keywords("tu connais l'adresse d'oc?"))
+        # print(self.gp.extract_keywords("tu connais l'adresse d'oc?"))
 
-class TestPatternRecognition():
+@pytest.mark.gppr
+class TestPatternRecognition(TestTools):
     
-    @pytest.mark.pr1
+    @pytest.mark.gppr1
     def test_what_patterns_is_recognized_when_user_ask_for_the_time(self):
 
-        gp = GrandPy()
-
         keywords = "\n".join(["quelle", "heure", "?"])
-        matches = gp.search_patterns(keywords)
+        matches = self.gp.search_patterns(keywords)
         print(matches)
         
         for item in matches:
             assert item in ["what", "time", "question"]
 
-class TestGrandPy():
+@pytest.mark.gpgmg
+class TestGrandPyGaming(TestTools):
 
-    @pytest.mark.testgp1
-    def test_what_answer_message_returns_if_the_user_says_hello_and_asks_for_OC_address(self):
+    @pytest.mark.gpgmg1
+    def test_a_game_of_heads_or_tails(self):
         
-        self.gp = GrandPy()
+        message_wrapped1 = self.wrap_message("jouons à pile ou face")
+        actual_answer1 = self.send_and_unwrap(message_wrapped1)
+
+        expected_answer1 = "OK ! Je tire une pièce au hasard, devine le résultat !Pile ou face ?"
+
+        assert actual_answer1 == expected_answer1
+        assert "#HT" in self.gp.isWaitingForAnAnswer
+
+        message_wrapped2 = self.wrap_message("pile")
+        actual_answer2 = self.send_and_unwrap(message_wrapped2)
+
+        ht_results = [f"BRAVO ! La réponse est bien {gr_readable}, tu as gagné 🎊!" for gr_readable in ["pile", "face"]] + [f"PERDU 🤡! La réponse est {gr_readable} ! Une prochaine fois peut-être !" for gr_readable in ["pile", "face"]]
+
+        expected_answer2 = [
+            "Je lance la pièce et..." + result for result in ht_results 
+        ]
+
+        assert actual_answer2 in expected_answer2
+        assert "#HT" not in self.gp.isWaitingForAnAnswer
+
+    @pytest.mark.gpgmg2
+    def test_how_a_game_of_heads_or_tails_that_goes_wrong_is_handled_by_grandpy(self):
         
+        message_wrapped1 = self.wrap_message("jouons à pile ou face")
+        self.send_and_unwrap(message_wrapped1)
+
+        message_wrapped2 = self.wrap_message("pile et face lol")
+        expected_answer2 = "Désolé, je n'ai pas compris ta réponse. Peux-tu recommencer ? Il te reste 2 essais !!Pile ou face ?"
+        actual_answer2 = self.send_and_unwrap(message_wrapped2)
+
+        assert actual_answer2 == expected_answer2
+        assert self.gp.memory["HT_ERROR"] == 1
+
+        message_wrapped3 = self.wrap_message("pile et face !!")
+        expected_answer3 = "Désolé, je n'ai pas compris ta réponse. Peux-tu recommencer ? Il te reste 1 essai !!Pile ou face ?"
+        actual_answer3 = self.send_and_unwrap(message_wrapped3)
+
+        assert actual_answer3 == expected_answer3
+        assert self.gp.memory["HT_ERROR"] == 2
+
+        message_wrapped4 = self.wrap_message("je persiste: pile ET face")
+        expected_answer4 = "Désolé, tu as épuisé tes essais ! Le jeu pile ou face est terminé ! À une prochaine fois peut-être 🎲!"
+        actual_answer4 = self.send_and_unwrap(message_wrapped4)
+
+        assert actual_answer4 == expected_answer4
+
+        assert self.gp.memory.get("HT_ERROR") == None
+        assert "#HT" not in self.gp.isWaitingForAnAnswer
+
+@pytest.mark.gpansmu #26/07/20 - OK
+class TestGrandPyAnswerToMultipleQuestions(TestTools):
+
+    @pytest.mark.gpansmu1
+    def test_what_answer_message_returns_if_the_user_says_hello_and_asks_for_OC_address(self, monkeypatch):
+
+        monkeypatch.setattr(self.gp, "get_api_data", self.get_fake_api_data)
         hello_pattern = r"Bonjour!|Salut!|Yo!|Hi!!|👋"
-        expected_message = "Bien sûr mon poussin ! La voici : \"7 Cité Paradis, 75010 Paris\". <br> Et voilà une carte pour t'aider en plus !!<br>"
-        
-        grandpy_answer = self.gp.answer_message("salut grandpy ! Connais-tu l'adresse d'oc?")
-        grandpy_message = json.loads(grandpy_answer)["message"]
 
-        assert expected_message in grandpy_message
-        print(grandpy_message)
-        assert re.search(hello_pattern, grandpy_message)
+        actual_message = self.send_and_unwrap(self.wrap_message("salut grandpy ! Connais-tu l'adresse d'oc?"))
+        expected_message = "Bien sûr mon poussin ! La voici : \"7 Cité Paradis, 75010 Paris\".  Et voilà une carte pour t'aider en plus !!"
 
-    @pytest.mark.testgp2
+        assert re.search(hello_pattern, actual_message)
+        assert expected_message in actual_message
+
+@pytest.mark.gpans #25/07/20 - OK
+class TestGrandPyAnswerToASingleQuestion(TestTools):
+    
+    @pytest.mark.gpans1
     def test_what_answer_message_returns_if_the_user_says_nothing_interesting(self):
-        
-        self.gp = GrandPy()
-        grandpy_answer = json.loads(self.gp.answer_message("Wow"))
+                        
+        actual_message = self.send_and_unwrap(self.wrap_message("ONE MORE DOG REJECTED"))
 
-        expected_answer = "<span>Désolé, je n'ai compris ton message... 😕 Dans une prochaine version peut-être ?</span>"
+        expected_answer = "Désolé, je n'ai pas compris ton message... 😕 Dans une prochaine version peut-être ?"
 
-        assert grandpy_answer['message'] == expected_answer
+        assert actual_message == expected_answer
 
-    @pytest.mark.testgp3
+    @pytest.mark.gpans2
     def test_what_answer_message_returns_if_the_user_says_hello(self):
         
-        self.gp = GrandPy()
-
         hello_pattern = r"Bonjour!|Salut!|Yo!|Hi!!|👋"
-        grandpy_answer = json.loads(self.gp.answer_message("salut"))
 
-        assert re.search(hello_pattern, grandpy_answer['message'])
-        print("Réponse de GP:", grandpy_answer['message'])
+        messages = ["slt", "salut", "Bonjour", "Salutations", "👋", "Yo !!"]
 
-    @pytest.mark.testgp4
-    def test_what_answer_message_returns_if_the_user_asks_for_OC_address(self):
+        for m in messages: 
+            message = self.send_and_unwrap(self.wrap_message(m))
+            assert re.search(hello_pattern, message)
+
+    @pytest.mark.gpans3
+    def test_what_answer_message_returns_if_the_user_asks_for_OC_address(self, monkeypatch):
         
-        self.gp = GrandPy()
-        
-        expected_answer = {
-            'message': "<span>Bien sûr mon poussin ! La voici : \"7 Cité Paradis, 75010 Paris\". <br> Et voilà une carte pour t'aider en plus !!<br></span>",
-            'location': {'lat': 48.8748465, 'lng': 2.3504873}, #lat 48.8747265 et lng ont changé 2.3505517
-            'anecdocte' : "<span>Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse. [En savoir plus sur <a href='https://fr.wikipedia.org/wiki/Cité_Paradis' target='_blank'>Wikipédia</a>]</span>",
-            }
-        
-        expected_answer_js = json.dumps(expected_answer, ensure_ascii=False, sort_keys=True)
+        monkeypatch.setattr(self.gp, "get_api_data", self.get_fake_api_data)
 
-        grandpy_answer = self.gp.answer_message("adresse oc connaitre")
+        message_data = self.wrap_message("adresse oc connaitre")
 
-        assert expected_answer_js == grandpy_answer
+        actual_message = self.send_and_unwrap(message_data)
+        actual_coordinates = self.send_and_unwrap(message_data, "location")
+        actual_anecdocte = self.send_and_unwrap(message_data, "anecdocte")
 
-    @pytest.mark.testgp5
+        expected_message = "Bien sûr mon poussin ! La voici : \"7 Cité Paradis, 75010 Paris\".  Et voilà une carte pour t'aider en plus !!"
+        expected_coordinates = {'lat': 48.8747265, 'lng': 2.3505517} # From MOCK API DATA.
+        expected_anecdocte = "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse. [En savoir plus sur <a href='https://fr.wikipedia.org/wiki/Cité_Paradis' target='_blank'>Wikipédia</a>]"
+
+        assert expected_message == actual_message
+        assert expected_coordinates == actual_coordinates
+        assert expected_anecdocte == actual_anecdocte
+
+    @pytest.mark.gpans4
     def test_what_answer_message_returns_if_the_user_asks_how_grandpy_is_doing(self):
 
         KNOWMORE = lambda source, url: f"[En savoir plus sur <a href='{url}' target='_blank'>{source}</a>]"
@@ -237,102 +277,47 @@ class TestGrandPy():
         EXP_STATE_OF_MIND = [
             "Le Lundi, ça ne va jamais très fort n'est-ce pas 🥱 ? Mais faut se reprendre !! 💪",
             "Ça va ça va... Un Mardi comme les autres. 😐",
-            "Correct ! 😺 Mercredi... Il doit y avoir des sorties ciné aujourd'hui ! 🎦🍿",
-            f"Oui ! Savais-tu que dans le temps 👴, dans les années 60 et au début 70, le jeudi était une journée libre pour les enfants ? Maintenant c'est le Mercredi, et encore ça dépend {KNOWMORE('Wikipédia', 'https://fr.wikipedia.org/wiki/Rythmes_scolaires_en_France')}. Que le temps passe vite ! 😔",
+            "Correct ! Mercredi... Il doit y avoir des sorties ciné aujourd'hui ! 🎦🍿",
+            f"Ça va ! Ça va ! Savais-tu que dans le temps 👴, dans les années 60 et au début 70, le jeudi était une journée libre pour les enfants ? Maintenant c'est le Mercredi, et encore ça dépend {KNOWMORE('Wikipédia', 'https://fr.wikipedia.org/wiki/Rythmes_scolaires_en_France')}. Que le temps passe vite ! 😔",
             "Oh déjà Vendredi ! Bientôt le week-end ! 😺 À part ça ça va bien !",
-            "Oui ! C'est Samedi ! J'espère que tu t'en protites bien ! 😎",
+            "Bien ! C'est Samedi ! J'espère que tu t'en protites bien ! 😎",
             "Ça va ! C'est Dimanche, mais pour nous les 🤖, pas de repit ! 🦾"
         ]
 
-        self.gp = GrandPy()
+        messages = [
+            "Comment ça va ?", "ça va ?", "ca va ?", "Comment va ?", "comment vas-tu ?", 
+            "comment tu vas ???", "Comment allez vous ?"
+        ]
 
-        grandpy_answer = lambda message: json.loads(self.gp.answer_message(message))["message"].replace("<span>", "").replace("</span>", "").replace("<br>", "")
+        misleading_messages = [
+            "comment vas-tu à la boulangerie d'à côté", "Comment allez vous à la piscine municipale ?"
+        ]    
 
-        assert grandpy_answer("Comment ça va ?") in EXP_STATE_OF_MIND
-        assert grandpy_answer("ça va ?") in EXP_STATE_OF_MIND
-        assert grandpy_answer("ca va ?") in EXP_STATE_OF_MIND
-        assert grandpy_answer("Comment va ?") in EXP_STATE_OF_MIND
-        assert grandpy_answer("comment vas-tu ?") in EXP_STATE_OF_MIND
-        assert grandpy_answer("comment tu vas ???") in EXP_STATE_OF_MIND
-        assert grandpy_answer("Comment allez vous ?") in EXP_STATE_OF_MIND
+        for message in [*messages, *misleading_messages]:
+            if message in messages:
+                assert self.send_and_unwrap(self.wrap_message(message)) in EXP_STATE_OF_MIND
+            else:
+                assert self.send_and_unwrap(self.wrap_message(message)) not in EXP_STATE_OF_MIND
 
-        assert grandpy_answer("comment vas-tu à la boulangerie d'à côté") not in EXP_STATE_OF_MIND
-        assert grandpy_answer("Comment allez vous à la piscine municipale ?") not in EXP_STATE_OF_MIND
-
-        #print(grandpy_answer("comment vas-tu ?"))
-
-    @pytest.mark.testgp6
+    @pytest.mark.gpans5
     def test_if_grandpy_replies_as_expected_when_asked_for_the_time(self):
         
         current_time = time.strftime("%H:%M")
         expected_answer = f"🕗 Il est {current_time} !!"
 
-        self.gp = GrandPy()
-        grandpy_answer = lambda message: json.loads(self.gp.answer_message(message))["message"].replace("<span>", "").replace("</span>", "").replace("<br>", "")
+        messages = [
+            "il est quelle heure ?", "quelle heure est-il ?", "tu as l'heure ?", "Quelle heure il est"
+        ]
 
-        assert grandpy_answer({"user_message": "il est quelle heure ?", "options": {'timezone': 2}}) == expected_answer
-        assert grandpy_answer({"user_message": "quelle heure est-il ?", "options": {'timezone': 2}}) == expected_answer
-        assert grandpy_answer({"user_message": "tu as l'heure ?", "options": {'timezone': 2}}) == expected_answer
-        assert grandpy_answer({"user_message": "Quelle heure il est", "options": {'timezone': 2}}) == expected_answer
+        for message in messages:
+            assert self.send_and_unwrap(self.wrap_message(message, {'timezone': 2})) == expected_answer
 
-    @pytest.mark.testgp7
+    @pytest.mark.gpans6
     def test_if_grandpy_replies_as_expected_when_asked_for_the_weather(self, monkeypatch):
 
-        # Qu'est-ce qu'on essaie de faire ?
-        #### Vérifier si grandpy_answer() renvoie la bonne réponse à la question "quel temps il fait"
+        monkeypatch.setattr(self.gp, "get_weather_data", self.get_fake_weather_data)
 
-        # r["weather"]["icon"].replace("d", "").replace("n", "")
-        # http://openweathermap.org/img/wn/10d@2x.png
-
-        self.gp = GrandPy()
-
-        grandpy_answer = lambda message: json.loads(self.gp.answer_message(message))["message"].replace("<span>", "").replace("</span>", "").replace("<br>", "")
-        round = lambda x: math.ceil(x) if x - math.floor(x) > 0.5 else math.floor(x)
-
-        def get_fake_weather_data(user_location):
-
-            if not user_location: return None
-
-            current_f = {
-                "weather": [{
-                    "description": "couvert",
-                    "icon": "04d"
-                }],
-                "main": {
-                    "temp": 21.94,
-                    "feels_like": 18.89,
-                    "temp_min": 21,
-                    "temp_max": 24.44,
-                    "humidity": 40
-                },
-                "name": "Paris"            
-            }
-
-            daily_f = {
-                "daily": [
-                    {"temp": {
-                        "min": 21,
-                        "max": 24.44,
-                    }}
-                ]
-            }
-
-            forecast = {**current_f, **daily_f}
-
-            fake_weather_data = dict(
-                tcur = round(forecast["main"]["temp"]),
-                city = forecast["name"],
-                description = forecast["weather"][0]["description"],
-                icon = forecast["weather"][0]["icon"],
-                tmin = round(forecast["daily"][0]["temp"]["min"]),
-                tmax = round(forecast["daily"][0]["temp"]["max"])
-            )
-
-            return fake_weather_data
-
-        monkeypatch.setattr(self.gp, "get_weather_data", get_fake_weather_data)
-
-        expected_answer = f"<img src='https://openweathermap.org/img/wn/04d.png' alt='weather-icon' width='25' height='25'> Il fait actuellement 22°C à Paris. Le temps est couvert. Les températures min et max de la journée seront respectivement de 21°C et 24°C."
+        expected_answer = f"<img src='https://openweathermap.org/img/wn/04d.png' alt='weather-icon' width='25' height='25'>Il fait actuellement 22°C à Paris. Les températures min et max de la journée seront respectivement de 21°C et 24°C."
         expected_unexpected_answer = f"Désolé, impossible de te donner la météo. As-tu bien accepté que je te géolocalise quand je te l'ai demandé ? 🤔"
 
         options1 = {"location": {"latitude": 48.896, "longitude": 2.32}}
@@ -341,49 +326,81 @@ class TestGrandPy():
         questions = ["Quel temps il fait ?", "Quel temps fait-il ?", "quel temps ?", "quel temps aujourd'hui ?"]
 
         for question in questions:
-            assert grandpy_answer({"user_message": f"{question}", 
-                                "options": options1}) == expected_answer
-            assert grandpy_answer({"user_message": f"{question}", 
-                                "options": options2}) == expected_unexpected_answer
+            assert self.send_and_unwrap(self.wrap_message(f"{question}", options1)) == expected_answer
+            assert self.send_and_unwrap(self.wrap_message(f"{question}", options2)) == expected_unexpected_answer
 
-class TestGrandPyAutoResponses():
+@pytest.mark.gpau #25/07/20 - OK
+class TestGrandPyAutoResponses(TestTools):
 
-    @pytest.mark.testgpau1
+    @pytest.mark.gpau1
     def test_if_give_footer_info_returns_the_expected_string(self):
         
         expected_answer = """
-        <div id='footer-notes'>
-            2019, 2020 — Créé par Jeffrey G.<br/>pour OpenClassrooms
-        </div>
-        <div>
-            <a href="https://github.com/Ludophilia/P7v2" target="_blank">
-                <img src="{{ url_for('static', filename='img/GitHub-Mark-Light-32px.png') }}" alt="Octocat" width="25" height="25"/>
-            </a>
+        <div id="footer_container">
+            <div id="footer_text">
+                2019, 2020 — Créé par Jeffrey G. pour OpenClassrooms.
+            </div>
+            <div id="footer_sns">
+                <a href="https://github.com/Ludophilia/P7v2" target="_blank">
+                    <img src="static/img/GitHub-Mark-Light-32px.png" alt="Octocat" width="25" height="25"/>
+                </a><span>pour en savoir plus</span>
+            </div>
         </div>
         """
-        gp = GrandPy()
+        assert self.gp.give_footer_info() == expected_answer
 
-        assert gp.give_footer_info() == expected_answer
-
-    @pytest.mark.testgpau2
+    @pytest.mark.gpau2
     def test_if_start_conversation_returns_the_expected_string(self):
         
         expected_answer = """<span>Salut 👋, qu'est-ce que je peux faire pour toi ?<br><br>
-        Tu peux me demander:<br>
-        - L'adresse d'OpenClassrooms (ex: "tu connais l'adresse d'OC ?")<br>
-        - Quelle heure il est<br>
-        - Quel temps il fait aujourd'hui<br>
+        Tu peux me demander :<br>
+        - Si je connais l'adresse d'OpenClassrooms 🏫 !<br>
+        - Quel temps ⛅️ il fait actuellement (j'ai besoin de te 📍localiser pour ça) !<br>
+        - L'heure 🕓 qu'il est !<br>
+        - Des infos sur ce site 📁 !<br>
         <br>
-        ...Ou tout simplement me saluer ou me demander comment je vais, ça fait toujours plaisir !
-        </span>
-        """
+        Sinon, tu peux toujours me saluer 👋 ou me demander comment je vais 🙁🙂, ça fait toujours plaisir !<br><br>
+        On peut jouer à quelque chose aussi, mais juste pile ou face 🎲 pour le moment !<br>
+        </span>"""
        
-        gp = GrandPy()
+        assert expected_answer == self.gp.start_conversation()
 
-        # start_conversation = re.sub(r"\t+", " ", gp.start_conversation()).strip()
-        # expected_answer = re.sub(r"\t+",  " ", expected_answer)
+@pytest.mark.gpapi #25/07/20 - OK
+class TestApiDataReception(TestTools):
 
-        # start_conversation = re.sub(r"\s+", " ", gp.start_conversation()).strip()
-        # expected_answer = re.sub(r"\s+",  " ", expected_answer)
+    @pytest.mark.gpapi1
+    def test_if_get_maps_info_retrieves_the_expected_data(self):
+        
+        get_address = lambda maps_data: maps_data["results"][0]["formatted_address"].replace(", France", "") 
+        maps_data = self.gp.get_api_data("maps")
 
-        assert expected_answer == gp.start_conversation()
+        assert get_address(maps_data) == "7 Cité Paradis, 75010 Paris"
+    
+    @pytest.mark.gpapi2
+    def test_if_get_wiki_info_retrieves_the_expected_data(self):
+
+        extract_anecdocte = lambda wiki_data: wiki_data["query"]["pages"][0]["extract"].split('\n')[-1]
+        extract_title = lambda wiki_data: wiki_data["query"]["pages"][0]["title"]
+
+        expected_anecdocte = "La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse."
+        expected_title = "Cité Paradis"
+
+        wiki_data = self.gp.get_api_data("wiki")
+
+        assert extract_anecdocte(wiki_data) == expected_anecdocte
+        assert extract_title(wiki_data) == expected_title
+
+    @pytest.mark.gpapi3
+    def test_if_get_weather_data_retrieve_the_correct_data(self):
+
+        user_location = {"latitude": "48.896735799681274", "longitude": "2.325297188151602"}
+
+        result = self.gp.get_weather_data(user_location)
+
+        assert type(result) == type(dict())
+        assert type(result["tcur"]) == type(int())
+        assert type(result["city"]) == type(str())
+        assert type(result["description"]) == type(str())
+        assert type(result["tmin"]) == type(int())
+        assert type(result["tmax"]) == type(int())
+        assert type(result["icon"]) == type(str())
