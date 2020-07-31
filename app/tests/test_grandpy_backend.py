@@ -157,7 +157,7 @@ class TestPatternRecognition(TestTools):
         for item in matches:
             assert item in ["what", "time", "question"]
 
-@pytest.mark.gpgmg
+@pytest.mark.gpgmg #31/07/20 - OK
 class TestGrandPyGaming(TestTools):
 
     @pytest.mark.gpgmg1
@@ -212,7 +212,7 @@ class TestGrandPyGaming(TestTools):
         assert self.gp.memory.get("HT_ERROR") == None
         assert "#HT" not in self.gp.isWaitingForAnAnswer
 
-@pytest.mark.gpansmu #26/07/20 - OK
+@pytest.mark.gpansmu #31/07/20 - OK
 class TestGrandPyAnswerToMultipleQuestions(TestTools):
 
     @pytest.mark.gpansmu1
@@ -227,7 +227,7 @@ class TestGrandPyAnswerToMultipleQuestions(TestTools):
         assert re.search(hello_pattern, actual_message)
         assert expected_message in actual_message
 
-@pytest.mark.gpans #25/07/20 - OK
+@pytest.mark.gpans #31/07/20 - OK
 class TestGrandPyAnswerToASingleQuestion(TestTools):
     
     @pytest.mark.gpans1
@@ -317,7 +317,7 @@ class TestGrandPyAnswerToASingleQuestion(TestTools):
 
         monkeypatch.setattr(self.gp, "get_weather_data", self.get_fake_weather_data)
 
-        expected_answer = f"<img src='https://openweathermap.org/img/wn/04d.png' alt='weather-icon' width='25' height='25'>Il fait actuellement 22°C à Paris. Les températures min et max de la journée seront respectivement de 21°C et 24°C."
+        expected_answer = f"<img src='https://openweathermap.org/img/wn/04d.png' alt='weather-icon' width='25' height='25'>Il fait actuellement 22°C à Paris. Les températures min et max pour le reste de la journée seront respectivement de 21°C et 24°C."
         expected_unexpected_answer = f"Désolé, impossible de te donner la météo. As-tu bien accepté que je te géolocalise quand je te l'ai demandé ? 🤔"
 
         options1 = {"location": {"latitude": 48.896, "longitude": 2.32}}
@@ -340,7 +340,7 @@ class TestGrandPyAnswerToASingleQuestion(TestTools):
         </span>
         """
 
-        SITE_INFO = lambda link : f"Bien sûr ! Cette app web est la concrétisation d'un des projets à réaliser dans le cadre d'un des parcours-développeur proposé par OpenClassrooms.<br><br>En fait, il s'agit même de sa 2ème version, vu que la 1ère, des mots de Jeffrey G, son auteur, était \"un peu de la merde\".<br><br>D'un point de vue technique, côté frontend, l'app est construite avec le combo HTML5 + CSS3 + JS, sans l'aide d'un framework. Côté backend, est utilisé exclusivement Python3 avec le framework Flask.<br><br>Si ça t'intéresse davantage, je t'invite à te rendre sur {link}, tu en apprendras sans doute plus !"
+        SITE_INFO = lambda link : f"Bien sûr ! Cette app web est la concrétisation d'un des projets à réaliser dans le cadre d'un des parcours \"développeur d'application\" proposé par OpenClassrooms.<br><br>En fait, il s'agit même de sa 2ème version, vu que la 1ère, des mots de Jeffrey G, son auteur, était \"un peu de la merde\".<br><br>D'un point de vue technique, côté frontend , l'app est construite avec le combo HTML5 + CSS3 + JS, sans l'aide d'un framework. Côté backend, est utilisé exclusivement Python3 avec le framework Flask.<br><br>Si ça t'intéresse davantage, je t'invite à te rendre sur {link}, tu en apprendras sans doute plus !"
 
         message = "Puis-je avoir des infos sur ce site ?"
 
@@ -349,26 +349,26 @@ class TestGrandPyAnswerToASingleQuestion(TestTools):
         
         assert actual_message == expected_message
         
-@pytest.mark.gpau #25/07/20 - OK
+@pytest.mark.gpau #31/07/20 - OK
 class TestGrandPyAutoResponses(TestTools):
 
     @pytest.mark.gpau2
     def test_if_start_conversation_returns_the_expected_string(self):
         
         expected_answer = """<span>Salut 👋, qu'est-ce que je peux faire pour toi ?<br><br>
-        Tu peux me demander :<br>
-        - Si je connais l'adresse d'OpenClassrooms 🏫 !<br>
-        - Quel temps ⛅️ il fait actuellement (j'ai besoin de te 📍localiser pour ça) !<br>
-        - L'heure 🕓 qu'il est !<br>
-        - Des infos sur ce site 📁 !<br>
+        Tu peux me demander, dans le formulaire juste en bas avec 'Nouveau message' écrit dedans :<br><br>
+        - "Tu connais l'adresse d'OpenClassrooms ?" pour obtenir l'adresse d'Openclassrooms 🏫 !<br>
+        - "Quel temps fait-il ?" pour obtenir la météo ⛅️ de ton lieu (📍localisation nécessaire) !<br>
+        - "Quelle heure il est ?" pour obtenir l'heure 🕓 qu'il est !<br>
+        - "Jouons à pile ou face" si tu veux jouer au jeu du même nom 🎲 !<br>
+        - "T'as des infos sur ce site ?" pour obtenir des infos sur ce site 📁 !<br>
         <br>
-        Sinon, tu peux toujours me saluer 👋 ou me demander comment je vais 🙁🙂, ça fait toujours plaisir !<br><br>
-        On peut jouer à quelque chose aussi, mais juste pile ou face 🎲 pour le moment !<br>
+        Sinon, tu peux toujours m'envoyer un "salut" ou une "👋" pour me saluer 👋 ou me demander "comment tu vas" pour prendre des nouvelles 🍺, ça fait toujours plaisir !
         </span>"""
        
         assert expected_answer == self.gp.start_conversation()
 
-@pytest.mark.gpapi #25/07/20 - OK
+@pytest.mark.gpapi #31/07/20 - OK
 class TestApiDataReception(TestTools):
 
     @pytest.mark.gpapi1

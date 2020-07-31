@@ -66,6 +66,8 @@ async function displayMessage(message_str, { username, icon }, { custom_class = 
 };
 
 async function displayMap(location, user, animationDuration=1) {
+
+    // Permet d'initialiser la google maps, de l'ajouter au DOM et ainsi de l'afficher.
     
     const center_coordinates = location;
     const map_html = `<div class="map"></div>`;
@@ -140,6 +142,8 @@ function adjustWebAppHeight() {
 
 function getUserPosition() {
 
+    // Permet d'obtenir les coordonnées géographiques de l'utilisateur, moyennant son consentement bien sûr. Utile pour le service météo.
+
     if (!navigator.geolocation) {
         USER_LOCATION = null;
     } else {
@@ -176,6 +180,8 @@ function make_json(user_message) {
 };
 
 function main() {
+
+    // Fonction principale. Met en place les observateurs d'évènement necessaire aux fonctionnalités du site. 
 
     $ = document.querySelector.bind(document); $$ = document.querySelectorAll.bind(document);
 
@@ -256,17 +262,6 @@ function main() {
         reactions++;
         e.preventDefault();
     });
-
-    // $("#brand").addEventListener("click", () => {
-
-    //     // Permet de remonter rapidement le fil de la conversation en appuyant sur le bloc contenant le logo
-            // Ajoutez un bouton pour remonter le fil (dans une v3 ?) dans la zone de chat qui apparait dès que l'utilisateur dépasse un certain point
-
-    //     if (!$("#dialogue_area").firstElementChild) return;
-
-    //     $("#dialogue_area").firstElementChild.scrollIntoView(false);
-
-    // });
 };
 
 main();

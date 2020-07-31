@@ -1,17 +1,17 @@
 """ Données utilisées pour construire les réponses de GrandPy """
 
 STARTER = """Salut 👋, qu'est-ce que je peux faire pour toi ?<br><br>
-        Tu peux me demander :<br>
-        - Si je connais l'adresse d'OpenClassrooms 🏫 !<br>
-        - Quel temps ⛅️ il fait actuellement (j'ai besoin de te 📍localiser pour ça) !<br>
-        - L'heure 🕓 qu'il est !<br>
-        - Des infos sur ce site 📁 !<br>
+        Tu peux me demander, dans le formulaire juste en bas avec 'Nouveau message' écrit dedans :<br><br>
+        - "Tu connais l'adresse d'OpenClassrooms ?" pour obtenir l'adresse d'Openclassrooms 🏫 !<br>
+        - "Quel temps fait-il ?" pour obtenir la météo ⛅️ de ton lieu (📍localisation nécessaire) !<br>
+        - "Quelle heure il est ?" pour obtenir l'heure 🕓 qu'il est !<br>
+        - "Jouons à pile ou face" si tu veux jouer au jeu du même nom 🎲 !<br>
+        - "T'as des infos sur ce site ?" pour obtenir des infos sur ce site 📁 !<br>
         <br>
-        Sinon, tu peux toujours me saluer 👋 ou me demander comment je vais 🙁🙂, ça fait toujours plaisir !<br><br>
-        On peut jouer à quelque chose aussi, mais juste pile ou face 🎲 pour le moment !<br>
+        Sinon, tu peux toujours m'envoyer un "salut" ou une "👋" pour me saluer 👋 ou me demander "comment tu vas" pour prendre des nouvelles 🍺, ça fait toujours plaisir !
         """
 
-SITE_INFO = lambda link : f"Bien sûr ! Cette app web est la concrétisation d'un des projets à réaliser dans le cadre d'un des parcours-développeur proposé par OpenClassrooms.<br><br>En fait, il s'agit même de sa 2ème version, vu que la 1ère, des mots de Jeffrey G, son auteur, était \"un peu de la merde\".<br><br>D'un point de vue technique, côté frontend, l'app est construite avec le combo HTML5 + CSS3 + JS, sans l'aide d'un framework. Côté backend, est utilisé exclusivement Python3 avec le framework Flask.<br><br>Si ça t'intéresse davantage, je t'invite à te rendre sur {link}, tu en apprendras sans doute plus !"
+SITE_INFO = lambda link : f"Bien sûr ! Cette app web est la concrétisation d'un des projets à réaliser dans le cadre d'un des parcours \"développeur d'application\" proposé par OpenClassrooms.<br><br>En fait, il s'agit même de sa 2ème version, vu que la 1ère, des mots de Jeffrey G, son auteur, était \"un peu de la merde\".<br><br>D'un point de vue technique, côté frontend , l'app est construite avec le combo HTML5 + CSS3 + JS, sans l'aide d'un framework. Côté backend, est utilisé exclusivement Python3 avec le framework Flask.<br><br>Si ça t'intéresse davantage, je t'invite à te rendre sur {link}, tu en apprendras sans doute plus !"
 
 KNOWMORE = lambda source, url: f"[En savoir plus sur <a href='{url}' target='_blank'>{source}</a>]"
 
@@ -48,7 +48,7 @@ CURRENT_TIME = lambda user_current_time: f"🕗 Il est {user_current_time}"
 NRML_EXTRA = " !!"
 DFTZ_EXTRA = lambda gp_current_time: f"... du moins là où tu es car chez moi il est {gp_current_time} ! Que de distance nous sépare, c'est beau internet !🥺"
 
-CURRENT_WEATHER = lambda data: f"Il fait actuellement {data['tcur']}°C à {data['city']}. Les températures min et max de la journée seront respectivement de {data['tmin']}°C et {data['tmax']}°C."
+CURRENT_WEATHER = lambda data: f"Il fait actuellement {data['tcur']}°C à {data['city']}. Les températures min et max pour le reste de la journée seront respectivement de {data['tmin']}°C et {data['tmax']}°C."
 NO_COORDS_GIVEN = f"Désolé, impossible de te donner la météo. As-tu bien accepté que je te géolocalise quand je te l'ai demandé ? 🤔"
 
 FOOTER_TEXT = "2019, 2020 — Créé par Jeffrey G. pour OpenClassrooms."
