@@ -3,8 +3,8 @@
 ## Qu'est-ce que c'est ?
 
 <div style="text-align: center">
-    <img src="v2_dsk_1.gif">
-    <img src="v2_mob_1.gif">
+    <img src="v2_dsk_1.gif"><br>
+    <em>Screeshot v2<em>
 </div>
 
 Ce dépot contient GrandPy, **une application web** monopage responsive crée dans le cadre du parcours développeur d'application Python d'OpenClassrooms. Elle constitue le 7ème projet de ce parcours, d'où le nom P7v2 du dépot.
@@ -17,10 +17,11 @@ Cette application contient un robot conversationnel, lui aussi appelé **GrandPy
 
 Certaines de ces réponses sont construites avec l'aide d'informations provenant d'API de sites telles que Google Maps ou Wikipédia.
 
-## Une version 2 !?
+## Une version 2 ?
 
 <div style="text-align: center">
-    <img src="v1_dsk_1.gif">
+    <img src="v1_dsk_1.gif"><br>
+    <em>Screeshot de la v1<em>
 </div>
 
 Ce projet est une refonte significative du P7 initial disponible dans *[ce depot github](https://github.com/Ludophilia/P7)* et dont le resultat est consultable sur *https://grandpy-p7.herokuapp.com*.
@@ -106,10 +107,10 @@ Par la suite, depuis le terminal (bash et dérivés) et **la racine du projet**:
 
 5. A noter que de nouvelles clés API seront aussi nécessaires pour accéder aux différentes API dont dépend ce projet, voir les documentations fournisseur dans la section précédente pour plus d'information.
 
-5. Une fois les clés récupérées et ajoutées au fichier de config (`config.py`), toujours depuis la racine du projet:
+5. Une fois les clés récupérées et ajoutées au fichier de config (`config.py`),  pour lancer le serveur web, toujours depuis la racine du projet:
 
     ```bash
     flask run 
     ````
 
-    pour lancer le serveur web. Par défaut, l\'app se trouve à http://127.0.0.1:5000/.
+   Par défaut, l\'app se trouve à http://127.0.0.1:5000/.
