@@ -162,7 +162,7 @@ function getUserPosition() {
     };
 };
 
-function make_json(user_message) {
+function makeJson(user_message) {
 
     // Permet de créer un JSON avec différentes options en fonction de l'input utilisateur.
 
@@ -213,7 +213,7 @@ function main() {
         const is_string_empty = !user_message.trim();
         if (is_string_empty) return e.preventDefault();
 
-        const user_data = make_json(user_message);
+        const user_data = makeJson(user_message);
 
         displayMessage(user_message, user);
         

@@ -8,7 +8,7 @@ STARTER = """Salut 👋, qu'est-ce que je peux faire pour toi ?<br><br>
         - "Jouons à pile ou face" si tu veux jouer au jeu du même nom 🎲 !<br>
         - "T'as des infos sur ce site ?" pour obtenir des infos sur ce site 📁 !<br>
         <br>
-        Sinon, tu peux toujours m'envoyer un "salut" ou une "👋" pour me saluer 👋 ou me demander "comment tu vas" pour prendre des nouvelles 🍺, ça fait toujours plaisir !
+        Sinon, tu peux toujours m'envoyer un "salut" ou une "👋" pour me saluer 👊 ou me demander "comment tu vas" pour prendre des nouvelles 🍺, ça fait toujours plaisir !
         """
 
 SITE_INFO = lambda link : f"Bien sûr ! Cette app web est la concrétisation d'un des projets à réaliser dans le cadre d'un des parcours \"développeur d'application\" proposé par OpenClassrooms.<br><br>En fait, il s'agit même de sa 2ème version, vu que la 1ère, des mots de Jeffrey G, son auteur, était \"un peu de la merde\".<br><br>D'un point de vue technique, côté frontend , l'app est construite avec le combo HTML5 + CSS3 + JS, sans l'aide d'un framework. Côté backend, est utilisé exclusivement Python3 avec le framework Flask.<br><br>Si ça t'intéresse davantage, je t'invite à te rendre sur {link}, tu en apprendras sans doute plus !"

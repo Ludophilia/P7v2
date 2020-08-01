@@ -7,11 +7,13 @@ from datetime import date as dt
 
 class APIManager:
     
-    """Représente l'APIManager, c'est à dire le système qui télécharge les données des différentes API et les rend disponible à d'autres système"""
+    """Représente l'APIManager, c'est à dire le système qui télécharge les données des différentes 
+    API et les rend disponible à d'autres système"""
 
-    def get_api_data(self, api_name):
+    def get_location_data(self, api_name):
 
-        """Telecharge les données Maps sur OC ou de Wikipédia sur la Cité Paradis si elles n'existent pas, les stocke dans un fichier .js, et les rappelle sous forme de dict"""
+        """Telecharge les données Maps sur OC ou de Wikipédia sur la Cité Paradis 
+        si elles n'existent pas, les stocke dans un fichier .js, et les rappelle sous forme de dict"""
         
         maps_url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=openclassrooms+paris&key={cf.GM_API_KEY}"
         wiki_url = "https://fr.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Cité Paradis&formatversion=2&exsentences=3&exlimit=1&explaintext=1&exsectionformat=plain"
@@ -55,7 +57,8 @@ class APIManager:
 
 class Parser:
 
-    """Représente le Parser, c'est à dire le système qui analyse le message envoyé à l'utilisateur, en extrait les mots clés et les reconnait ceux qui font "reagir" GrandPy"""
+    """Représente le Parser, c'est à dire le système qui analyse le message envoyé à l'utilisateur, 
+    en extrait les mots clés et les reconnait ceux qui font "reagir" GrandPy"""
 
     def stopwords(self):
 
@@ -70,7 +73,8 @@ class Parser:
     
     def remove_punctuation(self, user_input):
 
-        """Retire la ponctuation et les whitespaces en trop de l'input utilisateur (str) et renvoie un str de cet input"""
+        """Retire la ponctuation et les whitespaces en trop de l'input utilisateur (str) 
+        et renvoie un str de cet input"""
 
         gp1 = ["\'", "\""] #"-",
         gp2 = ["!?", "!", "?", "?!"] #"-", 
@@ -89,7 +93,8 @@ class Parser:
         
     def extract_keywords(self, user_input):
         
-        """Retire les stopwords et les mots répétés de l'input utilisateur sans ponctuation (pf pour punctuation-free) et renvoie la list des mots "clés" restants (minuscules uniquement)"""
+        """Retire les stopwords et les mots répétés de l'input utilisateur sans ponctuation 
+        (pf pour punctuation-free) et renvoie la list des mots "clés" restants (minuscules uniquement)"""
 
         words_in_user_input = self.remove_punctuation(user_input).split()
         keywords = []
@@ -131,7 +136,9 @@ class GrandPy(Parser, APIManager):
 
     def get_anecdocte(self, jsf_wiki_data):
 
-        """Récupère l'anecdocte de GP sur la Cité Paradis et l'url de la fiche wikipédia associée à partir des données jsf (json-formatted) de l'API Wikimedia. Renvoie un str contenant l'anecdocte"""
+        """Récupère l'anecdocte de GP sur la Cité Paradis et l'url de la fiche wikipédia 
+        associée à partir des données jsf (json-formatted) de l'API Wikimedia. 
+        Renvoie un str contenant l'anecdocte"""
 
         title = jsf_wiki_data["query"]["pages"][0]["title"]
         wiki_url = f"https://fr.wikipedia.org/wiki/{title}".replace(" ", "_")
@@ -179,7 +186,8 @@ class GrandPy(Parser, APIManager):
 
     def give_weather(self, user_data, message):
 
-        """Génère un message où GrandPy donne la météo (temperature actuelle, minimale, maximale) en fonction des coordonnées géo de l'utilisateur."""
+        """Génère un message où GrandPy donne la météo (temperature actuelle, minimale, maximale) 
+        en fonction des coordonnées géo de l'utilisateur."""
 
         user_location = user_data.get("options").get("location")
 
@@ -199,15 +207,16 @@ class GrandPy(Parser, APIManager):
 
     def give_oc_address(self, message, grandpy_response):
 
-        """Génère un message où GrandPy donne l'adresse d'openclassrooms.Génère aussi un autre message contenant une anecdocte sur la rue d'OC et renvoie les coordonnés du lieu pour un affichage sur une carte."""
+        """Génère un message où GrandPy donne l'adresse d'openclassrooms.Génère aussi un autre message contenant une anecdocte 
+        sur la rue d'OC et renvoie les coordonnés du lieu pour un affichage sur une carte."""
 
-        oc_maps_data_js = self.get_api_data("maps")
+        oc_maps_data_js = self.get_location_data("maps")
         oc_address = oc_maps_data_js["results"][0]["formatted_address"].replace(", France", "") 
 
         message += f"{speech.ADDRESSFOUND(oc_address)}<br>"
 
         grandpy_response.update(
-            anecdocte = self.get_anecdocte(self.get_api_data("wiki")),
+            anecdocte = self.get_anecdocte(self.get_location_data("wiki")),
             location = oc_maps_data_js["results"][0]["geometry"]["location"]
         )
 
@@ -322,7 +331,8 @@ class GrandPy(Parser, APIManager):
 
     def deal_with_clicks_on_logo(self, user_data):
 
-        """Renvoie une réponse (sous forme de str) à l'utilisateur en fonction du nombre de fois qu'il a appuyé sur le logo de grandpy"""
+        """Renvoie une réponse (sous forme de str) à l'utilisateur en fonction du 
+        nombre de fois qu'il a appuyé sur le logo de grandpy"""
 
         nth_time = user_data.get("reactions", "")
 
