@@ -6,7 +6,7 @@
     <img src="v2_dsk_1.gif"><br>
 </div>
 
-Ce dépot contient GrandPy, **une application web** monopage responsive crée dans le cadre du parcours développeur d'application Python d'OpenClassrooms. Elle constitue le 7ème projet de ce parcours, d'où le nom P7v2 du dépot.
+Ce dépot contient GrandPy, **une application web** monopage responsive créé dans le cadre du parcours développeur d'application Python d'OpenClassrooms. Elle constitue le 7ème projet de ce parcours, d'où le nom P7v2 du dépot.
 
 Cette application contient un robot conversationnel, lui aussi appelé **GrandPy 🤖**, capable de répondre à quelques questions et messages envoyés par l'utilisateur tel que :
 - *Salut !*
@@ -16,16 +16,18 @@ Cette application contient un robot conversationnel, lui aussi appelé **GrandPy
 
 Certaines de ces réponses sont construites avec l'aide d'informations provenant d'API de sites telles que Google Maps ou Wikipédia.
 
+Cette application est optimisée pour Chrome 84 et Safari 13.
+
 ## Une version 2 ?
 
 <div style="text-align: center">
     <img src="v1_dsk_1.gif">
 </div>
 
-Ce projet est une refonte significative du P7 initial disponible dans *[ce depot github](https://github.com/Ludophilia/P7)* et dont le resultat est consultable sur *https://grandpy-p7.herokuapp.com*.
+Ce projet est une refonte significative du P7 initial (photo ci-dessus) disponible dans *[ce depot github](https://github.com/Ludophilia/P7)* et dont le resultat est consultable sur *https://grandpy-p7.herokuapp.com*.
 
-Cette nouvelle version part de sur de nouvelles bases techniques (retrait de Bootstrap, jquery…) et apporte de nombreuses améliorations telles que :
-- Un **design plus esthétique**, qui occupe mieux la hauteur d'écran disponible et s'adapte mieux à la consultation sur mobile grâce à l'ajout d'un design dédié.
+Cette nouvelle version apporte de nombreuses améliorations telles que :
+- Un **design plus esthétique**, qui occupe mieux la hauteur d'écran disponible et s'adapte mieux à la consultation sur mobile grâce à l'ajout d'un [design dédié](v2_mob_1.gif).
 - Une **meilleure expérience utilisateur**, grâce à l'ajout entre autres : 
     - d'un message d'accueil qui explique les fonctionnalités de l'application
     - d'une zone d'input message qui se redimensionne automatiquement
@@ -45,10 +47,10 @@ La partie sous le capot n'en est pas reste puisque :
 ### Logique générale
 
 L'application peut être séparée en deux parties qui communiquent ensemble via HTTP:
-- La partie **client**, accessible via un navigateur web compatible, est en charge de l'envoi des messages de l'utilisateur, et de la réception des messages du robot, et de l'affichage de la conversation qui en resulte.
-- La partie **serveur** héberge aussi le robot GrandPy qui traite les messages qui lui sont envoyés par le client, fait des appels à des API tierces quand nécessaire et renvoie la réponse appropriée. Naturellement, elle héberge aussi la partie client de l'application et la sert lorsque l'utilisateur accède à l'adresse dédiée.
+- La partie **client**, accessible via un navigateur web compatible, est en charge de l'envoi des messages tapés par l'utilisateur, de la réception des messages envoyé par le robot, et de l'affichage de la conversation qui en resulte.
+- La partie **serveur** héberge aussi le robot GrandPy qui traite les messages qui lui sont envoyés par le client, fait des appels à des API tierces quand nécessaire et renvoie la réponse appropriée. Naturellement, elle héberge aussi la partie client de l'application et la sert à l'utilisateur lorsque l'utilisateur accède à l'adresse dédiée.
 
-### Langages et API utilisées
+### Langages, modules et API
 
 #### Partie client:
 - HTML5 <img src="https://upload.wikimedia.org/wikipedia/commons/6/61/HTML5_logo_and_wordmark.svg" width=16 height=16>
@@ -57,8 +59,8 @@ L'application peut être séparée en deux parties qui communiquent ensemble via
 
 #### Partie serveur:
 - Python 3.6 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg" width=16 height=16>
-- web framework Flask <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Flask_logo.svg" width=48 height=16>
-- d'autres modules à voir dans requirements.txt (Requests...)
+- avec le web framework Flask <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Flask_logo.svg" width=48 height=16>
+- et d'autres modules à voir dans requirements.txt (requests...)
 
 #### API : 
 - **Google Maps** ([doc1](https://developers.google.com/maps/documentation/javascript/overview), [doc2](https://developers.google.com/places/web-service/search)) pour l'affichage d'une carte interactive et la récupération d'une adresse
@@ -67,8 +69,6 @@ L'application peut être séparée en deux parties qui communiquent ensemble via
 
 #### CDN : 
 - **FontAwesome** ([doc](https://fontawesome.com/v4.7.0/get-started/)) pour les icônes 
-
-Cette application est optimisée pour Chrome 84 et Safari 13.
 
 ## Comment ça s'installe ?
 
@@ -103,9 +103,9 @@ Par la suite, depuis le terminal (bash et dérivés) et **la racine du projet**:
     pip install -r requirements.txt
     ```
 
-5. A noter que de nouvelles clés API seront aussi nécessaires pour accéder aux différentes API dont dépend ce projet, voir les documentations fournisseur dans la section précédente pour plus d'information.
+5. De nouvelles clés API seront aussi nécessaires pour accéder aux différentes API dont dépend ce projet, voir les documentations fournisseur dans la [section précédente](#API) pour plus d'informations.
 
-5. Une fois les clés récupérées et ajoutées au fichier de config (`config.py`),  pour lancer le serveur web, toujours depuis la racine du projet:
+5. Une fois les clés récupérées et ajoutées au fichier de config (`config.py`), pour lancer le serveur web, toujours depuis la racine du projet:
 
     ```bash
     flask run 
