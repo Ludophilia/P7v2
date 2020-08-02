@@ -103,7 +103,7 @@ Par la suite, depuis le terminal (bash et dérivés) et **la racine du projet**:
     pip install -r requirements.txt
     ```
 
-5. De nouvelles clés API seront aussi nécessaires pour accéder aux différentes API dont dépend ce projet, voir les documentations fournisseur dans la [section précédente](#API) pour plus d'informations.
+5. De nouvelles clés API seront aussi nécessaires pour accéder aux différentes API dont dépend ce projet, voir les documentations fournisseur dans la [section précédente](#api-) pour plus d'informations.
 
 5. Une fois les clés récupérées et ajoutées au fichier de config (`config.py`), pour lancer le serveur web, toujours depuis la racine du projet:
 
