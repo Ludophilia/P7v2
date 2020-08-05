@@ -3,15 +3,51 @@ from app import app
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
-import time
+import time, requests, os, pytest, zipfile
 
-class TestMasterClass(LiveServerTestCase): 
+class TestMasterClass(LiveServerTestCase):
+
+    # def get_chromedriver(self):
+
+    #     # https://chromedriver.storage.googleapis.com/index.html?path=84.0.4147.30
+    #     # https://chromedriver.storage.googleapis.com/84.0.4147.30/chromedriver_mac64.zip
+    #     # https://chromedriver.storage.googleapis.com/84.0.4147.30/chromedriver_win32.zip
+
+    #     r = requests.get("https://chromedriver.storage.googleapis.com/84.0.4147.30/chromedriver_mac64.zip")
+
+    #     with open("test", "wb") as f:
+    #         f.write(r.content)
+
+    #     #will return webdriver.Chrome('app/tests/chromedriver')
+
+    def get_chromedriver(self, os_name): # Remettez le dans sa classe dédiée
+        
+        # GET CHROMEDRIVER : https://sites.google.com/a/chromium.org/chromedriver/
+        
+        ext = {"mac": "mac64", "win": "win32"}.get(os_name)
+        chromedriver_url = f"https://chromedriver.storage.googleapis.com/84.0.4147.30/chromedriver_{ext}.zip"
+
+        chromedriver_zip = requests.get(chromedriver_url)
+
+        if not os.path.exists("app/tests/chromedriver"):
+
+            with open("app/tests/chromedriver.zip", "wb") as f:
+                f.write(chromedriver_zip.content)# THAT REQUEST shit needs to be replaced.
+                          
+            with zipfile.ZipFile("app/tests/chromedriver.zip", mode="r") as z:
+                chromedriver = z.getinfo("chromedriver") #Python 3.8. Use := to assign and return ?
+                z.extract(chromedriver, path="app/tests")
+            
+            os.remove("app/tests/chromedriver.zip")
+
+        return webdriver.Chrome('app/tests/chromedriver')
+
     def create_app(self): 
         app.config.from_object("config_tests")
         return app
     
     def setUp(self): 
-        self.driver = webdriver.Chrome('app/tests/chromedriver')
+        self.driver = self.get_chromedriver("mac")
     
     def tearDown(self):
         self.driver.quit()
@@ -70,6 +106,13 @@ class TestChatFunctionalityAndErgo(TestMasterClass):
 
 class TestGrandPyAnswersFrontEndSide(TestMasterClass): 
 
+    # Tester si l'utilisateur voit bien le message s'afficher (une fois, sur la question "tu connais l'adresse d'oc ?"")
+
+    # @pytest.mark.test0
+    # def test_simple_very_simple(self):
+    #     self.get_chromedriver("mac")
+
+    @pytest.mark.test0
     def test_if_grandpy_gives_the_adress_and_the_info_related_to_the_adress_and_if_the_map_is_displayed(self):
         self.visit_url()
 
