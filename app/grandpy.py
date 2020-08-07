@@ -146,7 +146,7 @@ class GrandPy(Parser, APIManager):
         wikipedia_part = jsf_wiki_data["query"]["pages"][0]["extract"].split('\n')[-1]
         knowmore_part = speech.KNOWMORE("Wikipédia", wiki_url)
 
-        return f"<span>{speech.ANECDOCTE_STARTER} {wikipedia_part} {knowmore_part}</span>"
+        return f"{speech.ANECDOCTE_STARTER} {wikipedia_part} {knowmore_part}"
 
     def say_hello(self, message):
 
@@ -342,6 +342,6 @@ class GrandPy(Parser, APIManager):
 
         """Renvoie un message sympa pour démarrer la conversation avec l'utilisateur """
 
-        starter = f"<span>{speech.STARTER}</span>"
+        starter = f"{speech.STARTER}"
 
         return starter

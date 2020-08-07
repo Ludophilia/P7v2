@@ -3,51 +3,45 @@ from app import app
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
-import time, requests, os, pytest, zipfile
+from selenium.webdriver.common.touch_actions import TouchActions
+import time, wget, os, pytest, zipfile
 
-class TestMasterClass(LiveServerTestCase):
+class ChromeDvrMgr():
 
-    # def get_chromedriver(self):
+    @classmethod
+    def get_chromedriver(cls, os_name, version):
 
-    #     # https://chromedriver.storage.googleapis.com/index.html?path=84.0.4147.30
-    #     # https://chromedriver.storage.googleapis.com/84.0.4147.30/chromedriver_mac64.zip
-    #     # https://chromedriver.storage.googleapis.com/84.0.4147.30/chromedriver_win32.zip
-
-    #     r = requests.get("https://chromedriver.storage.googleapis.com/84.0.4147.30/chromedriver_mac64.zip")
-
-    #     with open("test", "wb") as f:
-    #         f.write(r.content)
-
-    #     #will return webdriver.Chrome('app/tests/chromedriver')
-
-    def get_chromedriver(self, os_name): # Remettez le dans sa classe dédiée
+        """ Automatise le téléchargement du chromedriver et le renvoie pour utilisation """
         
         # GET CHROMEDRIVER : https://sites.google.com/a/chromium.org/chromedriver/
-        
-        ext = {"mac": "mac64", "win": "win32"}.get(os_name)
-        chromedriver_url = f"https://chromedriver.storage.googleapis.com/84.0.4147.30/chromedriver_{ext}.zip"
-
-        chromedriver_zip = requests.get(chromedriver_url)
-
+    
         if not os.path.exists("app/tests/chromedriver"):
+            
+            ext = {"mac": "mac64", "win": "win32"}.get(os_name)
+            chromedriver_url = f"http://chromedriver.storage.googleapis.com/{version}/chromedriver_{ext}.zip"
 
-            with open("app/tests/chromedriver.zip", "wb") as f:
-                f.write(chromedriver_zip.content)# THAT REQUEST shit needs to be replaced.
-                          
+            wget.download(chromedriver_url, "app/tests/chromedriver.zip")
+
             with zipfile.ZipFile("app/tests/chromedriver.zip", mode="r") as z:
                 chromedriver = z.getinfo("chromedriver") #Python 3.8. Use := to assign and return ?
                 z.extract(chromedriver, path="app/tests")
             
+            os.system("chmod 755 app/tests/chromedriver")
             os.remove("app/tests/chromedriver.zip")
 
         return webdriver.Chrome('app/tests/chromedriver')
+
+class TestMasterClass(LiveServerTestCase):
 
     def create_app(self): 
         app.config.from_object("config_tests")
         return app
     
     def setUp(self): 
-        self.driver = self.get_chromedriver("mac")
+        self.driver = ChromeDvrMgr.get_chromedriver("mac", "84.0.4147.30")
+        self.query_selector = self.driver.find_element_by_css_selector
+        self.query_selector_all = self.driver.find_elements_by_css_selector
+        self.visit_url()
     
     def tearDown(self):
         self.driver.quit()
@@ -59,95 +53,66 @@ class TestMasterClass(LiveServerTestCase):
         self.visit_url()
         assert self.driver.current_url == "http://127.0.0.1:8943/" or self.driver.current_url == "http://localhost:8943/"
 
-class TestChatFunctionalityAndErgo(TestMasterClass): 
+    def send_message(self, message, send=True): 
+        self.chat_input = self.query_selector('#input_area')
+        self.chat_input.send_keys(message)
+        if send: self.query_selector("#submit_button").click()
 
-    def test_if_the_message_is_sent_when_the_user_hits_enter(self):
-        self.visit_url()
+@pytest.mark.gpansfe
+class TestGrandPyAnswersFrontEndSide(TestMasterClass):
 
-        self.text_area = self.driver.find_element_by_id('chat_input')
-        self.text_area.send_keys('bonjour', Keys.ENTER)
+    @pytest.mark.gpansfe0
+    def test_if_grandpys_welcome_message_is_correctly_displayed(self):
 
-        time.sleep(2) #Laissez lui le temps de rafraichir le dom, sinon c'est un échec.
+        time.sleep(2)
+        
+        self.message = self.query_selector("#message1")
+        self.part_of_expected_answer = "Salut 👋, qu'est-ce que je peux faire pour toi ?\n\nTu peux me demander, dans le formulaire juste en bas avec 'Nouveau message' écrit dedans :"
 
-        self.text_element = self.driver.find_element_by_css_selector(".message:last-child span")
+        assert self.part_of_expected_answer in self.message.text
 
-        assert self.text_element.text in ["Bonjour!", "Salut!", "Yo!", "Hi!!"]
+    @pytest.mark.gpansfe1
+    def test_if_grandpy_gives_the_adress_and_the_info_related_to_the_adress_and_if_the_map_is_displayed(self):
 
-    def test_if_the_loading_animation_is_displayed(self):
-        self.visit_url()
+        self.send_message("Connais-tu l'adresse d'OpenClassrooms") 
 
-        self.chat_input = self.driver.find_element_by_id('chat_input')
+        time.sleep(6)
+
+        self.answer = self.query_selector("#message3")
+        self.maps = self.query_selector(".map div.gm-style")
+        self.anecdocte = self.query_selector("#message5")
+
+        assert self.answer.text == "Bien sûr mon poussin ! La voici : \"7 Cité Paradis, 75010 Paris\".\nEt voilà une carte pour t'aider en plus !!"
+        assert self.maps.is_displayed
+        assert "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ?" in self.anecdocte.text
+
+    @pytest.mark.gpansfe2
+    def test_if_grandpy_greets_back(self):
+
+        self.chat_input = self.query_selector('#input_area')
         self.chat_input.send_keys('bonjour', Keys.ENTER)
-
-        self.loading_animation = self.driver.find_element_by_css_selector(".ld:last-child")
-        assert self.loading_animation.is_displayed()
-
-        self.chat_input.send_keys("Connais-tu l'adresse d'OpenClassrooms", Keys.ENTER)
-
-        self.loading_animation = self.driver.find_element_by_css_selector(".ld:last-child")
-        assert self.loading_animation.is_displayed()
-
-    def test_if_the_last_message_is_always_displayed_to_the_user(self):
-        self.visit_url()
-
-        self.chat_input = self.driver.find_element_by_id('chat_input')
-
-        for _ in range(4):
-            self.chat_input.send_keys('bonjour', Keys.ENTER)
-            self.chat_input.send_keys('Que veut dire notre président quand il affirme que Sisyphe a toujours cet intraduisible à faire rouler', Keys.ENTER)
-            self.chat_input.send_keys('Es-tu un premier de cordée ?', Keys.ENTER)
-            self.chat_input.send_keys("Connais-tu l'adresse d'OC ?", Keys.ENTER)
 
         time.sleep(2)
 
-        self.grandpy_answer = self.driver.find_element_by_css_selector(".message:last-child span")
+        self.answer = self.query_selector("#message3")
 
-        assert self.grandpy_answer.rect['y'] <= 611 #Ex de rect : {'height': 18, 'width': 61, 'x': 306, 'y': 4051}. Le message est directement visible si les coordonnées sont inférieures à (très très très grossièrement) à 611.
+        assert self.answer.text in ["Bonjour!", "Salut!", "Yo!", "Hi!!", "👋"]
 
-class TestGrandPyAnswersFrontEndSide(TestMasterClass): 
+    @pytest.mark.gpansfe3
+    def test_if_grandpy_answers_accordingly_when_asked_for_something_out_of_his_current_scope(self):
 
-    # Tester si l'utilisateur voit bien le message s'afficher (une fois, sur la question "tu connais l'adresse d'oc ?"")
+        self.send_message('Garçon !! Je voudrais un verre d\'hydromel, avec 3 glaçons !')
 
-    # @pytest.mark.test0
-    # def test_simple_very_simple(self):
-    #     self.get_chromedriver("mac")
+        time.sleep(2)
 
-    @pytest.mark.test0
-    def test_if_grandpy_gives_the_adress_and_the_info_related_to_the_adress_and_if_the_map_is_displayed(self):
-        self.visit_url()
+        self.answer = self.query_selector("#message3")
 
-        self.chat_input = self.driver.find_element_by_id('chat_input')
-        self.chat_input.send_keys("Connais-tu l'adresse d'OpenClassrooms") 
-        self.chat_input.submit()
+        assert self.answer.text == "Désolé, je n'ai pas compris ton message... 😕 Dans une prochaine version peut-être ?"
 
-        time.sleep(3)
-
-        self.gp_answer = self.driver.find_element_by_css_selector(".message:nth-last-child(3) span")
-        self.maps_gmstyle = self.driver.find_element_by_css_selector(".map div div:first-child")
-        self.gp_anecdocte = self.driver.find_element_by_css_selector(".message:last-child span")
-
-        assert self.gp_answer.text == "Bien sûr mon poussin ! La voici : 7 Cité Paradis, 75010 Paris."
-        assert self.maps_gmstyle.get_attribute("class") == "gm-style"
-        assert self.gp_anecdocte.text == "Mais t'ai-je déjà raconté l'histoire de ce quartier qui m'a vu en culottes courtes ? La cité Paradis est une voie publique située dans le 10e arrondissement de Paris. Elle est en forme de té, une branche débouche au 43, rue de Paradis, la deuxième au 57, rue d'Hauteville et la troisième en impasse. [En savoir plus sur Wikipédia]"
-
-    def test_if_grandpy_greets_back(self):
-        self.visit_url()
-
-        self.text_area = self.driver.find_element_by_id('chat_input')
-        self.text_area.send_keys('bonjour', Keys.ENTER)
-
-        time.sleep(2) #Laissez lui le temps de rafraichir le dom, sinon c'est un échec.
-
-        self.text_element = self.driver.find_element_by_css_selector(".message:last-child span")
-
-        assert self.text_element.text in ["Bonjour!", "Salut!", "Yo!", "Hi!!"]
-
-        #On pourrait aussi s'assurer que GrandPy ne dise pas bonjour dans d'autres situations
-
+    @pytest.mark.gpansfe4
     def test_what_grandpy_says_when_the_user_clicks_on_the_GrandPy_logo(self):
-        self.visit_url()
 
-        self.site_brand = self.driver.find_element_by_id('site_brand')
+        self.brand = self.query_selector("#brand_logo > a")
 
         self.reactions = {
             0 : "Pourquoi tu appuies sur mon logo, t'es fou ou quoi ? Je suis plus très jeune, c'est fragile ici !!",
@@ -157,15 +122,100 @@ class TestGrandPyAnswersFrontEndSide(TestMasterClass):
             4 : "C'EST FINI OUI ?",
             5 : "FRANCHEMENT ?",
             7 : "Aucune empathie hein :/",
-            9 : "10 fois de suite..."
+            9 : "10 fois de suite... OK. T'as gagné.",
+            10: "..."
         }
 
-        for i in range(10): 
+        for i in range(11): 
 
-            self.action = ActionChains(self.driver)
-            self.action.click(self.site_brand).perform()
-            time.sleep(2) #Laissez lui le temps de rafraichir le dom, sinon c'est un échec.
-            self.text_element = self.driver.find_element_by_css_selector(".message:last-child span")
+            self.brand.click()
+            time.sleep(2) 
+            self.answer = self.query_selector(".grandpy_type:last-child > div")
             
-            if i in range(6) or i in [7,9]:
-                assert self.text_element.text == self.reactions[i]
+            if i in range(6) or i in [7,10]:
+                assert self.answer.text == self.reactions[i]
+
+@pytest.mark.gpux
+class TestUserExperience(TestMasterClass): 
+
+    @pytest.mark.gpux1
+    def test_if_the_message_is_sent_when_the_user_hits_enter(self):
+        self.visit_url()
+
+        self.text_area = self.query_selector('#input_area')
+        self.text_area.send_keys('bonjour', Keys.ENTER)
+
+        time.sleep(2)
+
+        self.answer = self.query_selector("#message3")
+
+        assert self.answer.text in ["Bonjour!", "Salut!", "Yo!", "Hi!!", "👋"]
+
+    @pytest.mark.gpux2
+    def test_if_the_loading_animation_is_displayed(self):
+        
+        self.loading_animation1 = self.query_selector("#animation1")
+        assert self.loading_animation1.is_displayed()
+
+        time.sleep(2)
+
+        self.send_message("bonjour")
+
+        time.sleep(0.5)
+
+        self.loading_animation2 = self.query_selector("#animation3")
+        assert self.loading_animation2.is_displayed()
+
+    @pytest.mark.gpux3
+    def test_if_the_last_message_is_always_displayed_to_the_user(self):
+
+        self.send_message('Bonjour')
+        self.send_message('Au revoir')
+        self.send_message('Special Feature')
+        self.send_message('Wow')
+
+        time.sleep(2)
+
+        self.answer = self.query_selector(".message_container:last-child")
+
+        assert self.answer.rect['y'] <= 660 #Ex de rect : {'height': 18, 'width': 61, 'x': 306, 'y': 4051}. Le message est directement visible si les coordonnées sont inférieures à (très très très grossièrement) à 611.
+
+    @pytest.mark.gpux4
+    def test_if_the_last_message_is_displayed_when_the_user_type_something_in_the_input(self):
+
+        self.send_message('Bonjour')
+        self.send_message('Au revoir')
+        self.send_message('Special Feature')
+        self.send_message('Wow')
+
+        time.sleep(1)
+
+        self.target = self.query_selector("#dialogue_area")
+
+        while self.query_selector("#message1").rect["y"] < 0:
+            ActionChains(self.driver).send_keys_to_element(self.target, Keys.ARROW_UP).perform()
+
+        self.chat_input = self.query_selector('#input_area')
+        self.chat_input.send_keys("message")
+
+        self.last_message = self.query_selector(".message_container:last-child")
+
+        time.sleep(1)
+
+        assert self.last_message.rect['y'] <= 660
+
+    @pytest.mark.gpux5
+    def test_if_the_inputbox_expands_shrinks_when_the_user_adds_and_removes_content_from_it(self):
+
+        self.chat_input = self.query_selector('#input_area')
+
+        assert self.chat_input.rect["height"] in range(55,61)
+
+        self.chat_input.send_keys("H".join(["A" for _ in range (300)]))
+
+        assert self.chat_input.rect["height"] in range(200,225)
+
+        while self.chat_input.get_attribute('value'): 
+            self.chat_input.send_keys(Keys.BACKSPACE)
+        
+        assert self.chat_input.rect["height"] in range(55,61) #{'height': 102, 'width': 731, 'x': 290, 'y': 652}

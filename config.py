@@ -10,3 +10,6 @@ SECRET_KEY = os.environ.get("SECRET_KEY") # "".join([random.choice(string.printa
 GM_API_KEY = os.environ.get("GM_API_KEY")
 FA_KEY = os.environ.get("FA_KEY")
 OWM_API_KEY = os.environ.get("OWM_API_KEY")
+
+if os.environ.get('ENV') == "DEVELOPMENT":
+    DEBUG = True
