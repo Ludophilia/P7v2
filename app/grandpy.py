@@ -320,9 +320,12 @@ class GrandPy(Parser, APIManager):
 
             if "oc" in matches and "know" in matches and "address" in matches:
 
+                # Une autre approche pour la v3, mettre chaque nouveau message dans un array. 
+                # On itéra sur l'array pour afficher chaque message 
+
                 oc_address = self.give_oc_address(message, grandpy_response)
 
-                grandpy_response = oc_address.get("grandpy_response")
+                grandpy_response = oc_address.get("grandpy_response") 
                 message += oc_address.get("message")
 
         message += f"{speech.SORRY}" if len(message) == 0 else "" 
