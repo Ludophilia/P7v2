@@ -4,7 +4,6 @@ from app.grandpy import GrandPy
 import os, config, json
 
 app = Flask("app") #ou __name__ vu que __name__ == "app"
-
 app.config.from_object("config")
 
 @app.route('/', methods=['GET', 'POST'])
