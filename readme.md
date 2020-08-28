@@ -3,7 +3,7 @@
 ## Qu'est-ce que c'est ?
 
 <div style="text-align: center">
-    <img src="v2_dsk_1.gif"><br>
+    <img src="illust/v2_dsk_1.gif"><br>
 </div>
 
 Ce dépot contient GrandPy, **une application web** monopage responsive créé dans le cadre du parcours développeur d'application Python d'OpenClassrooms. Elle constitue le 7ème projet de ce parcours, d'où le nom P7v2 du dépot.
@@ -21,7 +21,7 @@ Cette application est optimisée pour Chrome 84 et Safari 13.
 ## Une version 2 ?
 
 <div style="text-align: center">
-    <img src="v1_dsk_1.gif">
+    <img src="illust/v1_dsk_1.gif">
 </div>
 
 Ce projet est une refonte significative du P7 initial (photo ci-dessus) disponible dans *[ce depot github](https://github.com/Ludophilia/P7)* et dont le resultat est consultable sur *https://grandpy-p7.herokuapp.com*.
