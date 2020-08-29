@@ -32,7 +32,7 @@ class APIManager:
 
     def get_weather_data(self, user_location):
         
-        """Acquière les données météo de et renvoie certaine d'entres elles sous forme de dict."""
+        """Acquiert les données météo de et renvoie certaine d'entres elles sous forme de dict."""
 
         latitude, longitude = user_location["latitude"], user_location["longitude"]
         round = lambda x: math.ceil(x) if x - math.floor(x) > 0.5 else math.floor(x)

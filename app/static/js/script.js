@@ -105,7 +105,7 @@ function adjustInputAreaHeight() {
 
     // Modifie la taille du formulaire et de la fenetre de chat au dessus en fonction du contenu formulaire
 
-    const is_mobile_with = $("body").clientWidth <= 800;
+    const is_mobile_with = $("body").clientWidth <= 970;
 
     const max_height = is_mobile_with ? 120 : 220;
     const base_height = is_mobile_with ? 50 : 60;

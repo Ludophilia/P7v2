@@ -23,7 +23,7 @@ class ChromeDvrMgr():
             wget.download(chromedriver_url, "app/tests/chromedriver.zip")
 
             with zipfile.ZipFile("app/tests/chromedriver.zip", mode="r") as z:
-                chromedriver = z.getinfo("chromedriver") #Python 3.8. Use := to assign and return ?
+                chromedriver = z.getinfo("chromedriver") #Python 3.8. Use := (walrus) to assign and return ?
                 z.extract(chromedriver, path="app/tests")
             
             os.system("chmod 755 app/tests/chromedriver")
