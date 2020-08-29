@@ -33,19 +33,20 @@ async function displayMessage(message_str, { username, icon }, { custom_class = 
     const message_id = MESSAGE_ID;
 
     const message_container_html = `
-    <div class='message_container ${username}_type ${custom_class}'>\
-        <div class="${username} message" id="message${message_id}">\
-            ${username === "grandpy"? message_str : ""}\
-        </div>\
-        <div class='profile_icon'>${icon}</div>\
-    </div>
+        <div class='message_container ${username}_type ${custom_class}'>\
+            <div class="${username} message" id="message${message_id}">\
+                ${username === "grandpy"? message_str : ""}\
+            </div>\
+            <div class='profile_icon'>${icon}</div>\
+        </div>
     `;
 
     if (username === "grandpy") {
-        const animation_html = `<div class="loading ld ld-square ld-spin"\
-        id="animation${message_id}"></div>`;
 
-        $("#dialogue_area").insertAdjacentHTML("beforeend", animation_html);
+        $("#dialogue_area").insertAdjacentHTML(
+            "beforeend", 
+            `<div class="loading ld ld-square ld-spin" id="animation${message_id}"></div>`
+            );
         focusOnLastMessage();
 
         await new Promise((resolve) => {
