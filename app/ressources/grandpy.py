@@ -233,6 +233,8 @@ class GrandPy(Parser, APIManager):
 
             self.isWaitingForAnAnswer.add("#HT")
             message += speech.HT_EXPLAIN_RULES
+            print("[grandpy.py] gp.memory:", self.memory)
+            print("[views.py] gp.isWaitingForAnAnswer:", self.isWaitingForAnAnswer)
 
         elif self.isWaitingForAnAnswer:
         
@@ -249,6 +251,9 @@ class GrandPy(Parser, APIManager):
                 if self.memory.get("HT_ERROR"): self.memory.pop("HT_ERROR")
                 self.isWaitingForAnAnswer.remove("#HT")
 
+                print("[grandpy.py] gp.memory:", self.memory)
+                print("[views.py] gp.isWaitingForAnAnswer:", self.isWaitingForAnAnswer)
+
             else:
                 self.memory["HT_ERROR"] = 1 if self.memory.get("HT_ERROR") == None else self.memory["HT_ERROR"] + 1
                 remaining = 3 - self.memory["HT_ERROR"]
@@ -260,6 +265,9 @@ class GrandPy(Parser, APIManager):
 
                 else:
                     message += speech.HT_ERROR(remaining)
+
+                print("[grandpy.py] gp.memory:", self.memory)
+                print("[views.py] gp.isWaitingForAnAnswer:", self.isWaitingForAnAnswer)
 
         return message
 
