@@ -25,6 +25,8 @@ def grandpy(mode):
     
     gp = pick_the_right_grandpy_instance(user_ip)
     print("[views.py] gp.owner:", gp.owner)
+    print("[views.py] last turn gp.memory:", gp.memory)
+    print("[views.py] last turn gp.isWaitingForAnAnswer:", gp.isWaitingForAnAnswer)
 
     if request.method == "POST":
 

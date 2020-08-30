@@ -1,12 +1,12 @@
 from app.ressources.grandpy import GrandPy
 
-owners = {}
+gp_owners = {}
 
 def pick_the_right_grandpy_instance(user_ip):
 
-    global owners #-_-"
+    global gp_owners #-_-"
 
-    if user_ip not in owners: 
-        owners[user_ip] = GrandPy(user_ip)
+    if user_ip not in gp_owners: 
+        gp_owners[user_ip] = GrandPy(user_ip)
 
-    return owners.get(user_ip)
+    return gp_owners.get(user_ip)
