@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request 
-from app.forms import Form
-from app.grandpy import GrandPy
+from app.ressources.forms import Form
+from app.ressources.gp_manager import pick_the_right_grandpy_instance
 import os, config, json
 
 app = Flask("app") #ou __name__ vu que __name__ == "app"
@@ -18,29 +18,13 @@ def index():
 def grandpy(mode):
 
     # Différentes instances de GrandPy.
-
     # Separation par ip ? Un grandPy par ip ?
+    # Il faut aussi un truc pour supprimer les instances de grandpy au bout de 15mn/1h.
 
-        # Si client_ip in ["known_client_ip"]
-        # Retourner le grandpy associé à cet ip ?    
-
-    # Il faut aussi un truc pour supprimer les instances de grandpy au bout de 15mn 1h.
-
-    def pick_the_right_grandpy_instance(user_ip):
-        
-        owners = {"127.0.0.1": GrandPy('127.0.0.1')}
-
-        if user_ip not in owners: 
-            owners[user_ip] = GrandPy(user_ip)
-
-        return owners.get(user_ip)
+    user_ip = request.environ.get('HTTP_X_FORWARDED_FOR') or request.remote_addr
     
-    gp = GrandPy()
-
-    print("[views.py] Client IP ?", request.origin)
-    print("[views.py] Client IP ?", request.remote_addr)
-    print("[views.py] Client IP ?", request.environ['REMOTE_ADDR'])
-    print("[views.py] Client IP ?", request.environ.get('HTTP_X_FORWARDED_FOR'))
+    gp = pick_the_right_grandpy_instance(user_ip)
+    print("[views.py] gp.owner:", gp.owner)
 
     if request.method == "POST":
 

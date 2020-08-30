@@ -131,8 +131,11 @@ class GrandPy(Parser, APIManager):
 
     """Représente GrandPy, le robot qui répond aux messages et joue parfois avec l'utilisateur."""
 
-    memory = {}
-    isWaitingForAnAnswer = set()
+    def __init__(self, owner_ip_adress):
+
+        self.owner = owner_ip_adress
+        self.memory = {}
+        self.isWaitingForAnAnswer = set()
 
     def get_anecdocte(self, jsf_wiki_data):
 
