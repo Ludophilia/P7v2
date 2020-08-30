@@ -37,8 +37,10 @@ def grandpy(mode):
     
     gp = GrandPy()
 
-    print("IP", request.remote_addr)
-    print("IP", request.environ['REMOTE_ADDR'])
+    print("[views.py] Client IP ?", request.origin)
+    print("[views.py] Client IP ?", request.remote_addr)
+    print("[views.py] Client IP ?", request.environ['REMOTE_ADDR'])
+    print("[views.py] Client IP ?", request.environ.get('HTTP_X_FORWARDED_FOR'))
 
     if request.method == "POST":
 
