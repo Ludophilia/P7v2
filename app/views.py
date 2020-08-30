@@ -17,7 +17,28 @@ def index():
 @app.route('/grandpy/<path:mode>', methods=['GET', 'POST'])
 def grandpy(mode):
 
+    # Différentes instances de GrandPy.
+
+    # Separation par ip ? Un grandPy par ip ?
+
+        # Si client_ip in ["known_client_ip"]
+        # Retourner le grandpy associé à cet ip ?    
+
+    # Il faut aussi un truc pour supprimer les instances de grandpy au bout de 15mn 1h.
+
+    def pick_the_right_grandpy_instance(user_ip):
+        
+        owners = {"127.0.0.1": GrandPy('127.0.0.1')}
+
+        if user_ip not in owners: 
+            owners[user_ip] = GrandPy(user_ip)
+
+        return owners.get(user_ip)
+    
     gp = GrandPy()
+
+    print("IP", request.remote_addr)
+    print("IP", request.environ['REMOTE_ADDR'])
 
     if request.method == "POST":
 

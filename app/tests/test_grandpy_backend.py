@@ -162,55 +162,42 @@ class TestGrandPyGaming(TestTools):
 
     @pytest.mark.gpgmg1
     def test_a_game_of_heads_or_tails(self):
+
+        for props in ["Pile", "pile", "Face", "face"]:
         
-        message_wrapped1 = self.wrap_message("jouons à pile ou face")
-        actual_answer1 = self.send_and_unwrap(message_wrapped1)
+            actual_answer1 = self.send_and_unwrap(self.wrap_message("Jouons à pile ou face"))
+            expected_answer1 = "OK ! Je tire une pièce au hasard, devine le résultat !Pile ou face ?"
 
-        expected_answer1 = "OK ! Je tire une pièce au hasard, devine le résultat !Pile ou face ?"
+            assert actual_answer1 == expected_answer1
+            assert "#HT" in self.gp.isWaitingForAnAnswer
 
-        assert actual_answer1 == expected_answer1
-        assert "#HT" in self.gp.isWaitingForAnAnswer
+            actual_answer2 = self.send_and_unwrap(self.wrap_message(props))
+            ht_results = [f"BRAVO ! La réponse est bien {gr_readable}, tu as gagné 🎊!" for gr_readable in ["pile", "face"]] + [
+                f"PERDU 🤡! La réponse est {gr_readable} ! Une prochaine fois peut-être !" for gr_readable in ["pile", "face"]]
+            expected_answer2 = [
+                "Je lance la pièce et..." + result for result in ht_results 
+            ]
 
-        message_wrapped2 = self.wrap_message("pile")
-        actual_answer2 = self.send_and_unwrap(message_wrapped2)
-
-        ht_results = [f"BRAVO ! La réponse est bien {gr_readable}, tu as gagné 🎊!" for gr_readable in ["pile", "face"]] + [f"PERDU 🤡! La réponse est {gr_readable} ! Une prochaine fois peut-être !" for gr_readable in ["pile", "face"]]
-
-        expected_answer2 = [
-            "Je lance la pièce et..." + result for result in ht_results 
-        ]
-
-        assert actual_answer2 in expected_answer2
-        assert "#HT" not in self.gp.isWaitingForAnAnswer
+            assert actual_answer2 in expected_answer2
+            assert "#HT" not in self.gp.isWaitingForAnAnswer
 
     @pytest.mark.gpgmg2
     def test_how_a_game_of_heads_or_tails_that_goes_wrong_is_handled_by_grandpy(self):
         
-        message_wrapped1 = self.wrap_message("jouons à pile ou face")
-        self.send_and_unwrap(message_wrapped1)
+        #Déclenche le jeu
+        self.send_and_unwrap(self.wrap_message("jouons à pile ou face"))
 
-        message_wrapped2 = self.wrap_message("pile et face lol")
-        expected_answer2 = "Désolé, je n'ai pas compris ta réponse. Peux-tu recommencer ? Il te reste 2 essais !!Pile ou face ?"
-        actual_answer2 = self.send_and_unwrap(message_wrapped2)
+        for message, error_time in [("pile et face lol", 1), ("pile et face !!", 2), ("je persiste: pile ET face", 3)]:
 
-        assert actual_answer2 == expected_answer2
-        assert self.gp.memory["HT_ERROR"] == 1
+            try_again = f"Désolé, je n'ai pas compris ta réponse. Peux-tu recommencer ? Il te reste {3-error_time} essai{'s' if error_time < 2 else ''} !!Pile ou face ?"
+            too_bad = "Désolé, tu as épuisé tes essais ! Le jeu pile ou face est terminé ! À une prochaine fois peut-être 🎲!"
+            expected_answer = try_again if error_time < 3 else too_bad
 
-        message_wrapped3 = self.wrap_message("pile et face !!")
-        expected_answer3 = "Désolé, je n'ai pas compris ta réponse. Peux-tu recommencer ? Il te reste 1 essai !!Pile ou face ?"
-        actual_answer3 = self.send_and_unwrap(message_wrapped3)
+            actual_answer = self.send_and_unwrap(self.wrap_message(message))
 
-        assert actual_answer3 == expected_answer3
-        assert self.gp.memory["HT_ERROR"] == 2
-
-        message_wrapped4 = self.wrap_message("je persiste: pile ET face")
-        expected_answer4 = "Désolé, tu as épuisé tes essais ! Le jeu pile ou face est terminé ! À une prochaine fois peut-être 🎲!"
-        actual_answer4 = self.send_and_unwrap(message_wrapped4)
-
-        assert actual_answer4 == expected_answer4
-
-        assert self.gp.memory.get("HT_ERROR") == None
-        assert "#HT" not in self.gp.isWaitingForAnAnswer
+            assert actual_answer == expected_answer
+            assert self.gp.memory.get("HT_ERROR") == error_time if error_time < 3 else self.gp.memory.get("HT_ERROR") == None
+            if error_time == 3: assert "#HT" not in self.gp.isWaitingForAnAnswer
 
 @pytest.mark.gpansmu #31/07/20 - OK
 class TestGrandPyAnswerToMultipleQuestions(TestTools):
