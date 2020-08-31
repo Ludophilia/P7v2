@@ -136,6 +136,7 @@ class GrandPy(Parser, APIManager):
         self.owner = owner_ip_adress
         self.memory = {}
         self.isWaitingForAnAnswer = set()
+        self.awsers = 0
 
     def get_anecdocte(self, jsf_wiki_data):
 
@@ -233,8 +234,8 @@ class GrandPy(Parser, APIManager):
 
             self.isWaitingForAnAnswer.add("#HT")
             message += speech.HT_EXPLAIN_RULES
+            print("[grandpy.py] gp.isWaitingForAnAnswer:", self.isWaitingForAnAnswer)
             print("[grandpy.py] gp.memory:", self.memory)
-            print("[views.py] gp.isWaitingForAnAnswer:", self.isWaitingForAnAnswer)
 
         elif self.isWaitingForAnAnswer:
         
@@ -251,11 +252,16 @@ class GrandPy(Parser, APIManager):
                 if self.memory.get("HT_ERROR"): self.memory.pop("HT_ERROR")
                 self.isWaitingForAnAnswer.remove("#HT")
 
+                print("[grandpy.py] gp.isWaitingForAnAnswer:", self.isWaitingForAnAnswer)
                 print("[grandpy.py] gp.memory:", self.memory)
-                print("[views.py] gp.isWaitingForAnAnswer:", self.isWaitingForAnAnswer)
 
             else:
-                self.memory["HT_ERROR"] = 1 if self.memory.get("HT_ERROR") == None else self.memory["HT_ERROR"] + 1
+                #Les lignes fautives ?
+                if self.memory.get("HT_ERROR") == None:
+                    self.memory["HT_ERROR"] = 1  
+                else:
+                     self.memory["HT_ERROR"] + 1
+                
                 remaining = 3 - self.memory["HT_ERROR"]
 
                 if remaining == 0:
@@ -266,8 +272,8 @@ class GrandPy(Parser, APIManager):
                 else:
                     message += speech.HT_ERROR(remaining)
 
+                print("[grandpy.py] gp.isWaitingForAnAnswer:", self.isWaitingForAnAnswer)
                 print("[grandpy.py] gp.memory:", self.memory)
-                print("[views.py] gp.isWaitingForAnAnswer:", self.isWaitingForAnAnswer)
 
         return message
 
@@ -296,6 +302,9 @@ class GrandPy(Parser, APIManager):
         grandpy_response = {}
         keywords = "\n".join(self.extract_keywords(user_message))
         matches = self.search_patterns(keywords)
+
+        self.awsers += 1
+        print("[grandpy.py] Number of Answers:", self.awsers) #L'info reste-t-elle en mémoire ?
 
         if self.isWaitingForAnAnswer:
 
@@ -347,6 +356,9 @@ class GrandPy(Parser, APIManager):
 
         """Renvoie une réponse (sous forme de str) à l'utilisateur en fonction du 
         nombre de fois qu'il a appuyé sur le logo de grandpy"""
+
+        self.awsers += 1
+        print("[grandpy.py] Number of Answers:", self.awsers)
 
         nth_time = user_data.get("reactions", "")
 
