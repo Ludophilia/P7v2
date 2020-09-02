@@ -136,7 +136,7 @@ class GrandPy(Parser, APIManager):
         self.owner = owner_ip_adress
         self.memory = {}
         self.isWaitingForAnAnswer = set()
-        self.awsers = 0
+        #self.answers = 0
 
     def get_anecdocte(self, jsf_wiki_data):
 
@@ -234,8 +234,6 @@ class GrandPy(Parser, APIManager):
 
             self.isWaitingForAnAnswer.add("#HT")
             message += speech.HT_EXPLAIN_RULES
-            print("[grandpy.py] gp.isWaitingForAnAnswer:", self.isWaitingForAnAnswer)
-            print("[grandpy.py] gp.memory:", self.memory)
 
         elif self.isWaitingForAnAnswer:
         
@@ -251,9 +249,6 @@ class GrandPy(Parser, APIManager):
                 message += bravo if playerschoice == gamesresult else shame
                 if self.memory.get("HT_ERROR"): self.memory.pop("HT_ERROR")
                 self.isWaitingForAnAnswer.remove("#HT")
-
-                print("[grandpy.py] gp.isWaitingForAnAnswer:", self.isWaitingForAnAnswer)
-                print("[grandpy.py] gp.memory:", self.memory)
 
             else:
                 #Les lignes fautives ?
@@ -272,8 +267,6 @@ class GrandPy(Parser, APIManager):
                 else:
                     message += speech.HT_ERROR(remaining)
 
-                print("[grandpy.py] gp.isWaitingForAnAnswer:", self.isWaitingForAnAnswer)
-                print("[grandpy.py] gp.memory:", self.memory)
 
         return message
 
@@ -303,9 +296,6 @@ class GrandPy(Parser, APIManager):
         keywords = "\n".join(self.extract_keywords(user_message))
         matches = self.search_patterns(keywords)
 
-        self.awsers += 1
-        print("[grandpy.py] Number of Answers:", self.awsers) #L'info reste-t-elle en mémoire ?
-
         if self.isWaitingForAnAnswer:
 
             if "#HT" in self.isWaitingForAnAnswer:
@@ -322,7 +312,7 @@ class GrandPy(Parser, APIManager):
                 message += self.give_website_info(message)
 
             if "play" in matches and "heads" in matches and "tails" in matches:
-
+            
                 message += self.play_heads_or_tails(matches, message)
 
             if ("how" in matches or "question" in matches) and ("go" in matches) and (
@@ -356,9 +346,6 @@ class GrandPy(Parser, APIManager):
 
         """Renvoie une réponse (sous forme de str) à l'utilisateur en fonction du 
         nombre de fois qu'il a appuyé sur le logo de grandpy"""
-
-        self.awsers += 1
-        print("[grandpy.py] Number of Answers:", self.awsers)
 
         nth_time = user_data.get("reactions", "")
 
