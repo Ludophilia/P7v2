@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request 
+import json, config
+from flask import Flask, render_template, request
+from app import app
 from app.ressources.forms import Form
-from app.ressources.gp_manager import pick_the_right_grandpy_instance
-import os, config, json
-
-app = Flask("app") #ou __name__ vu que __name__ == "app"
-app.config.from_object("config")
+from app.ressources.grandpy import GrandPy
+from app.models import Robot, db 
+#from app.ressources.gp_manager import pick_the_right_grandpy_instance
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -17,14 +17,19 @@ def index():
 @app.route('/grandpy/<path:mode>', methods=['GET', 'POST'])
 def grandpy(mode):
 
-    # Différentes instances de GrandPy.
-    # Separation par ip ? Un grandPy par ip ?
+    # Différentes instances de GrandPy.# Separation par ip ? Un grandPy par ip ?
     # Il faut aussi un truc pour supprimer les instances de grandpy au bout de 15mn/1h.
 
     user_ip = request.environ.get('HTTP_X_FORWARDED_FOR') or request.remote_addr
     
-    gp = pick_the_right_grandpy_instance(user_ip)
-    print("[views.py] gp.owner:", gp.owner)
+    # Qu'est-ce qu'on doit faire ? Enregistrer le grandpy ?
+
+    if not Robot.query.get(user_ip):
+        db.session.add(Robot(id=f"{user_ip}"))
+        db.session.commit()
+    print("[views.py] DB", Robot.query.all())
+    
+    gp = GrandPy(user_ip) ; print("[views.py] gp.owner:", gp.owner)
 
     if request.method == "POST":
 

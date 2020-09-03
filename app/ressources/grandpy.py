@@ -134,7 +134,9 @@ class GrandPy(Parser, APIManager):
     def __init__(self, owner_ip_adress):
 
         self.owner = owner_ip_adress
+        #ADD DATABASE OP HERE
         self.memory = {}
+        #ADD DATABASE OP HERE
         self.isWaitingForAnAnswer = set()
         #self.answers = 0
 
@@ -233,10 +235,13 @@ class GrandPy(Parser, APIManager):
         if "play" in matches and not self.isWaitingForAnAnswer:
 
             self.isWaitingForAnAnswer.add("#HT")
+            #ADD DATABASE OP HERE
+
             message += speech.HT_EXPLAIN_RULES
 
         elif self.isWaitingForAnAnswer:
-        
+        #ADD DATABASE OP HERE
+
             if ("heads" in matches) ^ ("tails" in matches):
 
                 playerschoice = 0 if "heads" in matches else 1
@@ -247,11 +252,13 @@ class GrandPy(Parser, APIManager):
 
                 message += speech.HT_TOSS_COIN
                 message += bravo if playerschoice == gamesresult else shame
+                #ADD DATABASE OP HERE
                 if self.memory.get("HT_ERROR"): self.memory.pop("HT_ERROR")
                 self.isWaitingForAnAnswer.remove("#HT")
 
             else:
                 #Les lignes fautives ?
+                #ADD DATABASE OP HERE
                 if self.memory.get("HT_ERROR") == None:
                     self.memory["HT_ERROR"] = 1  
                 else:
@@ -259,6 +266,7 @@ class GrandPy(Parser, APIManager):
                 
                 remaining = 3 - self.memory["HT_ERROR"]
 
+                #ADD DATABASE OP HERE
                 if remaining == 0:
                     message += speech.HT_OUT_OF_TRIES
                     self.memory.pop("HT_ERROR")
@@ -296,8 +304,10 @@ class GrandPy(Parser, APIManager):
         keywords = "\n".join(self.extract_keywords(user_message))
         matches = self.search_patterns(keywords)
 
+        #ADD DATABASE OP HERE
         if self.isWaitingForAnAnswer:
-
+            
+            #ADD DATABASE OP HERE
             if "#HT" in self.isWaitingForAnAnswer:
                 message += self.play_heads_or_tails(matches, message)
 
