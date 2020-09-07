@@ -1,0 +1,1 @@
+from app.grandpy.skills.parser.classes import Parser

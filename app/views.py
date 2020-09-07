@@ -1,10 +1,11 @@
 import json, config
-from flask import Flask, render_template, request
+
+from flask import render_template, request
+
 from app import app
-from app.ressources.forms import Form
-from app.ressources.grandpy import GrandPy
+from app.forms import Form
+from app.grandpy import GrandPy
 from app.models import Robot, db 
-#from app.ressources.gp_manager import pick_the_right_grandpy_instance
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
