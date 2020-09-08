@@ -1,1 +1,1 @@
-from app.grandpy.skills.base.base import answer_message
+from app.grandpy.skills.base.answer_message import answer_message
