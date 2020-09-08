@@ -30,14 +30,14 @@ def grandpy(mode):
         db.session.commit()
     print("[views.py] DB", Robot.query.all())
     
-    gp = GrandPy(user_ip) ; print("[views.py] gp.owner:", gp.owner)
+    gp = GrandPy(user_ip) #; print("[views.py] gp.owner:", gp.owner)
 
     if request.method == "POST":
 
         user_data = json.loads(request.data.decode("utf-8"))
 
         if mode == "chat/":
-            return gp.answer_message(user_data) 
+            return gp.build_response(user_data) 
         
         elif mode == "wtf/":
             return gp.deal_with_clicks_on_logo(user_data)

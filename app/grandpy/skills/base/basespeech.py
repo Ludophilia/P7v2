@@ -14,6 +14,7 @@ STARTER = """Salut 👋, qu'est-ce que je peux faire pour toi ?<br><br>
 SORRY = "Désolé, je n'ai pas compris ton message... 😕 Dans une prochaine version peut-être ?"
 
 INTERROGATE_CLICK_ON_LOGO = "Pourquoi tu appuies sur mon logo, t'es fou ou quoi ? Je suis plus très jeune, c'est fragile ici !!"
+
 ANNOYED = dict(
     n1 = "Mais !?",
     n2 = "Ça va !?",

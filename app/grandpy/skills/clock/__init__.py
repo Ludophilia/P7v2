@@ -1,1 +1,1 @@
-from app.grandpy.skills.clock.functions import give_time
+from app.grandpy.skills.clock.clock import give_time

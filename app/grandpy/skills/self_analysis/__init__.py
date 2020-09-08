@@ -1,1 +1,1 @@
-from app.grandpy.skills.self_analysis.functions import give_website_info
+from app.grandpy.skills.self_analysis.self_analysis import give_website_info

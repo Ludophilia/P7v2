@@ -1,1 +1,1 @@
-from app.grandpy.skills.social.functions import say_hello, give_state_of_mind
+from app.grandpy.skills.social.social import say_hello, give_state_of_mind

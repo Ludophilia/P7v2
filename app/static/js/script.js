@@ -220,14 +220,14 @@ function main() {
         
         sendDataToServer("POST", "/grandpy/chat/", user_data, (response) => {
                     
-            const { message, anecdocte, location } = JSON.parse(response);
+            const { answer, oc_anecdote, oc_coordinates } = JSON.parse(response);
 
-            displayMessage(message, grandpy);
+            displayMessage(answer, grandpy);
             
-            if (anecdocte && location) {
-                displayMap(location, grandpy);
+            if (oc_anecdote && oc_coordinates) {
+                displayMap(oc_coordinates, grandpy);
                 setTimeout(() => 
-                    displayMessage(anecdocte, grandpy), 4500
+                    displayMessage(oc_anecdote, grandpy), 4500
                 );
             };
         });

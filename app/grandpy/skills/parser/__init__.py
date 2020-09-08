@@ -1,1 +1,1 @@
-from app.grandpy.skills.parser.classes import Parser
+from app.grandpy.skills.parser.parser import Parser

@@ -1,1 +1,1 @@
-from app.grandpy.skills.weather.functions import tell_weather
+from app.grandpy.skills.weather.weather import tell_weather

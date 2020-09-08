@@ -1,1 +1,1 @@
-from app.grandpy.skills.api_manager.classes import APIManager
+from app.grandpy.skills.api_manager.api_manager import APIManager
