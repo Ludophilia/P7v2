@@ -1,22 +1,26 @@
 import random
 
 from app.grandpy.skills.heads_tails import speech
+from app.models import db, State, Memory
 
-def play_heads_or_tails(matches, message):
-
-    # Si une réponse est attendue, autant gérer ça ici non ? Non ?
+def play_heads_or_tails(matches, user_data, message):
 
     """Gère tout ce qui a à voir avec le jeu pile ou face proposé par grandpy. Retourne le paramètre message modifié."""
 
-    if "play" in matches: #and not self.isWaitingForAnAnswer:
+    owner_ip = user_data.get("owner")
+    is_waiting_for_answer = State.query.get({"robot_id": owner_ip, "type": "WAITING", "value":'HT_EVENT'})
 
-        #self.isWaitingForAnAnswer.add("#HT")
-        #ADD DATABASE OP HERE
+    if "play" in matches and is_waiting_for_answer is None:
+
+        waiting_st = State(robot_id=user_data.get("owner"), type="WAITING", value="HT_EVENT")
+        db.session.add(waiting_st)
+        db.session.commit()
 
         message += speech.HT_EXPLAIN_RULES
 
-    elif False: #Add database-related RULE here
-    #ADD DATABASE OP HERE
+    elif is_waiting_for_answer:
+
+        ht_error = Memory.query.get({"robot_id": owner_ip, "object": "HT_ERROR"})
 
         if ("heads" in matches) ^ ("tails" in matches):
 
@@ -28,25 +32,32 @@ def play_heads_or_tails(matches, message):
 
             message += speech.HT_TOSS_COIN
             message += bravo if playerschoice == gamesresult else shame
-            #ADD DATABASE OP HERE
-            if self.memory.get("HT_ERROR"): self.memory.pop("HT_ERROR")
-            self.isWaitingForAnAnswer.remove("#HT")
+
+            if ht_error: db.session.delete(ht_error)
+            db.session.delete(is_waiting_for_answer)
+            db.session.commit()
 
         else:
-            #Les lignes fautives ?
-            #ADD DATABASE OP HERE
-            if self.memory.get("HT_ERROR") == None:
-                self.memory["HT_ERROR"] = 1  
-            else:
-                    self.memory["HT_ERROR"] + 1
-            
-            remaining = 3 - self.memory["HT_ERROR"]
 
-            #ADD DATABASE OP HERE
+            if ht_error is None:
+                
+                new_ht_error = Memory(robot_id=owner_ip, object="HT_ERROR", value=1)
+                db.session.add(new_ht_error)
+                db.session.commit()
+
+            else:
+                ht_error.value = int(ht_error.value) + 1
+                db.session.commit()
+
+            ht_error = Memory.query.get({"robot_id": owner_ip, "object": "HT_ERROR"})
+            remaining = 3 - int(ht_error.value)
+
             if remaining == 0:
                 message += speech.HT_OUT_OF_TRIES
-                self.memory.pop("HT_ERROR")
-                self.isWaitingForAnAnswer.remove("#HT")
+
+                db.session.delete(ht_error)
+                db.session.delete(is_waiting_for_answer)
+                db.session.commit()
 
             else:
                 message += speech.HT_ERROR(remaining)
