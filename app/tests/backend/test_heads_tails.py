@@ -53,16 +53,16 @@ class TestHeadsTails(TestCase):
         
         Tools().ask_grandpy("jouons à pile ou face")
 
-        for message, error_time in [("pile et face lol", 1), ("pile et face !!", 2), ("je persiste: pile ET face", 3)]:
+        for message, error_time in [("pile et face lol", 2), ("pile et face !!", 1), ("je persiste: pile ET face", 0)]:
 
-            try_again = f"Désolé, je n'ai pas compris ta réponse. Peux-tu recommencer ? Il te reste {3-error_time} essai{'s' if error_time < 2 else ''} !!Pile ou face ?"
+            try_again = f"Désolé, je n'ai pas compris ta réponse. Peux-tu recommencer ?Il te reste {error_time} essai{'s' if error_time > 1 else ''} !!Pile ou face ?"
             too_bad = "Désolé, tu as épuisé tes essais ! Le jeu pile ou face est terminé ! À une prochaine fois peut-être 🎲!"
-            expected_answer = try_again if error_time < 3 else too_bad
+            expected_answer = try_again if error_time > 0 else too_bad
 
             actual_answer = Tools().ask_grandpy(message)
-            ht_error = Memory.query.get({'robot_id': '127.0.0.1', 'object': 'HT_ERROR'})
+            ht_error = Memory.query.get({'robot_id': '127.0.0.1', 'object': 'HT_REMAINING'})
             isWaitingForAnAnswer = State.query.get({'robot_id': '127.0.0.1', 'type': 'WAITING', 'value': 'HT_EVENT'})
 
             assert actual_answer == expected_answer
-            assert int(ht_error.value) == error_time if error_time < 3 else ht_error is None
-            if error_time == 3: assert isWaitingForAnAnswer is None
+            assert int(ht_error.value) == error_time if error_time > 0 else ht_error is None
+            if error_time == 0: assert isWaitingForAnAnswer is None

@@ -25,6 +25,8 @@ ANNOYED = dict(
     n9 = "10 fois de suite... OK. T'as gagné."
 )
 
+HT_REMINDER = lambda waiting_for_htev, remaining: f"<br><br> ET... AH OUI! Un jeu pile ou face est toujours en cours : il te reste encore {remaining} essai{'s' if remaining > 1 else ''}!" if waiting_for_htev else ""
+
 # Dans la V3 ?:
     # Quel est le sens de la vie
     # Raconte moi une blague

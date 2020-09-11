@@ -20,7 +20,7 @@ def play_heads_or_tails(matches, user_data, message):
 
     elif is_waiting_for_answer:
 
-        ht_error = Memory.query.get({"robot_id": owner_ip, "object": "HT_ERROR"})
+        ht_remaining = Memory.query.get({"robot_id": owner_ip, "object": "HT_REMAINING"})
 
         if ("heads" in matches) ^ ("tails" in matches):
 
@@ -33,33 +33,33 @@ def play_heads_or_tails(matches, user_data, message):
             message += speech.HT_TOSS_COIN
             message += bravo if playerschoice == gamesresult else shame
 
-            if ht_error: db.session.delete(ht_error)
+            if ht_remaining: db.session.delete(ht_remaining)
             db.session.delete(is_waiting_for_answer)
             db.session.commit()
 
         else:
 
-            if ht_error is None:
+            if ht_remaining is None:
                 
-                new_ht_error = Memory(robot_id=owner_ip, object="HT_ERROR", value=1)
-                db.session.add(new_ht_error)
+                ht_remaining = Memory(robot_id=owner_ip, object="HT_REMAINING", value=2)
+                db.session.add(ht_remaining)
                 db.session.commit()
 
             else:
-                ht_error.value = int(ht_error.value) + 1
+                ht_remaining.value = int(ht_remaining.value) - 1
                 db.session.commit()
 
-            ht_error = Memory.query.get({"robot_id": owner_ip, "object": "HT_ERROR"})
-            remaining = 3 - int(ht_error.value)
+            state_of_the_game = Memory.query.get({"robot_id": owner_ip, "object": "HT_REMAINING"})
+            ht_remaining = int(state_of_the_game.value)
 
-            if remaining == 0:
+            if ht_remaining == 0:
                 message += speech.HT_OUT_OF_TRIES
 
-                db.session.delete(ht_error)
+                db.session.delete(state_of_the_game)
                 db.session.delete(is_waiting_for_answer)
                 db.session.commit()
 
             else:
-                message += speech.HT_ERROR(remaining)
+                message += speech.HT_ERROR(ht_remaining)
 
     return message

@@ -1,7 +1,9 @@
 import json
 
 from app.grandpy import skills
-from app.grandpy.skills import basespeech
+from app.grandpy.skills import basespeech as speech
+
+from app.models import State, Memory
 
 class GrandPy:
 
@@ -14,7 +16,12 @@ class GrandPy:
 
         """Renvoie un message sympa pour démarrer la conversation avec l'utilisateur """
 
-        starter = f"{basespeech.STARTER}"
+        waiting_for_htev = State.query.get({'robot_id': self.owner, 'type':'WAITING', 'value':'HT_EVENT'})
+        state_of_the_game = Memory.query.get({'robot_id': self.owner, 'object': 'HT_REMAINING'})
+
+        remaining = int(state_of_the_game.value) if state_of_the_game else 3
+
+        starter = f"{speech.STARTER + speech.HT_REMINDER(waiting_for_htev, remaining)}"
 
         return starter
 
@@ -25,7 +32,7 @@ class GrandPy:
 
         nth_time = user_data.get("reactions", "")
 
-        return basespeech.INTERROGATE_CLICK_ON_LOGO if nth_time == "n0" else basespeech.ANNOYED.get(nth_time, "...")
+        return speech.INTERROGATE_CLICK_ON_LOGO if nth_time == "n0" else speech.ANNOYED.get(nth_time, "...")
 
     def build_response(self, user_data):
 

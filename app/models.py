@@ -30,7 +30,7 @@ class State(db.Model):
 
 class Memory(db.Model):
     robot_id = db.Column(db.String(15), db.ForeignKey('robot.id'), primary_key=True, nullable=False)
-    object = db.Column(db.String(50), primary_key=True, nullable=False) #ex: HT_ERROR, OWNER_FAV_COLOR
+    object = db.Column(db.String(50), primary_key=True, nullable=False) #ex: HT_REMAINING, OWNER_FAV_COLOR
     value = db.Column(db.String(50), nullable=False) #ex: 1, GREEN
 
     def __repr__(self):
