@@ -165,15 +165,15 @@ class TestUserExperience(TestMasterClass):
     @pytest.mark.gpux2
     def test_if_the_loading_animation_is_displayed(self):
         
+        time.sleep(0.5)
         self.loading_animation1 = self.query_selector("#animation1")
         assert self.loading_animation1.is_displayed()
 
         time.sleep(2)
 
         self.send_message("bonjour")
-
+        
         time.sleep(0.5)
-
         self.loading_animation2 = self.query_selector("#animation3")
         assert self.loading_animation2.is_displayed()
 
