@@ -1,10 +1,14 @@
+import time, os
+
+import wget, pytest, zipfile
 from flask_testing import LiveServerTestCase
-from app import app
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.touch_actions import TouchActions
-import time, wget, os, pytest, zipfile
+
+from app import app
+from app.models import db, Robot, State, Memory
 
 class ChromeDvrMgr():
 
@@ -14,22 +18,25 @@ class ChromeDvrMgr():
         """ Automatise le téléchargement du chromedriver et le renvoie pour utilisation """
         
         # GET CHROMEDRIVER : https://sites.google.com/a/chromium.org/chromedriver/
-    
-        if not os.path.exists("app/tests/chromedriver"):
+
+        dirname = os.path.dirname(os.path.abspath(__file__))
+        build_path = lambda file: os.path.join(dirname, file)
+
+        if not os.path.exists(build_path("chromedriver")):
             
             ext = {"mac": "mac64", "win": "win32"}.get(os_name)
             chromedriver_url = f"http://chromedriver.storage.googleapis.com/{version}/chromedriver_{ext}.zip"
 
-            wget.download(chromedriver_url, "app/tests/chromedriver.zip")
+            wget.download(chromedriver_url, build_path("chromedriver.zip"))
 
-            with zipfile.ZipFile("app/tests/chromedriver.zip", mode="r") as z:
+            with zipfile.ZipFile(build_path("chromedriver.zip"), mode="r") as z:
                 chromedriver = z.getinfo("chromedriver") #Python 3.8. Use := (walrus) to assign and return ?
-                z.extract(chromedriver, path="app/tests")
+                z.extract(chromedriver, path=build_path(""))
             
-            os.system("chmod 755 app/tests/chromedriver")
-            os.remove("app/tests/chromedriver.zip")
+            os.system(f"chmod 755 {build_path('chromedriver')}")
+            os.remove(build_path("chromedriver.zip"))
 
-        return webdriver.Chrome('app/tests/chromedriver')
+        return webdriver.Chrome(build_path('chromedriver'))
 
 class TestMasterClass(LiveServerTestCase):
 
@@ -38,12 +45,16 @@ class TestMasterClass(LiveServerTestCase):
         return app
     
     def setUp(self): 
+        db.create_all()
+        db.session.add(Robot(id=f"127.0.0.1"))
+        db.session.commit()
         self.driver = ChromeDvrMgr.get_chromedriver("mac", "84.0.4147.30")
         self.query_selector = self.driver.find_element_by_css_selector
         self.query_selector_all = self.driver.find_elements_by_css_selector
         self.visit_url()
     
     def tearDown(self):
+        db.drop_all()
         self.driver.quit()
 
     def visit_url(self):
