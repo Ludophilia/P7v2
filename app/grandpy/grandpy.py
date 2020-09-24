@@ -38,10 +38,9 @@ class GrandPy:
 
         """Renvoie une réponse (sous forme de json) à renvoyer à l'utilisateur en prenant en compte les mots clés qui y figurent"""
 
-        user_data["owner"] = self.owner 
-
         user_message = user_data.get("user_message", "")
         matches = skills.Parser().find_matches(user_message)
+        user_data["owner"] = self.owner
 
         grandpy_response = {}
 
@@ -53,4 +52,3 @@ class GrandPy:
         grandpy_response["answer"] = skills.answer_message(matches, user_data)
 
         return json.dumps(grandpy_response, ensure_ascii=False, sort_keys=True)
-

@@ -8,7 +8,7 @@ function sendDataToServer(method, target_url, data_to_send, callback) {
     request.addEventListener("load", () => {
         try {
             callback(request.responseText);
-        } catch (error) {
+        } catch(error) {
             console.error(error);
         };
     });
@@ -211,8 +211,8 @@ function main() {
         // Gère ce qui se passe quand on valide le formulaire
 
         const user_message = $("#input_area").value;
-        const is_string_empty = !user_message.trim();
-        if (is_string_empty) return e.preventDefault();
+        const is_empty_string = !user_message.trim();
+        if (is_empty_string) return e.preventDefault();
 
         const user_data = makeJson(user_message);
 
@@ -244,10 +244,10 @@ function main() {
         // Gère l'envoi du formulaire en cas d'appui sur la touche entrée
 
         const key_pushed = e.code;
-        const is_string_empty = !($("#input_area").value.trim());
+        const is_empty_string = !($("#input_area").value.trim());
 
         if (key_pushed !== 'Enter') return; 
-        if (is_string_empty) return;
+        if (is_empty_string) return;
 
         $("#submit_button").click();
     });

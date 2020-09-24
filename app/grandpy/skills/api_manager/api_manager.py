@@ -17,7 +17,7 @@ class APIManager:
         wiki_url = "https://fr.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Cité Paradis&formatversion=2&exsentences=3&exlimit=1&explaintext=1&exsectionformat=plain"
 
         data_url = maps_url if api_name == "maps" else wiki_url
-        data_pth = f"app/ressources/{api_name}_data.js"
+        data_pth = f"app/ressources/{api_name}_data.json"
 
         if not pth.exists(data_pth): 
             with open(data_pth, "w") as f:

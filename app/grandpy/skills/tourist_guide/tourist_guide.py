@@ -15,7 +15,7 @@ def get_oc_anecdote():
 
     knowmore_part = speech.KNOWMORE("Wikipédia", wiki_url)
 
-    return f"{speech.ANECDOTE_STARTER} {wikipedia_part} {knowmore_part}"
+    return f"{speech.ANECDOTE_STARTER} {wikipedia_part} {knowmore_part}<br>"
 
 def get_oc_coordinates():
 

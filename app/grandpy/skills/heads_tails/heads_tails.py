@@ -16,7 +16,7 @@ def play_heads_or_tails(matches, user_data, message):
         db.session.add(waiting_st)
         db.session.commit()
 
-        message += speech.HT_EXPLAIN_RULES
+        message += f"{speech.HT_EXPLAIN_RULES}<br>"
 
     elif is_waiting_for_answer:
 
@@ -31,7 +31,7 @@ def play_heads_or_tails(matches, user_data, message):
             bravo, shame = speech.HT_PLAYER_VICTORY(gr_readable),speech.HT_PLAYER_DEFEAT(gr_readable)
 
             message += speech.HT_TOSS_COIN
-            message += bravo if playerschoice == gamesresult else shame
+            message += f"{bravo}<br>" if playerschoice == gamesresult else f"{shame}<br>" 
 
             if ht_remaining: db.session.delete(ht_remaining)
             db.session.delete(is_waiting_for_answer)
@@ -60,6 +60,6 @@ def play_heads_or_tails(matches, user_data, message):
                 db.session.commit()
 
             else:
-                message += speech.HT_ERROR(ht_remaining)
+                message += f"{speech.HT_ERROR(ht_remaining)}<br>"
 
     return message

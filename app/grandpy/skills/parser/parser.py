@@ -89,14 +89,14 @@ class Parser:
             if re.search(pattern, keywords, re.I|re.M):
                 matches += [equiv]
 
-        return matches #Franchement, pas terrible cet algo
+        return matches
 
     def find_matches(self, user_input): 
 
         """ Extraie les mots-clés de la chaine utilisateur et renvoie les codes des mots-clés 
         reconnus par le parser """
 
-        keywords = self.__extract_keywords_from_user_input(user_input)
-        matches = self.__find_matches_from_keywords(keywords)
+        keywords_str = self.__extract_keywords_from_user_input(user_input)
+        matches = self.__find_matches_from_keywords(keywords_str)
 
         return matches
