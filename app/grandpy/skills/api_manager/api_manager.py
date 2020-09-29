@@ -6,7 +6,7 @@ import requests
 class APIManager:
     
     """Représente l'APIManager, c'est à dire le système qui télécharge les données des différentes 
-    API et les rend disponible à d'autres système"""
+    API et les rend disponible à d'autres systèmes"""
 
     def get_location_data(self, api_name):
 
