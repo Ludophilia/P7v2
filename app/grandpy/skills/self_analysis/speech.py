@@ -3,7 +3,7 @@
 GITHUB = """
 <span id="footer_sns">
     <a href="https://github.com/Ludophilia/P7v2" target="_blank">
-        <img src="static/img/GitHub-Mark-Light-32px.png" alt="Octocat" width="25" height="25"/>
+        <img src="static/legacy/img/GitHub-Mark-Light-32px.png" alt="Octocat" width="25" height="25"/>
     </a>
 </span>
 """

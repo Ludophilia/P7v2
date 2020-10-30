@@ -3,7 +3,9 @@
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-        <link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }}>
+        <!-- REMOVE -->
+        <link rel="stylesheet" href={{ url_for('static', filename='legacy/css/style.css') }}>
+        <!-- REMOVE -->
         <link rel="icon" type="image/png" href={{ url_for('static', filename='img/robot-face.png') }} />
         <title>P7v2 - GrandPyBot 1st Anniversary Remake</title>
     </head>
@@ -33,13 +35,13 @@
                 </div>
                 <div id="footer_sns">
                     <a href="https://github.com/Ludophilia/P7v2" target="_blank">
-                        <img src="{{ url_for('static', filename='img/GitHub-Mark-Light-32px.png') }}" alt="Octocat" width="25" height="25"/>
+                        <img src="{{ url_for('static', filename='legacy/img/GitHub-Mark-Light-32px.png') }}" alt="Octocat" width="25" height="25"/>
                     </a>
                 </div>
             </footer>
         </div>
         <script defer src="https://maps.googleapis.com/maps/api/js?key={{ gm_api_key }}" async></script>
-        <script defer src="static/js/script.js"></script> 
+        <script defer src="static/dist/bundle.js"></script> 
         <script defer src="https://use.fontawesome.com/{{ fa_key }}.js"></script>
     </body>
 </html>
