@@ -1,0 +1,47 @@
+$header_height: 55px
+$app_background_color: #1D1F26 
+$chat_background_color: #1C2E40
+$input_background_color: #1D212A
+$mobile_breakpoint: 970px
+$message_font_size: 16px
+
+*
+    box-sizing: border-box
+
+@font-face
+    font-family: fb-krungthep
+    src: url("../fonts/krungthep.ttf") format("truetype")
+
+html
+    height: 100vh
+    width: 100vw
+    z-index: 1
+
+body
+    position: fixed
+    top: 0px
+    left: 0px
+    z-index: 10
+    height: 100%
+    width: 100%
+    font-family: krungthep, fb-krungthep
+    font-size: $message_font_size
+    color:#fff
+    overflow: hidden
+    margin: 0px
+
+a
+    color: #fff
+
+.my_container
+    display: grid
+    grid-template-columns: 20% 80%
+    grid-template-rows: 1fr 250px
+    grid-template-areas: "a b" "c b"
+    height: 100%
+    width: 100%
+
+    @media (max-width: $mobile_breakpoint)
+        grid-template-columns: 100%
+        grid-template-rows: $header_height calc(100% - #{$header_height})
+        grid-template-areas: "a" "b"

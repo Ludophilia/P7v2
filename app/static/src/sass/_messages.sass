@@ -1,0 +1,52 @@
+@use "container"
+// Variables
+$message_padding: 15px 25px
+
+.message_container
+    width: max-content
+    max-width: 75%
+    margin: 10px 0
+
+    @each $breakpoint, $width in (1350: 85, 1050: 90, 800: 100)
+        @media (max-width: $breakpoint)
+            max-width: $width
+    
+    @each $user, $direction in (grandpy: right, user: left)
+        &.#{$user}_type
+            margin-#{$direction}: auto
+
+.message
+    text-align: justify
+    overflow-wrap: break-word
+    background-color: container.$chat_background_color
+    padding: $message_padding
+
+.user
+    font-family: Verdana
+    border-radius: 20px 20px 0px 20px
+
+    + .profile_icon
+        text-align: right
+        margin: 0 -10px 0 0
+
+.grandpy 
+    border-radius: 20px 20px 20px 0px
+
+    + .profile_icon
+        text-align: left
+        margin: 0 0 0 -10px
+
+.loading
+    color: #fff
+    margin: 10px 0
+
+
+.map
+    height: 40vh
+    width: 100vw
+    max-width: calc(100% + 2*30px)
+    margin: -15px -25px
+    border-radius: 10px 10px 10px 0
+
+    @media (max-width: container.$mobile_breakpoint)
+        height: 50vh

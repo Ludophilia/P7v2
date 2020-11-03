@@ -5,7 +5,7 @@ import { displayMessage, displayMap } from './modules/message.js';
 import { selectUserProfile } from './modules/user.js';
 import  { adjustInputAreaHeight, adjustWebAppHeight } from './modules/window.js';
 
-//import './style.scss';
+import '../sass/main.sass';
 
 function main() {
 

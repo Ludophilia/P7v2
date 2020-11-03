@@ -1,4 +1,3 @@
-
 function sendDataToServer(method, target_url, data_to_send, callback) {
     
     // Envoie les données au serveur et gère ce qu'il se passe quand le serveur renvoie des données. J'aurais pu utiliser l'API Fetch, mais laissons comme ça... à l'ancienne.

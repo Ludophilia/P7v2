@@ -1,0 +1,67 @@
+@use "container"
+
+// Variables
+$input_container_height: 20px + 2*20px
+$input_area_width: 82%
+$submit_button_width: calc(100% - #{$input_area_width})
+
+$input_area_padding: 20px 30px
+$submit_button_border_radius: 0px 0px 10px 0px
+$input_area_border_radius: 0px 0px 0px 10px   
+
+@media (max-width: container.$mobile_breakpoint)
+    $input_container_height: 20px + 2*20px
+    $input_area_width: 75%
+
+    $input_area_padding: 15px 25px
+    $submit_button_border_radius: 0
+    $input_area_border_radius: 0
+
+:root
+    --input_container_height: #{$input_container_height}
+
+#input_container
+    display: flex
+    height: $input_container_height
+    width: 100%
+
+#input_area
+    resize: none
+    border: none
+    margin: 0
+    flex-basis: $input_area_width
+    font-size: container.$message_font_size
+    font-family: Verdana
+    color: #fff
+    background-color: container.$input_background_color
+    padding: $input_area_padding
+    border-radius: $input_area_border_radius
+    transition: border, box-shadow 1500ms ease-out
+
+    &:focus
+        outline: none
+        border: 1px solid #51CBEE
+        box-shadow: 0px 0 5px #51CBEE
+
+#submit_button
+    --webkit-appearance: none
+    border: none
+    margin: 0
+    padding: 0
+    display: flex
+    flex-basis: $submit_button_width
+    color: #fff
+    background-color: #182736
+    border-radius: $submit_button_border_radius
+
+    &:focus
+        outline: none
+
+    @media (pointer: fine)
+        &:hover    
+            color: #182736
+            background-color: #fff
+
+#envelope
+    font-size: 25px
+    margin: auto

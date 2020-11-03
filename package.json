@@ -20,7 +20,8 @@
   "homepage": "https://github.com/Ludophilia/P7v2#readme",
   "devDependencies": {
     "css-loader": "^5.0.0",
-    "dart-sass": "^1.25.0",
+    "file-loader": "^6.2.0",
+    "sass": "^1.28.0",
     "sass-loader": "^10.0.4",
     "style-loader": "^2.0.0",
     "webpack": "^5.3.1",
