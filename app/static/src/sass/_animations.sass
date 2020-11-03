@@ -1,4 +1,4 @@
-@use "container"
+@use "universal"
 
 @keyframes ld-spin
     0% 
@@ -17,8 +17,8 @@
         animation: ld-spin 1s infinite
 
 .ld-square
-    width: container.$message_font_size
-    height: container.$message_font_size
+    width: universal.$message_font_size
+    height: universal.$message_font_size
     position: relative
 
     &:after

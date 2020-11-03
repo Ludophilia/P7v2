@@ -1,9 +1,4 @@
-$header_height: 55px
-$app_background_color: #1D1F26 
-$chat_background_color: #1C2E40
-$input_background_color: #1D212A
-$mobile_breakpoint: 970px
-$message_font_size: 16px
+@use "universal"
 
 *
     box-sizing: border-box
@@ -25,13 +20,13 @@ body
     height: 100%
     width: 100%
     font-family: krungthep, fb-krungthep
-    font-size: $message_font_size
-    color:#fff
+    font-size: universal.$message_font_size
+    color: universal.$app_text_color
     overflow: hidden
     margin: 0px
 
 a
-    color: #fff
+    color: universal.$app_text_color
 
 .my_container
     display: grid
@@ -41,7 +36,7 @@ a
     height: 100%
     width: 100%
 
-    @media (max-width: $mobile_breakpoint)
+    @media (max-width: universal.$mobile_breakpoint)
         grid-template-columns: 100%
-        grid-template-rows: $header_height calc(100% - #{$header_height})
+        grid-template-rows: 55px calc(100% - 55px)
         grid-template-areas: "a" "b"

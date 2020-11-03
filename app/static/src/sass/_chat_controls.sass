@@ -1,47 +1,39 @@
-@use "container"
-
-// Variables
-$input_container_height: 20px + 2*20px
-$input_area_width: 82%
-$submit_button_width: calc(100% - #{$input_area_width})
-
-$input_area_padding: 20px 30px
-$submit_button_border_radius: 0px 0px 10px 0px
-$input_area_border_radius: 0px 0px 0px 10px   
-
-@media (max-width: container.$mobile_breakpoint)
-    $input_container_height: 20px + 2*20px
-    $input_area_width: 75%
-
-    $input_area_padding: 15px 25px
-    $submit_button_border_radius: 0
-    $input_area_border_radius: 0
+@use "universal"
 
 :root
-    --input_container_height: #{$input_container_height}
+    --input_container_height: #{20px + 2 * 20px}
+    --input_area_width: 82%
 
+    @media (max-width: universal.$mobile_breakpoint)
+        --input_container_height: #{20px + 2 * 15px}
+        --input_area_width: 75%
+    
 #input_container
     display: flex
-    height: $input_container_height
+    height: var(--input_container_height)
     width: 100%
 
 #input_area
     resize: none
     border: none
     margin: 0
-    flex-basis: $input_area_width
-    font-size: container.$message_font_size
+    flex-basis: var(--input_area_width)
+    font-size: universal.$message_font_size
     font-family: Verdana
-    color: #fff
-    background-color: container.$input_background_color
-    padding: $input_area_padding
-    border-radius: $input_area_border_radius
+    color: universal.$app_text_color
+    background-color: universal.$input_background_color
+    padding: 20px 30px
+    border-radius: 0px 0px 0px 10px
     transition: border, box-shadow 1500ms ease-out
+
+    @media (max-width: universal.$mobile_breakpoint)
+        padding: 15px 25px
+        border-radius: 0
 
     &:focus
         outline: none
-        border: 1px solid #51CBEE
-        box-shadow: 0px 0 5px #51CBEE
+        border: 1px solid universal.$input_outline_color
+        box-shadow: 0px 0 5px universal.$input_outline_color
 
 #submit_button
     --webkit-appearance: none
@@ -49,18 +41,21 @@ $input_area_border_radius: 0px 0px 0px 10px
     margin: 0
     padding: 0
     display: flex
-    flex-basis: $submit_button_width
-    color: #fff
-    background-color: #182736
-    border-radius: $submit_button_border_radius
+    flex-basis: calc(100% - var(--input_area_width))
+    color: universal.$submit_button_secondary_color
+    background-color: universal.$submit_button_main_color
+    border-radius: 0px 0px 10px 0px
 
     &:focus
         outline: none
+    
+    @media (max-width: universal.$mobile_breakpoint)
+        border-radius: 0
 
     @media (pointer: fine)
         &:hover    
-            color: #182736
-            background-color: #fff
+            color: universal.$submit_button_main_color
+            background-color: universal.$submit_button_secondary_color
 
 #envelope
     font-size: 25px

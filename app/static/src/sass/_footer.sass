@@ -1,4 +1,4 @@
-@use "container"
+@use "universal"
 
 footer
     grid-area: c
@@ -6,7 +6,7 @@ footer
     width: 100%
     text-align: center
     font-size: 12px
-    background-color: container.$app_background_color
+    background-color: universal.$app_background_color
     padding: 0 15px
     padding-top: 165px 
 
@@ -14,7 +14,7 @@ footer
         @media (max-width: #{$breakpoint}px) 
             padding-top: #{$padding}px
         
-    @media (max-width: container.$mobile_breakpoint)
+    @media (max-width: universal.$mobile_breakpoint)
         display: none
 
 #footer

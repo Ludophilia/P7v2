@@ -1,13 +1,11 @@
-@use "container"
-// Variables
-$message_padding: 15px 25px
+@use "universal"
 
 .message_container
     width: max-content
     max-width: 75%
     margin: 10px 0
 
-    @each $breakpoint, $width in (1350: 85, 1050: 90, 800: 100)
+    @each $breakpoint, $width in (1350px: 85%, 1050px: 90%, 800px: 100%)
         @media (max-width: $breakpoint)
             max-width: $width
     
@@ -18,8 +16,8 @@ $message_padding: 15px 25px
 .message
     text-align: justify
     overflow-wrap: break-word
-    background-color: container.$chat_background_color
-    padding: $message_padding
+    background-color: universal.$chat_background_color
+    padding: 15px 25px
 
 .user
     font-family: Verdana
@@ -37,7 +35,7 @@ $message_padding: 15px 25px
         margin: 0 0 0 -10px
 
 .loading
-    color: #fff
+    color: universal.$app_text_color
     margin: 10px 0
 
 
@@ -48,5 +46,5 @@ $message_padding: 15px 25px
     margin: -15px -25px
     border-radius: 10px 10px 10px 0
 
-    @media (max-width: container.$mobile_breakpoint)
+    @media (max-width: universal.$mobile_breakpoint)
         height: 50vh

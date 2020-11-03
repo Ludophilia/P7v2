@@ -1,32 +1,29 @@
-@use "container"
-@use "chat_controls"
-
-$chat_window_padding: 7px 15px
-$dialogue_area_height: calc(100% - #{chat_controls.$input_container_height})
-$dialogue_area_padding: 0px 20px
-$dialogue_area_border_radius: 10px 10px 0px 0px
-
-@media (max-width: container.$mobile_breakpoint)
-    $chat_window_padding: 0
-    $dialogue_area_padding: 0px 25px
-    $dialogue_area_border_radius: 0
+@use "universal"
 
 #chat_window
     grid-area: b
     height: 100%
     width: 100%
-    background-color: container.$chat_background_color
-    padding: $chat_window_padding
+    background-color: universal.$chat_background_color
+    padding: 7px 15px
 
-#dialogue_container // Dans #chat_window
+    @media (max-width: universal.$mobile_breakpoint)
+        padding: 0
+
+#dialogue_container
     height: 100%
     width: 100%
 
-#dialogue_area  // Dans #dialogue_container
-    height: $dialogue_area_height
+#dialogue_area
+    height: calc(100% - var(--input_container_height))
     width: 100%
     overflow: auto
-    background-color: container.$app_background_color
-    padding: $dialogue_area_padding
-    border-top: 10px solid container.$app_background_color
-    border-radius: $dialogue_area_border_radius
+    background-color: universal.$app_background_color
+    padding: 0px 22px
+    border-top: 10px solid universal.$app_background_color
+    border-radius: 10px 10px 0px 0px
+
+    @media (max-width: universal.$mobile_breakpoint)
+        padding: 0px 25px
+        border-radius: 0
+
