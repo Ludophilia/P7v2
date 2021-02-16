@@ -3,6 +3,7 @@ import pytest
 from app.tests.backend.testtools import TestTools
 from app.grandpy.skills import Parser
 
+@pytest.mark.tprs
 class TestParser:
 
     @pytest.mark.tprs1
@@ -25,7 +26,7 @@ class TestParser:
 
     @pytest.mark.tprs3
     def test_if_extract_keywords_does_extract_keywords_from_user_input(self):
-        
+
         test_string = Parser()._Parser__extract_keywords_from_user_input("Salut, tu connais l'adresse d'oc ?")
         expected_result = "salut\nconnais\nadresse\noc\n?"
         
@@ -35,7 +36,23 @@ class TestParser:
     def test_if_find_matches_does_extract_keywords_from_user_input(self):
 
         actual_oc_matches = Parser().find_matches("Salut, Tu connais l'adresse d'oc ?")
-        expected_oc_matches = ["know", "oc", "address", "hello"]
+        expected_oc_matches = ["know","address", "hello"] #  "oc", 
         
         for matches in expected_oc_matches:
             assert matches in actual_oc_matches
+
+    @pytest.mark.tprs5
+    def test_if_extract_address_from_user_message_does_extract_address_from_user_input(self):
+        
+        places = [
+            ("la tour eiffel", "tour eiffel"), ("des champs élysée", "champs élysée"), 
+            ("d'openclassrooms", "openclassrooms"), ("du sacré coeur", "sacré coeur"),
+            ("de la sorbonne", "sorbonne")
+            ]
+
+        for placevb, place in places:
+
+            user_message = f"Salut, Tu connais l'adresse {placevb}?"
+            expected_answer = Parser().extract_place_from_user_message(user_message)
+
+            assert expected_answer == place

@@ -33,6 +33,9 @@ class TestGrandPyAnswerToASingleQuestion(TestTools):
     @pytest.mark.gpans3
     def test_what_answer_message_returns_if_the_user_asks_for_OC_address(self, monkeypatch):
         
+        # FAUT FAIRE CE TEST :
+        # FAUT ENSUITE VOIR CE QU'IL SE PASSE EN FRONT
+        
         #GrandPy("127.0.0.1")
         monkeypatch.setattr(APIManager, "get_location_data", self.get_fake_api_data)
         

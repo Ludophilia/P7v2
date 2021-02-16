@@ -2,7 +2,7 @@
 
 STARTER = """Salut 👋, qu'est-ce que je peux faire pour toi ?<br><br>
         Tu peux me demander, dans le formulaire juste en bas avec 'Nouveau message' écrit dedans :<br><br>
-        - "Tu connais l'adresse d'OpenClassrooms ?" pour obtenir l'adresse d'Openclassrooms 🏫 !<br>
+        - "Tu connais l'adresse de (un lieu de ton choix)" pour obtenir l'adresse d'un 🏫 , n'oublie pas le '?' si tu mets plusieurs questions !<br>
         - "Quel temps fait-il ?" pour obtenir la météo ⛅️ de ton lieu (📍localisation nécessaire) !<br>
         - "Quelle heure il est ?" pour obtenir l'heure 🕓 qu'il est !<br>
         - "Jouons à pile ou face" si tu veux jouer au jeu du même nom 🎲 !<br>

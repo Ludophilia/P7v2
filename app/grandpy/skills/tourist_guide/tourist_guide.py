@@ -1,38 +1,61 @@
+from typing import Optional
+
 from app.grandpy.skills.tourist_guide import speech
 from app.grandpy.skills import APIManager
 
-def get_oc_anecdote():
+class TouristGuide:
 
-    """Récupère l'anecdote de GP sur la Cité Paradis et l'url de la fiche wikipédia 
-    associée à partir des données jsf (json-formatted) de l'API Wikimedia. 
-    Renvoie un str contenant l'anecdote"""
+    def __init__(self, place_of_interest: str): #Pourquoi init avec poi ? Déclencher une rech directement ?
+        self.coordinates = dict()
+        self.wiki_data = None
+        self.place_of_interest = place_of_interest
+        self.maps_data = APIManager().get_maps_data(place_of_interest)
 
-    wiki_data = APIManager().get_location_data("wiki")
+    def get_anecdote(self, coordinates: dict, matches: list) -> str:
 
-    title = wiki_data["query"]["pages"][0]["title"]
-    wiki_url = f"https://fr.wikipedia.org/wiki/{title}".replace(" ", "_")
-    wikipedia_part = wiki_data["query"]["pages"][0]["extract"].split('\n')[-1]
+        """Récupère l'anecdote de GP et l'url de la fiche wikipédia associée à partir 
+        des données jsf (json-formatted) de l'API Wikimedia. Renvoie un str contenant l'anecdote."""
 
-    knowmore_part = speech.KNOWMORE("Wikipédia", wiki_url)
+        if self.coordinates != coordinates:
+            self.wiki_data = APIManager().get_wiki_data(coordinates)
+            self.coordinates = coordinates
 
-    return f"{speech.ANECDOTE_STARTER} {wikipedia_part} {knowmore_part}<br>"
+        if self.wiki_data is None: return speech.NO_ANECDOTE
 
-def get_oc_coordinates():
+        starter = f"{speech.ANECDOTE_STARTER} " if "oc" in matches else ""
+        wiki_part = self.wiki_data["query"]["pages"][0]["extract"]#.split('\n')[-1]
+        title = self.wiki_data["query"]["pages"][0]["title"].replace("'", "%27")
+        wiki_url = f"https://fr.wikipedia.org/wiki/{title}".replace(" ", "_")
+        knowmore_part = speech.KNOWMORE("Wikipédia", wiki_url)
 
-    """Renvoie les coordonnés du lieu pour un affichage sur une carte."""
+        return f"{starter}" + f"{wiki_part} {knowmore_part}<br>"
 
-    oc_maps_data_js = APIManager().get_location_data("maps")
-    oc_coordinates = oc_maps_data_js["results"][0]["geometry"]["location"]
+    def get_coordinates(self, place_of_interest: str) -> Optional[dict]:
 
-    return oc_coordinates
+        """Renvoie les coordonnés du lieu pour un affichage sur une carte."""
 
-def get_oc_address(message):
+        if self.place_of_interest != place_of_interest:
+            self.maps_data = APIManager().get_maps_data(place_of_interest)
+            self.place_of_interest = place_of_interest
 
-    """Génère un message où GrandPy donne l'adresse d'openclassrooms."""
+        if self.maps_data is None: return None
 
-    oc_maps_data_js = APIManager().get_location_data("maps")
-    oc_address = oc_maps_data_js["results"][0]["formatted_address"].replace(", France", "") 
+        coordinates = self.maps_data["candidates"][0]["geometry"]["location"]
 
-    message += f"{speech.ADDRESSFOUND(oc_address)}<br>"
+        return coordinates
 
-    return message
+    def get_address(self, place_of_interest: str, message: str) -> str:
+
+        """Génère un message où GrandPy donne l'adresse du lieu d'intérêt"""
+
+        if self.place_of_interest != place_of_interest:
+            self.maps_data = APIManager().get_maps_data(place_of_interest)
+            self.place_of_interest = place_of_interest
+
+        if self.maps_data is None: return speech.NO_ADDRESS
+
+        address = self.maps_data["candidates"][0]["formatted_address"].replace(", France", "") 
+
+        message += f"{speech.ADDRESSFOUND(address)}<br>"
+
+        return message

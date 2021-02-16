@@ -4,7 +4,7 @@ class Parser:
 
     """Représente le Parser, c'est à dire le système qui analyse le message envoyé à l'utilisateur, en extrait les mots clés et les reconnait ceux qui font "reagir" GrandPy"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.HELLO = r"^b(on)?j(ou)?r$|^slt$|^salut(ations?)?$|^yo$|^hi$|^👋$"
         self.OC = r"^o(pen)?c(las{1,2}rooms?)?$"
         self.ADDRESS = r"^ad{1,2}res{1,2}e?$"
@@ -21,9 +21,10 @@ class Parser:
         self.TAILS = r"^face$"
         self.INFO = r"^info(rmation)?s?$"
         self.WEBSITE = r"^(site|app)(\s(web|internet))?$"
+        self.PLACEOFINTEREST = r"ad{1,2}res{1,2}e? ((\w+\s?){1,8})(\?|$)"
 
     @property
-    def __stopwords(self):
+    def __stopwords(self) -> list:
 
         """Renvoie une liste python de stopwords (minuscules)."""
 
@@ -34,7 +35,7 @@ class Parser:
 
         return stopwords_list
     
-    def __remove_punctuation(self, user_input):
+    def __remove_punctuation(self, user_input: str) -> str:
 
         """Retire la ponctuation et les whitespaces en trop de l'input utilisateur (str) 
         et renvoie un str de cet input"""
@@ -54,12 +55,13 @@ class Parser:
 
         return re.sub(r"\s+", " ", user_input).strip()
         
-    def __extract_keywords_from_user_input(self, user_input):
+    def __extract_keywords_from_user_input(self, user_input: str, multiline = True) -> str:
         
         """Retire les stopwords et les mots répétés de l'input utilisateur sans ponctuation 
         et renvoie une chaine de charactère contenant les mots "clés" restants (minuscules uniquement)"""
 
         words_in_user_input = self.__remove_punctuation(user_input).split()
+        sep = "\n" if multiline else " "
         keywords = []
 
         for word in words_in_user_input:
@@ -67,9 +69,12 @@ class Parser:
             if word not in self.__stopwords and word not in keywords:
                 keywords.append(word) 
 
-        return "\n".join(keywords)
 
-    def __find_matches_from_keywords(self, keywords):
+        return f"{sep}".join(keywords) #Renvoyer Keywords in array à la place. Pourquoi ? Cela permet d'utiliser la liste des 
+        # keywords de façon positionnelle, pour pouvoir repérer l'adresse du lieu recherché qui devrait se trouver
+        # à une certaine position.
+
+    def __find_matches_from_keywords(self, keywords: str) -> list:
 
         """ Analyse la chaine de keywords à la recherche de patterns qui font réagir grandpy
         et retourne la liste des keywords déclencheurs """
@@ -91,7 +96,17 @@ class Parser:
 
         return matches
 
-    def find_matches(self, user_input): 
+    def extract_place_from_user_message(self, user_input: str) -> str:
+
+        """ Analyse la chaine utilisateur et renvoie l'adresse qui y figure. L'implémentation actuelle 
+        nécessite que l'utilisateur utilise un '?' pour terminer la sous chaine qui constitue l'adresse. """
+
+        keywords = self.__extract_keywords_from_user_input(user_input, False)
+        extract_poi = re.search(self.PLACEOFINTEREST, keywords)
+
+        return extract_poi.group(1).strip()
+
+    def find_matches(self, user_input: str) -> list: 
 
         """ Extraie les mots-clés de la chaine utilisateur et renvoie les codes des mots-clés 
         reconnus par le parser """

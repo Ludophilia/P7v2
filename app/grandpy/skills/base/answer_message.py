@@ -8,6 +8,7 @@ def answer_message(matches, user_data):
 
     answer = ""
     owner = user_data.get("owner")
+    
     is_waiting_for_answers = State.query.filter_by(robot_id=owner, type="WAITING").all()
 
     if is_waiting_for_answers:
@@ -45,9 +46,11 @@ def answer_message(matches, user_data):
             
             answer = skills.tell_weather(user_data, answer)
 
-        if "oc" in matches and "know" in matches and "address" in matches:
+        if "know" in matches and "address" in matches:
 
-            answer = skills.get_oc_address(answer)
+            tourist_guide = user_data.get("tourist_guide")
+            place_of_interest = user_data.get("place_of_interest") #redondant, déjà dans tourist_guide
+            answer = tourist_guide.get_address(place_of_interest, answer)
 
     answer += f"{basespeech.SORRY}" if len(answer) == 0 else ""
 

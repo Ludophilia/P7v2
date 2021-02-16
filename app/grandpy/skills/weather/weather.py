@@ -1,5 +1,3 @@
-#import 
-#import #
 from app.grandpy.skills import APIManager #DANGEREUX
 from app.grandpy.skills.weather import speech
 

@@ -39,16 +39,27 @@ class GrandPy:
         """Renvoie une réponse (sous forme de json) à renvoyer à l'utilisateur en prenant en compte les mots clés qui y figurent"""
 
         user_message = user_data.get("user_message", "")
-        matches = skills.Parser().find_matches(user_message)
-        user_data["owner"] = self.owner
+
+        parser = skills.Parser()
+        matches = parser.find_matches(user_message)
 
         grandpy_response = {}
 
-        if "oc" in matches and "know" in matches and "address" in matches:
+        if "know" in matches and "address" in matches:
 
-            grandpy_response["oc_anecdote"] = skills.get_oc_anecdote()
-            grandpy_response["oc_coordinates"] = skills.get_oc_coordinates()
+            place_of_interest = parser.extract_place_from_user_message(user_message) # ex : tour eiffel
+            user_data["place_of_interest"] = place_of_interest
 
+            tourist_guide = skills.TouristGuide(place_of_interest)
+            user_data["tourist_guide"] = tourist_guide
+
+            coordinates = tourist_guide.get_coordinates(place_of_interest)
+            anecdote = tourist_guide.get_anecdote(coordinates, matches)
+
+            grandpy_response["oc_coordinates"] = coordinates
+            grandpy_response["oc_anecdote"] = anecdote
+
+        user_data["owner"] = self.owner
         grandpy_response["answer"] = skills.answer_message(matches, user_data)
 
         return json.dumps(grandpy_response, ensure_ascii=False, sort_keys=True)
